@@ -8,9 +8,9 @@ Status: draft, filled decision by decision. The contract is the interface betwee
 
 - A game is split into pure logic and a view. The logic knows nothing about Vue, the view draws what the logic provides
 - A game may only know `core` and `game-kit` (a package with Vue building blocks for games, see `tech-stack.md`), nothing of the platform
-- A game package exports a module with: a manifest, a function `createRound({ challenge, seed, saved })`, a Vue component `View` that receives the round object, and its scoring tests
+- A game package exports a module with: a manifest, a function `createRound({ challenge, seed, saved })`, a Vue component `View` that receives the round object and a how-to-play component. Scoring tests are not part of the module (see below)
 - `createRound` returns a round object with a fixed interface (`apply(move)`, `serialize()`, `result()`). The platform controls saving and round end through this interface. Pause and time are not part of it, they belong to the game (see Pause and Time)
-- Scoring tests run directly against the logic (seed and move sequence produce the expected board, score and par). `core` brings one shared test runner for all games
+- Scoring tests run directly against the logic (seed and move sequence produce the expected board, score and par). They are Vitest files in the game package (`src/scoring.<challenge>.test.ts`, one per challenge) and never ship in the bundle. `core` brings one shared test helper for all games. A repository check (`checks/scoring-tests.test.ts`) fails when a challenge in a manifest has no such file
 - **One default `View` per game, and every challenge may bring its own.** A challenge without its own view uses the default of the game. The platform only chooses which component it loads and hands it the round. The own views live in the module (`views`, loaded on demand), not in the manifest, because the manifest is read for the game list without loading any view. The logic is unaffected, `createRound` receives the challenge anyway and may differ per challenge
 - Sketch (concept, not built):
 
@@ -26,7 +26,6 @@ interface GameModule {
   View: Component             // default view, receives the round
   views?: Record<string, () => Promise<Component>> // optional, per challenge
   HowToPlay: Component        // rules and scoring dialog content
-  scoringTests: ScoringTest[] // seed + moves -> expected score and par
 }
 ```
 
@@ -72,6 +71,12 @@ Two different things, only one of them is optional.
 - The parameters of a challenge (grid size, number of colors) stay in the game logic, so the numbers exist in one place. The rule "if a parameter of a challenge changes, the scoring version goes up" stays with the logic and its scoring tests
 - Display names (of the game and of the challenges, for example "6×6 · 4 colors") come from the texts of the game, not from the manifest
 - The three versions are integers starting at 1, not texts. Comparability depends only on `scoringVersion`, and for `gameVersion` traceability counts, not semantics
+
+### Showing a score
+
+- **Order is generic, display is the game's.** The platform compares score values position by position with the `better` direction from the manifest (no game code needed, so import, merge and old scoring versions need none either). How a score looks is up to the game
+- The `key` of each score position is also the text key of its label, taken from the language file of the game
+- For the value itself the game provides a small display function or text template (for example "2 under par" instead of `-2`), separate from the view and loaded with the game package. The platform only calls it. The exact shape is fixed when the game list is built
 
 ### Reporting moves and round end
 

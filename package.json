@@ -1,0 +1,32 @@
+{
+  "name": "mindwhile",
+  "private": true,
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "packageManager": "pnpm@10.33.2",
+  "engines": {
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.19.2",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-boundaries": "^7.2.0",
+    "eslint-plugin-vue": "^10.11.1",
+    "prettier": "^3.9.10",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.2",
+    "vitest": "^5.0.5",
+    "vue-tsc": "^3.3.13"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @mindwhile/web dev",
+    "build": "pnpm --filter @mindwhile/web build",
+    "typecheck": "vue-tsc --noEmit -p apps/web/tsconfig.json && tsc -p packages/core && tsc -p packages/game-kit && tsc -p packages/games/spill-it && tsc -p checks",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run"
+  }
+}

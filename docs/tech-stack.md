@@ -53,6 +53,16 @@ Status: draft. Functional rules live in `architecture.md`, terms and English nam
 - **Names are separate from the license:** The names Mindwhile and Spillit belong to the project and are not granted by the code license, forks should choose their own names
 - **Changelog in two levels:** The technical `CHANGELOG.md` is generated automatically from the commits and is not shipped. The news file `news.json` is created as a draft from it at release time and written by hand for players (see `architecture.md`). git-cliff is under discussion as the tool for the changelog
 
+### Workspace tooling
+
+- **Node 24** (`.nvmrc`, `engines`), pnpm pinned through `packageManager`. Package names `@mindwhile/core`, `@mindwhile/game-kit`, `@mindwhile/game-spill-it`, `@mindwhile/web`
+- **Router mode: history** (SPA fallback at the host is still to be checked, see Open)
+- **TypeScript 6 for now:** `vue-tsc` 3.3 does not run with TypeScript 7 (native compiler). Move up when `vue-tsc` supports it
+- **Shared `tsconfig.base.json`**, one `tsconfig` per package (`core` without the DOM lib), type check via `vue-tsc` for the web app and `tsc` for the packages
+- **Lint and format:** ESLint (flat config) with `eslint-plugin-boundaries`, relative imports are resolved with the node resolver (`.ts` and `.vue` extensions). Prettier for code, Markdown is excluded. Boundaries cover game, game-kit, core and the web features. Imports by package name are not resolved by the plugin, there the declared `dependencies` of each package are the guard
+- **Game discovery:** `import.meta.glob` over `packages/games/*/src/manifest.ts` (eager, manifests are pure data). Works in dev (`server.fs.allow` for the workspace) and in build
+- **Scoring tests:** Vitest files `src/scoring.<challenge>.test.ts` in the game package, enforced by `checks/scoring-tests.test.ts`
+
 ## Proposals (still to be confirmed)
 
 - **Compression for the export:** the browser's `CompressionStream`, without a package
@@ -61,9 +71,7 @@ Status: draft. Functional rules live in `architecture.md`, terms and English nam
 ## Open
 
 - Router mode of the platform: history or hash. History mode needs an SPA fallback at the host (not verified for statichost.eu), hash mode collides with the import links whose payload sits after the `#` (they would need a route such as `#/import/<payload>`). Decide together with the hosting check
-- Workspace details: shared `tsconfig`, `vue-tsc` across all packages, glob access outside the Vite root during development
 - Check the type derivation of the `t()` keys across several language files against a real build
 - Check git-cliff: as far as we know it runs locally and independently of the Git host, this is not verified yet
 - Hosting: which path patterns the Hobby plan allows for headers (one exact path for `sw.js` is enough) and what happens when the quota is exceeded
 - **License for texts, documents and graphics:** Software licenses do not fit them. Candidates are CC BY-SA 4.0 or CC BY 4.0, to be decided
-- `LICENSE` file with the full GPL text and the SPDX identifier in the `package.json` files are still to be added when the repository is set up

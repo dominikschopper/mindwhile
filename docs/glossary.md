@@ -53,7 +53,7 @@ Spelling in code: identifiers in `camelCase`, types in `PascalCase`, folders and
 | game contract (`GameContract`) | Interface that every game has to fulfill |
 | game manifest (`GameManifest`) | Central description of a game (ID, versions, challenges, scoring type) |
 | how-to-play dialog (`howToPlay`) | Dialog with the rules and scoring of a game. The game delivers the content as a component (`HowToPlay`) |
-| game module (`GameModule`) | What a game package exports: manifest, `createRound`, default view, optional views per challenge, how-to-play component, scoring tests |
+| game module (`GameModule`) | What a game package exports: manifest, `createRound`, default view, optional views per challenge, how-to-play component. Scoring tests are Vitest files next to it, not part of the module |
 | round object (`Round`) | Pure logic of a running round (`apply`, `serialize`, `result`), wrapped by the platform |
 | active time (`elapsedMs`) | Play time without pause and background, measured by the game with the active clock |
 | active clock (`ActiveClock`, `createActiveClock`) | Framework-free clock in `core` that stops during pause and in the background |
@@ -71,9 +71,9 @@ Spelling in code: identifiers in `camelCase`, types in `PascalCase`, folders and
 | What | Display name | Name in code |
 |---|---|---|
 | Platform | Mindwhile | repository `mindwhile` |
-| First game | Spillit | game ID `spill-it`, package `@mindwhile/game-spill-it`. Spillit is our version of the classic flood-fill game (the mechanic keeps its generic name in prose, see `game-spill-it.md`) |
+| First game | Spillit | game ID `spill-it`, package `@mindwhile/game-spill-it`. Spillit is our version of the classic flood-fill game |
 
-Display names live in the language files. The game ID follows the working title `spill-it` (decision of the maintainer), so a later rename of the game would also touch the ID, stored results and the package name, and is decided deliberately.
+Display names live in the language files. The game ID follows the working title `spill-it`, so a later rename of the game would also touch the ID, stored results and the package name, and is decided deliberately.
 
 ## Open
 

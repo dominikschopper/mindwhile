@@ -1,0 +1,14 @@
+{
+  "name": "@mindwhile/game-kit",
+  "version": "0.0.0",
+  "private": true,
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@mindwhile/core": "workspace:*",
+    "vue": "^3.5.0"
+  }
+}
