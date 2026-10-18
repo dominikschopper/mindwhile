@@ -8,15 +8,15 @@ Spelling in code: identifiers in `camelCase`, types in `PascalCase`, folders and
 
 | Term (code name) | Meaning |
 |---|---|
-| game (`game`, `gameId`) | One game of the collection, for example Flood-Fill. It never means a single board or round |
+| game (`game`, `gameId`) | One game of the collection, for example Spillit. It never means a single board or round |
 | round (`round`) | One run of a game from start to round end |
 | board (`board`, state at the start: `startBoard`) | The concrete playing field of a round, determined by `seed` and `challenge` |
 | seed (`seed`) | Identifier from which the start board is generated reproducibly. For games with fixed boards (for example Sokoban) the seed selects the board from the fixed list, there is no second name for the identifier |
-| challenge (`challenge`, values `a`, `b`, `c`, more later) | A fixed variant of a game with its own parameters, for example grid size and number of colors in Flood-Fill. The letters are neutral, permanent IDs and say nothing about difficulty. The display name comes from the texts of the game. A challenge ID is never reassigned |
+| challenge (`challenge`, values `a`, `b`, `c`, more later) | A fixed variant of a game with its own parameters, for example grid size and number of colors in Spillit. The letters are neutral, permanent IDs and say nothing about difficulty. The display name comes from the texts of the game. A challenge ID is never reassigned |
 | result (`result`) | Result of a finished round |
 | score values (`scoreValues`) | Ordered list of integers by which results are compared. The direction of each position (`higher` or `lower` is better) is declared in the game manifest, not in the result |
 | best result (`bestResult`) | Best result per game, challenge and scoring version |
-| par (`par`) | Reference value of a board (in Flood-Fill: the moves of the greedy method) |
+| par (`par`) | Reference value of a board (in Spillit: the moves of the greedy method) |
 | deviation (`deviation`) | Moves minus par |
 | round end (`roundEnd` with state `won`, `lost` or `ended`) | Won, lost or ended (open-ended games) |
 | abort (`abort`) | Leaving a round without a result being created |
@@ -71,9 +71,9 @@ Spelling in code: identifiers in `camelCase`, types in `PascalCase`, folders and
 | What | Display name | Name in code |
 |---|---|---|
 | Platform | Mindwhile | repository `mindwhile` |
-| First game | Spillit | game ID `flood-fill` (named after the mechanic, not after the name) |
+| First game | Spillit | game ID `spill-it`, package `@mindwhile/game-spill-it`. Spillit is our version of the classic flood-fill game (the mechanic keeps its generic name in prose, see `game-spill-it.md`) |
 
-Display names live in the language files and never in identifiers, so a rename only changes texts.
+Display names live in the language files. The game ID follows the working title `spill-it` (decision of the maintainer), so a later rename of the game would also touch the ID, stored results and the package name, and is decided deliberately.
 
 ## Open
 

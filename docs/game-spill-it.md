@@ -1,6 +1,6 @@
-# Game concept: Flood-Fill (working title of the game in the app: Spillit)
+# Game concept: Spillit (game ID `spill-it`)
 
-Status: draft. Flood-Fill is the test game of the beta. Platform rules, formats and versioning live in `architecture.md`, terms in `glossary.md`. The game ID in code is `flood-fill`.
+Status: draft. Spillit is our version of the classic flood-fill game and the test game of the beta. Platform rules, formats and versioning live in `architecture.md`, terms in `glossary.md`. The game ID in code is `spill-it`.
 
 ## Basic rule
 

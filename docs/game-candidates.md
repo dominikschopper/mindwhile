@@ -27,7 +27,7 @@ Guardrails and core decisions (scoring, groups, identity, backend) live in `arch
 | Hanoi | Planning | Moves (par) | + | + | + | + | + | + | Public domain, 4 pegs and color rules as a twist |
 | Mines | Deduction | Time | o | o | o | o | + | o | Solvable without guessing via solver, "Minesweeper" is a trademark |
 | Lights Out | Pattern | Moves | + | + | + | + | + | + | Twist: neighborhood patterns, hex |
-| Flood-Fill | Strategy | Deviation from par | + | + | + | + | + | + | **Decided, first game of the beta** (working title in the app: Spillit), details in `game-flood-fill.md`. Move limit later as a challenge of its own |
+| Flood-Fill | Strategy | Deviation from par | + | + | + | + | + | + | **Decided, first game of the beta** (our version, called Spillit in the app), details in `game-spill-it.md`. Move limit later as a challenge of its own |
 | Takuzu (symbols) | Deduction | Time | o | + | + | + | + | o | More symbols as a difficulty step, tell symbols apart by shape |
 | Sokoban variant | Planning | **none** (see below) | - | o | o | - | o | - | Own name and own levels needed |
 
@@ -65,4 +65,4 @@ Guardrails and core decisions (scoring, groups, identity, backend) live in `arch
 - Which games from the pool move into the start, which are dropped?
 - Is a game without a best result (Sokoban) fine for the platform, or should every game have scoring?
 - Do we need at least one very simple game for children (Memory, mini sudoku)?
-- Working titles for the further games (own names because of the trademark question). Flood-Fill is called Spillit in the app for now
+- Working titles for the further games (own names because of the trademark question). Spillit (our flood-fill) is the first game

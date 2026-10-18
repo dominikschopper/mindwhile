@@ -29,7 +29,7 @@
 | [`data-formats.md`](docs/data-formats.md) | Exact data formats: keys, envelope, result, profile, limits, transport |
 | [`game-contract.md`](docs/game-contract.md) | The interface between platform and game |
 | [`tech-stack.md`](docs/tech-stack.md) | Technology decisions, structure, conventions, hosting |
-| [`game-flood-fill.md`](docs/game-flood-fill.md) | Concept of the first game |
+| [`game-spill-it.md`](docs/game-spill-it.md) | Concept of the first game |
 | [`game-candidates.md`](docs/game-candidates.md) | Candidates for further games |
 | [`glossary.md`](docs/glossary.md) | Terms and their English code names |
 

@@ -112,7 +112,7 @@ The interface between platform and game (module shape, navigation, pause, time, 
 
 **Game manifest (central description per game):** ID, game version, scoring version, interface version, challenges (their IDs only, the parameters stay in the game logic), the direction of every score position. Display names are not part of the manifest but live in the texts of the game
 
-**How-to-play dialog:** Every game ships a how-to-play dialog of its own that describes rules and scoring (for example how par is calculated in Flood-Fill and why the deviation can be negative). It is part of the game contract, its texts live in the language file of the game.
+**How-to-play dialog:** Every game ships a how-to-play dialog of its own that describes rules and scoring (for example how par is calculated in Spillit and why the deviation can be negative). It is part of the game contract, its texts live in the language file of the game.
 
 It appears as a scrollable dialog inside the game route, not as a page of its own:
 - **First start of a game:** The dialog opens by itself, with a "Start game" button at the end. Closing it lands in the game
@@ -157,7 +157,7 @@ It appears as a scrollable dialog inside the game route, not as a page of its ow
 
 ## Open architecture questions
 
-- **Comparability of score values in free play:** Define per game that the values do not depend on the random board. Decided for Flood-Fill (deviation from par), still open for Merge and the other games
+- **Comparability of score values in free play:** Define per game that the values do not depend on the random board. Decided for Spillit (deviation from par), still open for Merge and the other games
 - **Game list display:** how the best result is shown (for example a label via text key per score position in the manifest, the platform shows label and number). Not decided
 - **Game-owned data in the export:** whether a game may keep own small data (settings) that goes into the export, for example as an opaque slot per game with a size limit. Not needed by any game yet, not decided
 - **Deep links:** A URL scheme that opens a game with challenge and seed (for group boards) belongs to the platform router. Deferred, not part of the beta, decided together with groups. Games never route themselves

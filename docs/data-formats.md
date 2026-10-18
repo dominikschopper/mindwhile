@@ -68,7 +68,7 @@ Status: draft, filled decision by decision. Rules and reasons live in `architect
 - A stored result has **no** `player`. Own results belong to the profile, whose player ID is stored once. This avoids a result carrying a different ID than the profile after an import overwrote the local ID
 - `player` is added only when a result is shared into a group (later, `kind: board`), because there results of several players stand in one list
 - So there are two forms of a result (with and without `player`), and the code keeps them cleanly apart through separate types
-- Example (stored): `{ "game": "flood-fill", "gamev": 1, "chall": "a", "seed": 48213, "score": [-2], "scorev": 1 }`
+- Example (stored): `{ "game": "spill-it", "gamev": 1, "chall": "a", "seed": 48213, "score": [-2], "scorev": 1 }`
 
 ### Best results and local flags
 
@@ -88,7 +88,7 @@ Status: draft, filled decision by decision. Rules and reasons live in `architect
 - The platform keeps at most one running round per device and writes it after every move and when the app goes to the background. Envelope fields: `fmtv`, `game`, `gamev`, `chall`, `seed` and an opaque `state`
 - The content of `state` is created and read by the game alone (any JSON), the platform knows nothing about game states
 - If the state cannot be read any more (error, version jump), the app discards the round with a hint
-- Games for which replaying fits (Flood-Fill, Hanoi) may store seed and move list inside `state` themselves, the platform does not require it
+- Games for which replaying fits (Spillit, Hanoi) may store seed and move list inside `state` themselves, the platform does not require it
 - This state is local and never part of an export
 - **Active play time:** The game measures it itself with the clock from `core` (stops during pause and in the background) and keeps its state inside its own `state`, the platform stores nothing about time. If time counts for the score, the game turns it into a value in `score` (see `game-contract.md`)
 
