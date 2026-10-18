@@ -56,6 +56,14 @@ describe('boundary rules', () => {
     expect(rules).toContain('no-restricted-properties')
   })
 
+  it.each(['packages/core/src/tmp.ts', 'packages/game-kit/src/tmp.ts', 'apps/web/src/tmp.ts'])(
+    'forbids Math.random in %s',
+    async (filePath) => {
+      const rules = await messagesFor(filePath, 'export const x = Math.random()\n')
+      expect(rules).toContain('no-restricted-properties')
+    },
+  )
+
   it('allows a game importing core', async () => {
     const rules = await messagesFor(
       'packages/games/spill-it/src/tmp.ts',

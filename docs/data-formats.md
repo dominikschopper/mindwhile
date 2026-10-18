@@ -64,7 +64,7 @@ Status: draft, filled decision by decision. Rules and reasons live in `architect
 
 ### Result
 
-- Fields and types: `game` (text), `gamev` (integer), `chall` (text), `seed` (integer, see Seed), `score` (list of integers), `scorev` (integer)
+- Fields and types: `game` (text), `gamev` (integer), `chall` (text), `seed` (integer, see Seed), `score` (list of integers), `scorev` (integer, 0 occurs only before the first release, such results are not meant to be kept)
 - A stored result has **no** `player`. Own results belong to the profile, whose player ID is stored once. This avoids a result carrying a different ID than the profile after an import overwrote the local ID
 - `player` is added only when a result is shared into a group (later, `kind: board`), because there results of several players stand in one list
 - So there are two forms of a result (with and without `player`), and the code keeps them cleanly apart through separate types

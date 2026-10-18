@@ -83,7 +83,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['packages/games/**/*.{ts,vue}'],
+    files: ['**/*.{ts,vue}'],
     ignores: ['**/*.test.ts'],
     rules: {
       'no-restricted-properties': [
@@ -91,7 +91,8 @@ export default tseslint.config(
         {
           object: 'Math',
           property: 'random',
-          message: 'Games use the seeded integer generator from core, not Math.random().',
+          message:
+            'Math.random() is banned. Use the seeded generator from core; fresh seeds come from newSeed() in core.',
         },
       ],
     },

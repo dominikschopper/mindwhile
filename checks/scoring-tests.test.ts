@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest'
 // packages/games/<game>/src/scoring.<challenge>.test.ts
 // Games listed here have no scoring tests yet. Remove the entry when the game
 // gets its tests (the Spillit plan adds them), the check is mandatory afterwards.
-const pendingGames: string[] = ['spill-it']
+const pendingGames: string[] = []
 
 const gamesDir = join(import.meta.dirname, '..', 'packages', 'games')
 const gameFolders = readdirSync(gamesDir, { withFileTypes: true })

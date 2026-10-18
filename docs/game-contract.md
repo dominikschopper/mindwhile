@@ -12,7 +12,7 @@ Status: draft, filled decision by decision. The contract is the interface betwee
 - `createRound` returns a round object with a fixed interface (`apply(move)`, `serialize()`, `result()`). The platform controls saving and round end through this interface. Pause and time are not part of it, they belong to the game (see Pause and Time)
 - Scoring tests run directly against the logic (seed and move sequence produce the expected board, score and par). They are Vitest files in the game package (`src/scoring.<challenge>.test.ts`, one per challenge) and never ship in the bundle. `core` brings one shared test helper for all games. A repository check (`checks/scoring-tests.test.ts`) fails when a challenge in a manifest has no such file
 - **One default `View` per game, and every challenge may bring its own.** A challenge without its own view uses the default of the game. The platform only chooses which component it loads and hands it the round. The own views live in the module (`views`, loaded on demand), not in the manifest, because the manifest is read for the game list without loading any view. The logic is unaffected, `createRound` receives the challenge anyway and may differ per challenge
-- Sketch (concept, not built):
+- The types live in `packages/core/src/contract.ts` (`Round`, `RoundResult`, `GameManifest`, `GameModule`). `core` has no Vue, so `GameModule` is generic over the view component type: `GameModule<TView>`, `game-kit` and the platform use Vue's `Component`. `playMoves(round, moves)` in `core` applies moves and returns `result()`, it is the helper for scoring tests. Sketch:
 
 ```ts
 interface Round {
@@ -20,12 +20,12 @@ interface Round {
   serialize(): unknown        // goes into `state`
   result(): { roundEnd: 'won' | 'lost' | 'ended'; score: number[] } | null
 }
-interface GameModule {
+interface GameModule<TView = unknown> {
   manifest: GameManifest
   createRound(p: { challenge: string; seed: number; saved?: unknown }): Round
-  View: Component             // default view, receives the round
-  views?: Record<string, () => Promise<Component>> // optional, per challenge
-  HowToPlay: Component        // rules and scoring dialog content
+  View: TView                 // default view, receives the round
+  views?: Record<string, () => Promise<TView>> // optional, per challenge
+  HowToPlay: TView            // rules and scoring dialog content
 }
 ```
 
@@ -70,7 +70,7 @@ Two different things, only one of them is optional.
 - Only what the platform needs, pure data and small: `id`, `gameVersion`, `scoringVersion`, `interfaceVersion`, the list of challenges with their IDs (`a`, `b`, `c`) and the direction of every score position (`scoring: [{ key: 'deviation', better: 'lower' }]`)
 - The parameters of a challenge (grid size, number of colors) stay in the game logic, so the numbers exist in one place. The rule "if a parameter of a challenge changes, the scoring version goes up" stays with the logic and its scoring tests
 - Display names (of the game and of the challenges, for example "6×6 · 4 colors") come from the texts of the game, not from the manifest
-- The three versions are integers starting at 1, not texts. Comparability depends only on `scoringVersion`, and for `gameVersion` traceability counts, not semantics
+- The three versions are integers, not texts. `gameVersion` and `interfaceVersion` start at 1, `scoringVersion` may be 0 until the first release of the app. Comparability depends only on `scoringVersion`, and for `gameVersion` traceability counts, not semantics
 
 ### Showing a score
 
