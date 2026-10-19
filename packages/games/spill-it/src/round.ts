@@ -3,6 +3,7 @@ import type { Board } from './board'
 import { challengeParams } from './challenges'
 import { applyColor, isSolved } from './flood'
 import { generateBoard } from './generate'
+import { pointsFor } from './points'
 import type { SpillItChallenge } from './manifest'
 
 export interface SpillItSavedState {
@@ -14,6 +15,8 @@ export interface SpillItRound extends Round {
   readonly board: Board
   readonly moves: readonly number[]
   readonly par: number
+  readonly size: number
+  readonly colors: number
   serialize(): SpillItSavedState
 }
 
@@ -46,7 +49,7 @@ export function createRound(p: { challenge: string; seed: number; saved?: unknow
     throw new Error(`unknown challenge: ${p.challenge}`)
   }
   const challenge = p.challenge as SpillItChallenge
-  const { colors } = challengeParams[challenge]
+  const { colors, size } = challengeParams[challenge]
   const { board: startBoard, par } = generateBoard(challenge, p.seed)
   let board = startBoard
   const moves: number[] = []
@@ -66,6 +69,8 @@ export function createRound(p: { challenge: string; seed: number; saved?: unknow
   return {
     startBoard,
     par,
+    size,
+    colors,
     get board() {
       return board
     },
@@ -79,7 +84,9 @@ export function createRound(p: { challenge: string; seed: number; saved?: unknow
       return { moves: [...moves] }
     },
     result(): RoundResult | null {
-      return isSolved(board) ? { roundEnd: 'won', score: [moves.length - par] } : null
+      return isSolved(board)
+        ? { roundEnd: 'won', score: [pointsFor(challenge, moves.length, par), moves.length - par] }
+        : null
     },
   }
 }

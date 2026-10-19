@@ -62,9 +62,9 @@ describe('isSolved', () => {
 describe('challengeParams', () => {
   it('matches the documented challenges', () => {
     expect(challengeParams).toEqual({
-      a: { size: 6, colors: 4, minPar: 5 },
-      b: { size: 10, colors: 5, minPar: 12 },
-      c: { size: 14, colors: 6, minPar: 20 },
+      a: { size: 6, colors: 4, minPar: 5, basePoints: 500 },
+      b: { size: 10, colors: 5, minPar: 12, basePoints: 750 },
+      c: { size: 14, colors: 6, minPar: 20, basePoints: 1000 },
     })
   })
 })

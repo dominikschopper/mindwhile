@@ -36,3 +36,8 @@ export interface GameModule<TView = unknown> {
   views?: Record<string, () => Promise<TView>>
   HowToPlay: TView
 }
+
+export interface GameTexts {
+  name: string
+  challengeName(challenge: string): string
+}

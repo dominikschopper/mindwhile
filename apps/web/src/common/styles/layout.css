@@ -1,0 +1,16 @@
+@layer layout {
+  .page {
+    box-sizing: border-box;
+    max-width: 40rem;
+    margin-inline: auto;
+    padding: var(--spacing-md);
+  }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    margin-block-end: var(--spacing-lg);
+  }
+}

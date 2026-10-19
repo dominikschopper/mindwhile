@@ -43,7 +43,15 @@ describe('boundary rules', () => {
   it('forbids common code importing a feature', async () => {
     const rules = await messagesFor(
       'apps/web/src/common/components/tmp.ts',
-      "import { discoverGames } from '../../game-selection/discoverGames'\nexport const x = discoverGames\n",
+      "import View from '../../game-selection/GameSelectionView.vue'\nexport const x = View\n",
+    )
+    expect(rules).toContain('boundaries/dependencies')
+  })
+
+  it('forbids a feature importing another feature', async () => {
+    const rules = await messagesFor(
+      'apps/web/src/play/tmp.ts',
+      "import View from '../game-selection/GameSelectionView.vue'\nexport const x = View\n",
     )
     expect(rules).toContain('boundaries/dependencies')
   })

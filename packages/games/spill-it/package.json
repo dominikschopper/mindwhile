@@ -5,10 +5,13 @@
   "license": "GPL-3.0-or-later",
   "type": "module",
   "exports": {
-    ".": "./src/manifest.ts"
+    ".": "./src/manifest.ts",
+    "./texts": "./src/texts.ts",
+    "./module": "./src/module.ts"
   },
   "dependencies": {
     "@mindwhile/core": "workspace:*",
-    "@mindwhile/game-kit": "workspace:*"
+    "@mindwhile/game-kit": "workspace:*",
+    "vue": "^3.5.0"
   }
 }

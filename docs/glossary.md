@@ -18,6 +18,7 @@ Spelling in code: identifiers in `camelCase`, types in `PascalCase`, folders and
 | best result (`bestResult`) | Best result per game, challenge and scoring version |
 | par (`par`) | Reference value of a board (in Spillit: the moves of the greedy method) |
 | deviation (`deviation`) | Moves minus par |
+| points (`points`) | Spillit score value derived from moves and par (`basePoints * par / moves`, rounded down to tens), higher is better |
 | round end (`roundEnd` with state `won`, `lost` or `ended`) | Won, lost or ended (open-ended games) |
 | abort (`abort`) | Leaving a round without a result being created |
 | pause (`pause`) | Round stopped by the player, optional and decided by the game. Not the same as an interruption by the system |

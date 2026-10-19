@@ -8,5 +8,8 @@ export const manifest = {
   scoringVersion: 0,
   interfaceVersion: 1,
   challenges,
-  scoring: [{ key: 'deviation', better: 'lower' }],
+  scoring: [
+    { key: 'points', better: 'higher' },
+    { key: 'deviation', better: 'lower' },
+  ],
 } as const

@@ -5,7 +5,12 @@
   "license": "GPL-3.0-or-later",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./styles/index.css": "./src/styles/index.css",
+    "./styles/layers.css": "./src/styles/layers.css",
+    "./styles/reset.css": "./src/styles/reset.css",
+    "./styles/tokens.css": "./src/styles/tokens.css",
+    "./styles/utilities.css": "./src/styles/utilities.css"
   },
   "dependencies": {
     "@mindwhile/core": "workspace:*",

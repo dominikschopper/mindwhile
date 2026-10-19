@@ -17,13 +17,16 @@ describe('createRound', () => {
   it('scores 0 when the greedy sequence is played', () => {
     const round = createRound({ challenge: 'a', seed: 5 })
     const moves = greedyMoves(round.startBoard, challengeParams.a.colors).map(pick)
-    expect(playMoves(round, moves)).toEqual({ roundEnd: 'won', score: [0] })
+    expect(playMoves(round, moves)).toEqual({ roundEnd: 'won', score: [500, 0] })
   })
 
   it('scores negative for a sequence shorter than par', () => {
     const round = createRound({ challenge: 'a', seed: 0 })
     expect(round.par).toBe(8)
-    expect(playMoves(round, shorterThanPar.map(pick))).toEqual({ roundEnd: 'won', score: [-1] })
+    expect(playMoves(round, shorterThanPar.map(pick))).toEqual({
+      roundEnd: 'won',
+      score: [570, -1],
+    })
   })
 
   it('gives the same round twice for the same seed', () => {
@@ -42,7 +45,7 @@ describe('createRound', () => {
     expect(restored.board).toEqual(round.board)
     expect(restored.moves).toEqual(round.moves)
     for (const color of moves.slice(2)) restored.apply(pick(color))
-    expect(restored.result()).toEqual({ roundEnd: 'won', score: [0] })
+    expect(restored.result()).toEqual({ roundEnd: 'won', score: [500, 0] })
   })
 })
 
@@ -91,5 +94,15 @@ describe('invalid input', () => {
     ['bad color', { moves: [9] }],
   ])('rejects a saved state with %s', (_name, saved) => {
     expect(() => createRound({ challenge: 'a', seed: 0, saved })).toThrow()
+  })
+})
+
+describe('createRound size and colors', () => {
+  it('exposes size and colors of the challenge', () => {
+    for (const challenge of ['a', 'b', 'c'] as const) {
+      const round = createRound({ challenge, seed: 1 })
+      expect(round.size).toBe(challengeParams[challenge].size)
+      expect(round.colors).toBe(challengeParams[challenge].colors)
+    }
   })
 })

@@ -10,10 +10,13 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^24.19.2",
+    "@vitejs/plugin-vue": "^6.0.10",
+    "@vue/test-utils": "^2.5.1",
     "eslint": "^10.13.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-boundaries": "^7.2.0",
     "eslint-plugin-vue": "^10.11.1",
+    "happy-dom": "^21.0.3",
     "prettier": "^3.9.10",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.71.2",
@@ -23,7 +26,7 @@
   "scripts": {
     "dev": "pnpm --filter @mindwhile/web dev",
     "build": "pnpm --filter @mindwhile/web build",
-    "typecheck": "vue-tsc --noEmit -p apps/web/tsconfig.json && tsc -p packages/core && tsc -p packages/game-kit && tsc -p packages/games/spill-it && tsc -p checks",
+    "typecheck": "vue-tsc --noEmit -p apps/web/tsconfig.json && tsc -p packages/core && tsc -p packages/core/tsconfig.test.json && vue-tsc --noEmit -p packages/game-kit && vue-tsc --noEmit -p packages/games/spill-it && vue-tsc --noEmit -p packages/games/spill-it/tsconfig.test.json && tsc -p checks",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

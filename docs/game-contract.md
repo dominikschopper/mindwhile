@@ -67,7 +67,7 @@ Two different things, only one of them is optional.
 
 ### Manifest
 
-- Only what the platform needs, pure data and small: `id`, `gameVersion`, `scoringVersion`, `interfaceVersion`, the list of challenges with their IDs (`a`, `b`, `c`) and the direction of every score position (`scoring: [{ key: 'deviation', better: 'lower' }]`)
+- Only what the platform needs, pure data and small: `id`, `gameVersion`, `scoringVersion`, `interfaceVersion`, the list of challenges with their IDs (`a`, `b`, `c`) and the direction of every score position (`scoring: [{ key: 'points', better: 'higher' }, { key: 'deviation', better: 'lower' }]`)
 - The parameters of a challenge (grid size, number of colors) stay in the game logic, so the numbers exist in one place. The rule "if a parameter of a challenge changes, the scoring version goes up" stays with the logic and its scoring tests
 - Display names (of the game and of the challenges, for example "6×6 · 4 colors") come from the texts of the game, not from the manifest
 - The three versions are integers, not texts. `gameVersion` and `interfaceVersion` start at 1, `scoringVersion` may be 0 until the first release of the app. Comparability depends only on `scoringVersion`, and for `gameVersion` traceability counts, not semantics

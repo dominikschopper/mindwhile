@@ -1,0 +1,17 @@
+@layer tokens {
+  :root {
+    --spill-it-color-0: light-dark(#cf8f00, #e69f00);
+    --spill-it-color-1: light-dark(#67bceb, #89cbf0);
+    --spill-it-color-2: light-dark(#008e68, #009e73);
+    --spill-it-color-3: light-dark(#f0e442, #f3e968);
+    --spill-it-color-4: light-dark(#00507d, #0067a0);
+    --spill-it-color-5: light-dark(#954200, #c05500);
+
+    --spill-it-mark-0: light-dark(#000000, #000000);
+    --spill-it-mark-1: light-dark(#000000, #000000);
+    --spill-it-mark-2: light-dark(#000000, #000000);
+    --spill-it-mark-3: light-dark(#000000, #000000);
+    --spill-it-mark-4: light-dark(#ffffff, #ffffff);
+    --spill-it-mark-5: light-dark(#ffffff, #000000);
+  }
+}

@@ -157,7 +157,7 @@ It appears as a scrollable dialog inside the game route, not as a page of its ow
 
 ## Open architecture questions
 
-- **Comparability of score values in free play:** Define per game that the values do not depend on the random board. Decided for Spillit (deviation from par), still open for Merge and the other games
+- **Comparability of score values in free play:** Define per game that the values do not depend on the random board. Decided for Spillit (points from the ratio of par to moves, deviation from par as tie-break), still open for Merge and the other games
 - **Game list display:** the game shows its scores (label via the `key` of each score position, value via a display function or text template of the game, see `game-contract.md`). Open is only the exact shape: function versus text templates with parameters. Decided when the game list is built
 - **Game-owned data in the export:** whether a game may keep own small data (settings) that goes into the export, for example as an opaque slot per game with a size limit. Not needed by any game yet, not decided
 - **Deep links:** A URL scheme that opens a game with challenge and seed (for group boards) belongs to the platform router. Deferred, not part of the beta, decided together with groups. Games never route themselves

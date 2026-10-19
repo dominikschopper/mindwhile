@@ -6,8 +6,11 @@ it('declares the three challenges', () => {
   expect([...manifest.challenges]).toEqual(['a', 'b', 'c'])
 })
 
-it('ranks a lower deviation as better', () => {
-  expect(manifest.scoring[0].better).toBe('lower')
+it('ranks more points as better, then a lower deviation', () => {
+  expect(manifest.scoring.map(({ key, better }) => [key, better])).toEqual([
+    ['points', 'higher'],
+    ['deviation', 'lower'],
+  ])
 })
 
 it('is at scoring version 0 until the first release', () => {

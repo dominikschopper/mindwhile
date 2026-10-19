@@ -52,7 +52,7 @@ describe('scoring challenge c', () => {
     expect(generated.par).toBe(par)
     expect(moves).toHaveLength(par)
     const round = createRound({ challenge: 'c', seed })
-    expect(playMoves(round, moves.map(pick))).toEqual({ roundEnd: 'won', score: [0] })
+    expect(playMoves(round, moves.map(pick))).toEqual({ roundEnd: 'won', score: [1000, 0] })
     expect(round.moves).toHaveLength(par)
   })
 
@@ -77,6 +77,6 @@ describe('scoring challenge c', () => {
     const moves = [
       0, 1, 3, 0, 1, 5, 2, 0, 1, 3, 2, 0, 4, 3, 0, 1, 2, 4, 3, 5, 1, 2, 4, 0, 3, 5, 1, 2, 4,
     ]
-    expect(playMoves(round, moves.map(pick))).toEqual({ roundEnd: 'won', score: [0] })
+    expect(playMoves(round, moves.map(pick))).toEqual({ roundEnd: 'won', score: [1000, 0] })
   })
 })

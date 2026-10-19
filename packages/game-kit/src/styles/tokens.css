@@ -1,0 +1,51 @@
+@layer tokens {
+  :root {
+    color-scheme: light dark;
+
+    /* Tier 1: palette */
+    --white: #ffffff;
+    --black-900: #14161a;
+    --black-800: #1d2026;
+    --black-700: #2a2e36;
+    --gray-100: #f3f4f6;
+    --gray-200: #e2e5ea;
+    --gray-300: #c9ced6;
+    --gray-500: #6b7280;
+    --gray-700: #3d424b;
+    --blue-500: #2f6fed;
+    --blue-300: #7aa2f7;
+    --amber-600: #b45309;
+    --amber-300: #fbbf24;
+
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+
+    --radius: 0.5rem;
+    --font-family:
+      system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+    /* Tier 2: roles */
+    --text-color: light-dark(var(--black-900), var(--gray-100));
+    --surface-color: light-dark(var(--white), var(--black-900));
+    --surface-raised-color: light-dark(var(--gray-100), var(--black-800));
+    --border-color: light-dark(var(--gray-300), var(--gray-700));
+    --accent-color: light-dark(var(--blue-500), var(--blue-300));
+    --warning-color: light-dark(var(--amber-600), var(--amber-300));
+    --focus-ring-color: light-dark(var(--blue-500), var(--blue-300));
+
+    /* Tier 3: components */
+    --card-padding: var(--spacing-md);
+    --button-min-size: 2.75rem;
+  }
+
+  :root[data-theme='light'] {
+    color-scheme: light;
+  }
+
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+  }
+}

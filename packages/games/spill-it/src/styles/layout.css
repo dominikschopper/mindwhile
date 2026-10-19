@@ -1,0 +1,16 @@
+@layer layout {
+  .spill-it {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacing-md);
+    width: 100%;
+    max-width: 30rem;
+    margin-inline: auto;
+    padding: var(--spacing-md);
+    box-sizing: border-box;
+  }
+
+  .spill-it > * {
+    min-width: 0;
+  }
+}

@@ -7,7 +7,7 @@ Status: draft, filled decision by decision. Rules and reasons live in `architect
 ### Score values
 
 - A result stores only the numbers: `scoreValues: [2048, 311]` in code, `score: [2048, 311]` in the format
-- The direction of each position (`higher` or `lower` is better) is **not** stored in the result but in the game manifest, per scoring version, for example `{ key: 'deviation', better: 'lower' }`
+- The direction of each position (`higher` or `lower` is better) is **not** stored in the result but in the game manifest, per scoring version, for example `{ key: 'points', better: 'higher' }`
 - Results are only compared when game, challenge and scoring version match, so the direction is always unambiguous
 - Comparison goes through the positions in order, on a tie the next position decides
 - Raw integers only, no decimals
@@ -68,7 +68,7 @@ Status: draft, filled decision by decision. Rules and reasons live in `architect
 - A stored result has **no** `player`. Own results belong to the profile, whose player ID is stored once. This avoids a result carrying a different ID than the profile after an import overwrote the local ID
 - `player` is added only when a result is shared into a group (later, `kind: board`), because there results of several players stand in one list
 - So there are two forms of a result (with and without `player`), and the code keeps them cleanly apart through separate types
-- Example (stored): `{ "game": "spill-it", "gamev": 1, "chall": "a", "seed": 48213, "score": [-2], "scorev": 1 }`
+- Example (stored): `{ "game": "spill-it", "gamev": 1, "chall": "a", "seed": 48213, "score": [720, -2], "scorev": 1 }`
 
 ### Best results and local flags
 

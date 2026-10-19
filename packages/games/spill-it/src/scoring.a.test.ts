@@ -47,7 +47,7 @@ describe('scoring challenge a', () => {
     expect(generated.par).toBe(par)
     expect(moves).toHaveLength(par)
     const round = createRound({ challenge: 'a', seed })
-    expect(playMoves(round, moves.map(pick))).toEqual({ roundEnd: 'won', score: [0] })
+    expect(playMoves(round, moves.map(pick))).toEqual({ roundEnd: 'won', score: [500, 0] })
     expect(round.moves).toHaveLength(par)
   })
 
@@ -66,7 +66,7 @@ describe('scoring challenge a', () => {
     expect(boardText(round.startBoard)).toBe('o-xxx*/-o*oo*/--oo*o/xo**xo/xo--*-/*o*--o')
     expect(round.par).toBe(8)
     const moves = [3, 2, 1, 0, 3, 2, 1, 3]
-    expect(playMoves(round, moves.map(pick))).toEqual({ roundEnd: 'won', score: [0] })
+    expect(playMoves(round, moves.map(pick))).toEqual({ roundEnd: 'won', score: [500, 0] })
   })
 
   it('scores a negative deviation for a sequence shorter than par', () => {
@@ -75,7 +75,7 @@ describe('scoring challenge a', () => {
     expect(round.par).toBe(8)
     expect(playMoves(round, [3, 2, 1, 0, 1, 3, 2].map(pick))).toEqual({
       roundEnd: 'won',
-      score: [-1],
+      score: [570, -1],
     })
   })
 })
