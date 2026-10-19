@@ -165,6 +165,9 @@ onBeforeUnmount(() => globalThis.removeEventListener('keydown', onKeydown))
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background-color: var(--spill-it-bar-color);
+  border-radius: var(--radius);
 }
 
 .color-button {
@@ -189,10 +192,12 @@ onBeforeUnmount(() => globalThis.removeEventListener('keydown', onKeydown))
   outline-offset: 2px;
 }
 
+/* The current region color (or every color after solving): still clearly visible on
+   the raised bar in both themes, marked by a dashed border in the text color. */
 .color-button:disabled {
   cursor: not-allowed;
-  opacity: 0.35;
-  border-style: dashed;
+  opacity: 0.55;
+  border: 2px dashed var(--text-color);
 }
 
 @media (prefers-reduced-motion: reduce) {
