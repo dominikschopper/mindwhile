@@ -5,7 +5,7 @@ import type { SpillItChallenge } from './manifest'
 import { greedyPar } from './par'
 
 // Marks belong to the presentation, here they only make the pinned boards readable.
-const marks = ['x', '*', 'o', '-', '#', '|']
+const marks = 'x*o-#|'
 
 export function boardText(board: Board): string {
   return Array.from({ length: board.size }, (_, row) =>

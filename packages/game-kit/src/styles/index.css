@@ -1,4 +1,11 @@
-@import './layers.css';
+/*
+ * Cascade layer order for the whole app. Later layers win over earlier ones.
+ * Vue SFC style blocks are wrapped in `@layer components` automatically by
+ * `apps/web/build/sfc-layer.ts`, so they cannot beat `utilities`.
+ */
+@layer reset, tokens, layout, components, utilities;
+
 @import './reset.css';
 @import './tokens.css';
+@import './layout.css';
 @import './utilities.css';

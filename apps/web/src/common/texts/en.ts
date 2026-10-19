@@ -3,4 +3,13 @@ export const en = {
   'theme.choice.system': 'System',
   'theme.choice.light': 'Light',
   'theme.choice.dark': 'Dark',
+  'app.name': 'Mindwhile',
+  'menu.button': 'Menu',
+  'menu.settings': 'Settings',
+  'menu.language': 'Language: English',
+  'menu.languageHint': 'More languages will follow',
+  'footer.gamerTag': 'Swift Fox',
+  'footer.gamerTagLabel': 'Gamer tag',
+  'footer.backToGames': 'Back to games',
+  'footer.abort': 'Abort',
 } as const

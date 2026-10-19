@@ -1,10 +1,11 @@
 // @vitest-environment happy-dom
 import { flushPromises, mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 // Test-only: the par solver of the game is the oracle for the "On par" assertion.
 // eslint-disable-next-line boundaries/dependencies
 import { greedyMoves } from '../../../../packages/games/spill-it/src/par'
+import App from '../App.vue'
 import PlayView from './PlayView.vue'
 
 const seeds = vi.hoisted(() => ({ next: [11, 22, 33, 44, 55] as number[] }))
@@ -21,19 +22,20 @@ async function mountAt(path: string) {
     history: createMemoryHistory(),
     routes: [
       { path: '/', name: 'game-selection', component: { template: '<p>selection</p>' } },
+      { path: '/games/:id', name: 'game', component: { template: '<p>game page</p>' } },
       { path: '/play/:gameId/:challenge', name: 'play', component: PlayView, props: true },
     ],
   })
   await router.push(path)
   await router.isReady()
-  const wrapper = mount(PlayView, {
-    props: { gameId: path.split('/')[2]!, challenge: path.split('/')[3]! },
+  const wrapper = mount(App, {
     global: { plugins: [router] },
     attachTo: document.body,
   })
   // The game module is a lazy chunk, wait until loading is over.
   await vi.waitFor(() => expect(wrapper.text()).not.toContain('Loading'), { timeout: 10_000 })
   await flushPromises()
+  mounted.push(wrapper)
   return { wrapper, router }
 }
 
@@ -47,6 +49,10 @@ function gameRound(wrapper: Awaited<ReturnType<typeof mountAt>>['wrapper']) {
   }
 }
 
+function footer(wrapper: Awaited<ReturnType<typeof mountAt>>['wrapper']) {
+  return wrapper.get('footer')
+}
+
 async function playGreedy(wrapper: Awaited<ReturnType<typeof mountAt>>['wrapper']) {
   const round = gameRound(wrapper)
   const moves = greedyMoves(round.board as never, round.colors)
@@ -54,6 +60,13 @@ async function playGreedy(wrapper: Awaited<ReturnType<typeof mountAt>>['wrapper'
     await wrapper.find(`.color-button[data-color="${color}"]`).trigger('click')
   }
 }
+
+const mounted: Array<{ unmount(): void }> = []
+
+afterEach(() => {
+  while (mounted.length) mounted.pop()!.unmount()
+  document.body.innerHTML = ''
+})
 
 beforeEach(() => {
   seeds.next = [11, 22, 33, 44, 55]
@@ -74,6 +87,8 @@ describe('PlayView', () => {
     expect(wrapper.find('.spill-it-par').text()).toContain(String(gameRound(wrapper).par))
     expect(wrapper.findAll('.color-button')).toHaveLength(4)
     expect(wrapper.find('.result').exists()).toBe(false)
+    expect(footer(wrapper).find('button').text()).toContain('Abort')
+    expect(footer(wrapper).text()).not.toContain('Back to games')
   })
 
   it('keeps the round extras readable through the frame', async () => {
@@ -93,6 +108,9 @@ describe('PlayView', () => {
     expect(panel.exists()).toBe(true)
     expect(panel.text()).toContain('500 points')
     expect(panel.text()).toContain('On par')
+    expect(footer(wrapper).find('button').exists()).toBe(false)
+    expect(footer(wrapper).get('a').text()).toBe('Back to games')
+    expect(footer(wrapper).get('a').attributes('href')).toBe('/')
   })
 
   it('starts a new round with a new seed on Next round', async () => {
@@ -107,13 +125,43 @@ describe('PlayView', () => {
     expect(gameRound(wrapper).moves).toHaveLength(0)
   })
 
-  it('navigates back to the selection', async () => {
+  it('keeps playing when the abort dialog is cancelled or closed with Escape', async () => {
     const { wrapper, router } = await mountAt('/play/spill-it/a')
-    await playGreedy(wrapper)
-    const back = wrapper.findAll('.result button').find((b) => b.text() === 'Back')!
-    await back.trigger('click')
+    const dialog = wrapper.get('dialog')
+    expect(dialog.attributes('open')).toBeUndefined()
+    await footer(wrapper).get('button').trigger('click')
     await flushPromises()
-    expect(router.currentRoute.value.path).toBe('/')
+    expect(dialog.attributes('open')).toBeDefined()
+    expect(dialog.text()).toContain('Abort round?')
+    await wrapper
+      .findAll('dialog button')
+      .find((b) => b.text() === 'Keep playing')!
+      .trigger('click')
+    expect(dialog.attributes('open')).toBeUndefined()
+    await footer(wrapper).get('button').trigger('click')
+    await flushPromises()
+    expect(dialog.attributes('open')).toBeDefined()
+    // Escape closes a modal dialog natively, happy-dom does not: emulate it.
+    await dialog.trigger('keydown', { key: 'Escape' })
+    expect(dialog.attributes('open')).toBeUndefined()
+    expect(router.currentRoute.value.path).toBe('/play/spill-it/a')
+    expect(wrapper.findAll('.cell')).toHaveLength(36)
+    expect(footer(wrapper).find('button').exists()).toBe(true)
+  })
+
+  it('aborts the round, goes to the game page and leaves no result', async () => {
+    const { wrapper, router } = await mountAt('/play/spill-it/a')
+    await footer(wrapper).get('button').trigger('click')
+    await flushPromises()
+    await wrapper
+      .findAll('dialog button')
+      .find((b) => b.text() === 'Abort round')!
+      .trigger('click')
+    await flushPromises()
+    expect(router.currentRoute.value.path).toBe('/games/spill-it')
+    expect(wrapper.find('.result').exists()).toBe(false)
+    expect(footer(wrapper).find('button').exists()).toBe(false)
+    expect(footer(wrapper).get('a').text()).toBe('Back to games')
   })
 
   it.each(['/play/spill-it/zzz', '/play/nope/a'])(
@@ -125,19 +173,4 @@ describe('PlayView', () => {
       expect(wrapper.find('.board').exists()).toBe(false)
     },
   )
-
-  it('opens the help dialog and closes it with Escape', async () => {
-    const { wrapper } = await mountAt('/play/spill-it/a')
-    const dialog = wrapper.find('dialog')
-    expect(dialog.attributes('open')).toBeUndefined()
-    await wrapper
-      .findAll('button')
-      .find((b) => b.text() === 'How to play')!
-      .trigger('click')
-    await flushPromises()
-    expect(dialog.attributes('open')).toBeDefined()
-    // Escape closes a modal dialog natively, happy-dom does not: emulate the cancel/close.
-    await dialog.trigger('keydown', { key: 'Escape' })
-    expect(dialog.attributes('open')).toBeUndefined()
-  })
 })

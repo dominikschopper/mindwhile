@@ -12,7 +12,13 @@ export const en = {
   'color.4': 'Yellow',
   'color.5': 'Blue',
   'color.6': 'Vermillion',
-  'colorButton.label': '{color}, mark {mark}',
+  'mark.1': 'infinity',
+  'mark.2': 'alert',
+  'mark.3': 'pulse',
+  'mark.4': 'plane',
+  'mark.5': 'sun and moon',
+  'mark.6': 'apple',
+  'colorButton.label': '{color}, {mark}',
   'round.solved': 'Solved!',
   'score.summary': '{points} points · {detail}',
   'score.onPar': 'On par',
@@ -24,15 +30,17 @@ export const en = {
     one: '{count} move over par',
     other: '{count} moves over par',
   },
-  'howTo.rules.heading': 'The rules',
+  'howTo.rules.goal':
+    'Your goal is to turn the whole board into a single color. There is no move limit.',
   'howTo.rules.pick':
     'Pick a color. Your region, which starts in the top left corner, takes that color.',
   'howTo.rules.swallow':
     'The region swallows every neighbor cell that already has the new color and keeps growing.',
-  'howTo.rules.goal': 'Goal: the whole board has a single color. There is no move limit.',
+  'howTo.more': 'More',
+  'howTo.less': 'Less',
   'howTo.example.heading': 'Example',
   'howTo.example.before': 'Before: the region is the single top left cell.',
-  'howTo.example.after': 'After picking mark {mark}: the region took three more cells.',
+  'howTo.example.after': 'After picking {mark}: the region took three more cells.',
   'howTo.example.row': 'Row {row}: {marks}',
   'howTo.counter.heading': 'Moves and par',
   'howTo.counter.moves': 'The move counter shows how many colors you have picked.',
@@ -47,5 +55,5 @@ export const en = {
     'You can beat par. Par comes from a simple greedy method, so fewer moves than par give more than the base points.',
   'howTo.marks.heading': 'Marks',
   'howTo.marks.text':
-    'Every color has a fixed mark in its cells and on its button, so colors never depend on sight alone. The order is x, *, o, -, #, |. A challenge uses as many marks as it has colors.',
+    'Every color has a fixed mark in its cells and on its button, so colors never depend on sight alone. The marks are small icons, in this order: infinity, alert, pulse, plane, sun and moon, apple. A challenge uses as many marks as it has colors.',
 } as const

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { newSeed } from '@mindwhile/core'
 import type { Round } from '@mindwhile/core'
-import { computed, nextTick, ref, shallowRef, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import ThemeSwitch from '../common/components/ThemeSwitch.vue'
 import { loadGameModule } from '../common/composables/load-game-module'
 import type { LoadedGameModule } from '../common/composables/load-game-module'
+import { registerAbortHandler, setRoundState } from '../common/composables/use-chrome'
 import { useRoundFrame } from './use-round-frame'
 import { t } from './texts'
 
@@ -16,7 +16,7 @@ const module = shallowRef<LoadedGameModule | null>(null)
 const error = ref<string | null>(null)
 const framed = shallowRef<ReturnType<typeof useRoundFrame<Round>> | null>(null)
 const roundKey = ref(0)
-const dialog = ref<{ showModal(): void; close(): void } | null>(null)
+const abortDialog = ref<{ showModal(): void; close(): void } | null>(null)
 
 const result = computed(() => framed.value?.result.value ?? null)
 
@@ -48,62 +48,89 @@ async function load(): Promise<void> {
 
 watch(() => [props.gameId, props.challenge], load, { immediate: true })
 
+// Drive the shell: running while a round is open, ended once the result is there.
+watch(
+  [framed, result],
+  () => {
+    if (!framed.value) {
+      setRoundState('idle')
+      registerAbortHandler(null)
+    } else if (result.value) {
+      setRoundState('ended')
+      registerAbortHandler(null)
+    } else {
+      setRoundState('running')
+      registerAbortHandler(openAbort)
+    }
+  },
+  { immediate: true },
+)
+
+onBeforeUnmount(() => {
+  setRoundState('idle')
+  registerAbortHandler(null)
+})
+
 const scoreText = computed(() => {
   const score = result.value?.score
   if (!score) return ''
   return module.value?.formatScore?.(score) ?? score.join(' ')
 })
 
-async function openHelp(): Promise<void> {
+async function openAbort(): Promise<void> {
   await nextTick()
-  dialog.value?.showModal()
+  abortDialog.value?.showModal()
 }
 
-function closeHelp(): void {
-  dialog.value?.close()
+function keepPlaying(): void {
+  abortDialog.value?.close()
 }
 
-function back(): void {
-  void router.push('/')
+function confirmAbort(): void {
+  abortDialog.value?.close()
+  framed.value = null
+  void router.push(`/games/${props.gameId}`)
 }
 </script>
 
 <template>
-  <main class="page">
-    <header class="page-header">
-      <button type="button" @click="back">{{ t('page.back') }}</button>
-      <div class="play-actions">
-        <button v-if="module" type="button" @click="openHelp">{{ t('help.open') }}</button>
-        <ThemeSwitch />
-      </div>
-    </header>
+  <section v-if="error" role="alert">
+    <h1>{{ t('error.heading') }}</h1>
+    <p>{{ error }}</p>
+    <RouterLink to="/">{{ t('error.link') }}</RouterLink>
+  </section>
 
-    <section v-if="error" role="alert">
-      <h1>{{ t('error.heading') }}</h1>
-      <p>{{ error }}</p>
-      <RouterLink to="/">{{ t('error.link') }}</RouterLink>
+  <p v-else-if="!module || !framed">{{ t('loading') }}</p>
+
+  <template v-else>
+    <component :is="module.View" :key="roundKey" :round="framed.round" />
+
+    <section v-if="result" class="result" role="status">
+      <h2>{{ t('result.heading') }}</h2>
+      <p class="result-score">{{ scoreText }}</p>
+      <div class="play-actions">
+        <button type="button" @click="startRound">{{ t('result.next') }}</button>
+      </div>
     </section>
 
-    <p v-else-if="!module || !framed">{{ t('loading') }}</p>
-
-    <template v-else>
-      <component :is="module.View" :key="roundKey" :round="framed.round" />
-
-      <section v-if="result" class="result" role="status">
-        <h2>{{ t('result.heading') }}</h2>
-        <p class="result-score">{{ scoreText }}</p>
-        <div class="play-actions">
-          <button type="button" @click="startRound">{{ t('result.next') }}</button>
-          <button type="button" @click="back">{{ t('result.back') }}</button>
-        </div>
-      </section>
-
-      <dialog v-if="module" ref="dialog" class="help" @keydown.esc.prevent="closeHelp">
-        <component :is="module.HowToPlay" />
-        <button type="button" @click="closeHelp">{{ t('help.close') }}</button>
-      </dialog>
-    </template>
-  </main>
+    <dialog
+      ref="abortDialog"
+      class="abort-dialog"
+      @keydown.esc.prevent="keepPlaying"
+      @cancel.prevent="keepPlaying"
+    >
+      <h2>{{ t('abort.heading') }}</h2>
+      <p>{{ t('abort.text') }}</p>
+      <div class="play-actions">
+        <button type="button" class="abort-confirm" @click="confirmAbort">
+          {{ t('abort.confirm') }}
+        </button>
+        <button type="button" class="abort-cancel" @click="keepPlaying">
+          {{ t('abort.cancel') }}
+        </button>
+      </div>
+    </dialog>
+  </template>
 </template>
 
 <style scoped>

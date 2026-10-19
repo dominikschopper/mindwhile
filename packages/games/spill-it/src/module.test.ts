@@ -3,7 +3,6 @@ import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { formatScore } from './format-score'
 import HowToPlay from './HowToPlay.vue'
-import { marks } from './marks'
 import { gameModule } from './module'
 import { createRound } from './round'
 import { t } from './texts'
@@ -30,11 +29,23 @@ describe('gameModule', () => {
 })
 
 describe('HowToPlay', () => {
-  it('shows the headings and the example board marks', () => {
-    const wrapper = mount(HowToPlay)
+  it('starts with the goal paragraph and hides the details until "More" is clicked', async () => {
+    const wrapper = mount(HowToPlay, { attachTo: document.body })
+    const paragraphs = wrapper.findAll('p')
+    expect(paragraphs[0]!.text()).toBe(t('howTo.rules.goal'))
+
+    const button = wrapper.find('button')
+    expect(button.text()).toBe(t('howTo.more'))
+    expect(button.attributes('aria-expanded')).toBe('false')
+    expect(wrapper.find('.how-to-more-content').isVisible()).toBe(false)
+
+    await button.trigger('click')
+    expect(button.text()).toBe(t('howTo.less'))
+    expect(button.attributes('aria-expanded')).toBe('true')
+    expect(wrapper.find('.how-to-more-content').isVisible()).toBe(true)
+
     const headings = wrapper.findAll('h2').map((h) => h.text())
     expect(headings).toEqual([
-      t('howTo.rules.heading'),
       t('howTo.example.heading'),
       t('howTo.counter.heading'),
       t('howTo.score.heading'),
@@ -42,9 +53,19 @@ describe('HowToPlay', () => {
     ])
     const boards = wrapper.findAll('.example-board')
     expect(boards).toHaveLength(2)
-    const cells = boards[0]!.findAll('.example-cell').map((c) => c.text())
-    expect(cells).toEqual([0, 1, 1, 2, 0, 1, 2, 2, 0].map((c) => marks[c]))
-    const afterCells = boards[1]!.findAll('.example-cell').map((c) => c.text())
-    expect(afterCells).toEqual([1, 1, 1, 2, 0, 1, 2, 2, 0].map((c) => marks[c]))
+    const cells = boards[0]!.findAll('.example-cell').map((c) => c.find('svg').exists())
+    expect(cells).toEqual(Array(9).fill(true))
+    expect(boards[0]!.attributes('aria-label')).toBe(
+      'Row 1: infinity, alert, alert. Row 2: pulse, infinity, alert. Row 3: pulse, pulse, infinity',
+    )
+    const afterCells = boards[1]!.findAll('.example-cell').map((c) => c.find('svg').exists())
+    expect(afterCells).toEqual(Array(9).fill(true))
+    expect(boards[1]!.attributes('aria-label')).toContain('Row 1: alert, alert, alert')
+
+    await button.trigger('click')
+    expect(button.text()).toBe(t('howTo.more'))
+    expect(button.attributes('aria-expanded')).toBe('false')
+    expect(wrapper.find('.how-to-more-content').isVisible()).toBe(false)
+    wrapper.unmount()
   })
 })

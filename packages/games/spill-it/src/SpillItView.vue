@@ -23,7 +23,7 @@ const colorIndexes = computed(() => Array.from({ length: colorCount }, (_, i) =>
 const boardLabel = computed(() => t('board.summary', { size, regionCount: regionSize.value }))
 
 function buttonLabel(color: number): string {
-  return t('colorButton.label', { color: colorName(color), mark: marks[color]! })
+  return t('colorButton.label', { color: colorName(color), mark: t(marks[color]!.nameKey) })
 }
 
 function onKeydown(event: {
@@ -63,7 +63,7 @@ onBeforeUnmount(() => globalThis.removeEventListener('keydown', onKeydown))
         :disabled="solved || color === regionColor"
         @click="pick(color)"
       >
-        {{ marks[color] }}
+        <component :is="marks[color]!.icon" class="mark-icon" aria-hidden="true" />
       </button>
     </div>
 
@@ -71,11 +71,12 @@ onBeforeUnmount(() => globalThis.removeEventListener('keydown', onKeydown))
       <span
         v-for="(color, index) in cells"
         :key="index"
-        :class="['cell', `cell--${color}`]"
+        :class="['cell', `cell--${color}`, { 'cell--origin': index === 0 }]"
         :data-color="color"
         aria-hidden="true"
-        >{{ marks[color] }}</span
       >
+        <component :is="marks[color]!.icon" class="mark-icon" aria-hidden="true" />
+      </span>
     </div>
 
     <p v-if="solved" class="spill-it-solved" role="status">{{ t('round.solved') }}</p>
@@ -128,11 +129,26 @@ onBeforeUnmount(() => globalThis.removeEventListener('keydown', onKeydown))
   justify-content: center;
   min-width: 0;
   min-height: 0;
-  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-  font-weight: 700;
-  line-height: 1;
-  font-size: calc(55cqi / var(--size));
   transition: background-color 150ms ease;
+}
+
+/* The top left cell is where every move starts: a semi-transparent frame in the mark color
+   (always readable on this cell's color) shows which cell it is. */
+.cell--origin {
+  box-shadow: inset 0 0 0 3px color-mix(in srgb, currentColor 60%, transparent);
+}
+
+/* Icons follow the mark color and scale with the cell, like the text marks did. */
+.cell .mark-icon {
+  width: calc(65cqi / var(--size));
+  height: calc(65cqi / var(--size));
+  stroke-width: 2.5;
+}
+
+.color-button .mark-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  stroke-width: 2.5;
 }
 
 .cell--0 {
@@ -177,10 +193,6 @@ onBeforeUnmount(() => globalThis.removeEventListener('keydown', onKeydown))
   min-width: var(--button-min-size);
   min-height: var(--button-min-size);
   padding: 0;
-  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-  font-weight: 700;
-  font-size: 1.25rem;
-  line-height: 1;
   text-align: center;
   border: 2px solid var(--border-color);
   border-radius: var(--radius);

@@ -7,6 +7,7 @@ const manifestModules = import.meta.glob<{ manifest: GameManifestLike }>(
 
 export interface GameManifestLike {
   readonly id: string
+  readonly symbol: string
   readonly challenges: readonly string[]
 }
 

@@ -2,7 +2,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { challengeParams } from './challenges'
-import { marks } from './marks'
 import { greedyMoves } from './par'
 import { createRound } from './round'
 import SpillItView from './SpillItView.vue'
@@ -23,13 +22,14 @@ function otherColor(round: ReturnType<typeof createRound>) {
 }
 
 describe('SpillItView', () => {
-  it('renders size x size cells with their marks', () => {
+  it('renders size x size cells with their mark icons', () => {
     const { round, wrapper } = setup()
     const cells = wrapper.findAll('.cell')
     expect(cells).toHaveLength(36)
     cells.forEach((cell, i) => {
       const color = round.board.cells[i]!
-      expect(cell.text()).toBe(marks[color])
+      expect(cell.find('svg').exists()).toBe(true)
+      expect(cell.text()).toBe('')
       expect(cell.attributes('data-color')).toBe(String(color))
       expect(cell.classes()).toContain(`cell--${color}`)
       expect(cell.attributes('aria-hidden')).toBe('true')
@@ -45,13 +45,23 @@ describe('SpillItView', () => {
     wrapper.unmount()
   })
 
+  it('marks only the top left cell as the origin of every move', () => {
+    const wrapper = mount(SpillItView, {
+      props: { round: createRound({ challenge: 'a', seed: 5 }) },
+    })
+    const cells = wrapper.findAll('.cell')
+    expect(cells[0]!.classes()).toContain('cell--origin')
+    expect(wrapper.findAll('.cell--origin')).toHaveLength(1)
+  })
+
   it('renders one labeled button per color', () => {
     const { wrapper } = setup()
     const buttons = wrapper.findAll('button')
     expect(buttons).toHaveLength(challengeParams.a.colors)
-    expect(buttons[0]!.attributes('aria-label')).toBe('Orange, mark x')
-    expect(buttons[1]!.attributes('aria-label')).toBe('Sky blue, mark *')
-    expect(buttons[3]!.attributes('aria-label')).toBe('Yellow, mark -')
+    expect(buttons[0]!.attributes('aria-label')).toBe('Orange, infinity')
+    expect(buttons[1]!.attributes('aria-label')).toBe('Sky blue, alert')
+    buttons.forEach((b) => expect(b.find('svg').exists()).toBe(true))
+    expect(buttons[3]!.attributes('aria-label')).toBe('Yellow, plane')
     wrapper.unmount()
   })
 

@@ -11,6 +11,7 @@ export type {
   ScoreDirection,
   ScorePosition,
 } from './contract'
+export { highestChallengeWithResult } from './challenges'
 export { createRng, nextBelow } from './rng'
 export { newSeed } from './seed'
 export type { Rng } from './rng'

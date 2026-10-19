@@ -13,6 +13,10 @@ it('ranks more points as better, then a lower deviation', () => {
   ])
 })
 
+it('shows the grid-2x2 symbol on the tile', () => {
+  expect(manifest.symbol).toBe('grid-2x2')
+})
+
 it('is at scoring version 0 until the first release', () => {
   expect(manifest.scoringVersion).toBe(0)
 })

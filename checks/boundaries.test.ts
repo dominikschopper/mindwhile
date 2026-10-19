@@ -56,6 +56,14 @@ describe('boundary rules', () => {
     expect(rules).toContain('boundaries/dependencies')
   })
 
+  it.each(['play', 'game-selection'])('forbids game importing %s', async (feature) => {
+    const rules = await messagesFor(
+      'apps/web/src/game/tmp.ts',
+      `import * as other from '../${feature}/${feature === 'play' ? 'PlayView.vue' : 'GameSelectionView.vue'}'\nexport const x = other\n`,
+    )
+    expect(rules).toContain('boundaries/dependencies')
+  })
+
   it('forbids Math.random in a game', async () => {
     const rules = await messagesFor(
       'packages/games/spill-it/src/tmp.ts',

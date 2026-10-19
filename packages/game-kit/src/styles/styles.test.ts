@@ -4,10 +4,11 @@ import { buildUtilities, readSpacingSizes } from '../../scripts/generate-utiliti
 
 const read = (name: string) => readFileSync(new URL(name, import.meta.url), 'utf8')
 
-it('declares the layer order exactly and imports it first', () => {
-  expect(read('./layers.css')).toContain('@layer reset, tokens, layout, components, utilities;')
-  const firstImport = read('./index.css').match(/@import\s+'([^']+)'/)
-  expect(firstImport?.[1]).toBe('./layers.css')
+it('declares the layer order exactly, before any import', () => {
+  const index = read('./index.css')
+  const order = '@layer reset, tokens, layout, components, utilities;'
+  expect(index).toContain(order)
+  expect(index.indexOf(order)).toBeLessThan(index.indexOf('@import'))
 })
 
 it('has margin, padding and gap utilities for every spacing token', () => {
@@ -62,4 +63,13 @@ it('credits the reset source and does not use #root', () => {
   const css = read('./reset.css')
   expect(css).toContain('https://www.joshwcomeau.com/css/custom-css-reset/')
   expect(css).not.toContain('#root')
+})
+
+it('defines the page width rule in the layout layer and imports it', () => {
+  const css = read('./layout.css')
+  expect(css).toMatch(
+    /@layer layout\s*\{[\s\S]*\.content-column\s*\{[^}]*width:\s*min\(98%, 960px\)/,
+  )
+  expect(css).toContain('margin-inline: auto')
+  expect(read('./index.css')).toContain("@import './layout.css';")
 })

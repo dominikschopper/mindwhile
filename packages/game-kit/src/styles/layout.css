@@ -1,0 +1,17 @@
+@layer layout {
+  /* Page width rule: max 960px centered, 98% (1% margin each side) on narrow screens. */
+  .content-column {
+    width: min(98%, 960px);
+    margin-inline: auto;
+  }
+
+  /* Touch target for buttons placed in the header and footer bars. */
+  .chrome-button {
+    min-width: var(--button-min-size);
+    min-height: var(--button-min-size);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+  }
+}

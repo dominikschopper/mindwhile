@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { HowToExample, HowToHeading, HowToParagraph } from '@mindwhile/game-kit'
+import { HowToExample, HowToHeading, HowToMore, HowToParagraph } from '@mindwhile/game-kit'
 import './styles/tokens.css'
 import type { Board } from './board'
 import { applyColor } from './flood'
@@ -12,8 +12,10 @@ const pickedColor = 1
 const after = applyColor(before, pickedColor)
 
 function rowLabel(board: Board, row: number): string {
-  const rowMarks = board.cells.slice(row * board.size, (row + 1) * board.size).map((c) => marks[c]!)
-  return t('howTo.example.row', { row: row + 1, marks: rowMarks.join(' ') })
+  const rowMarks = board.cells
+    .slice(row * board.size, (row + 1) * board.size)
+    .map((c) => t(marks[c]!.nameKey))
+  return t('howTo.example.row', { row: row + 1, marks: rowMarks.join(', ') })
 }
 
 function boardLabel(board: Board): string {
@@ -23,46 +25,50 @@ function boardLabel(board: Board): string {
 
 <template>
   <div class="how-to-play">
-    <HowToHeading>{{ t('howTo.rules.heading') }}</HowToHeading>
-    <HowToParagraph>{{ t('howTo.rules.pick') }}</HowToParagraph>
-    <HowToParagraph>{{ t('howTo.rules.swallow') }}</HowToParagraph>
     <HowToParagraph>{{ t('howTo.rules.goal') }}</HowToParagraph>
 
-    <HowToHeading>{{ t('howTo.example.heading') }}</HowToHeading>
-    <HowToExample :caption="t('howTo.example.before')">
-      <div class="example-board" role="img" :aria-label="boardLabel(before)">
-        <span
-          v-for="(color, index) in before.cells"
-          :key="index"
-          :class="['example-cell', `cell--${color}`]"
-          aria-hidden="true"
-          >{{ marks[color] }}</span
-        >
-      </div>
-    </HowToExample>
-    <HowToExample :caption="t('howTo.example.after', { mark: marks[pickedColor]! })">
-      <div class="example-board" role="img" :aria-label="boardLabel(after)">
-        <span
-          v-for="(color, index) in after.cells"
-          :key="index"
-          :class="['example-cell', `cell--${color}`]"
-          aria-hidden="true"
-          >{{ marks[color] }}</span
-        >
-      </div>
-    </HowToExample>
+    <HowToMore :more-label="t('howTo.more')" :less-label="t('howTo.less')">
+      <HowToParagraph>{{ t('howTo.rules.pick') }}</HowToParagraph>
+      <HowToParagraph>{{ t('howTo.rules.swallow') }}</HowToParagraph>
 
-    <HowToHeading>{{ t('howTo.counter.heading') }}</HowToHeading>
-    <HowToParagraph>{{ t('howTo.counter.moves') }}</HowToParagraph>
-    <HowToParagraph>{{ t('howTo.counter.par') }}</HowToParagraph>
-    <HowToParagraph>{{ t('howTo.counter.approximation') }}</HowToParagraph>
+      <HowToHeading>{{ t('howTo.example.heading') }}</HowToHeading>
+      <HowToExample :caption="t('howTo.example.before')">
+        <div class="example-board" role="img" :aria-label="boardLabel(before)">
+          <span
+            v-for="(color, index) in before.cells"
+            :key="index"
+            :class="['example-cell', `cell--${color}`]"
+            aria-hidden="true"
+          >
+            <component :is="marks[color]!.icon" class="mark-icon" aria-hidden="true" />
+          </span>
+        </div>
+      </HowToExample>
+      <HowToExample :caption="t('howTo.example.after', { mark: t(marks[pickedColor]!.nameKey) })">
+        <div class="example-board" role="img" :aria-label="boardLabel(after)">
+          <span
+            v-for="(color, index) in after.cells"
+            :key="index"
+            :class="['example-cell', `cell--${color}`]"
+            aria-hidden="true"
+          >
+            <component :is="marks[color]!.icon" class="mark-icon" aria-hidden="true" />
+          </span>
+        </div>
+      </HowToExample>
 
-    <HowToHeading>{{ t('howTo.score.heading') }}</HowToHeading>
-    <HowToParagraph>{{ t('howTo.score.deviation') }}</HowToParagraph>
-    <HowToParagraph>{{ t('howTo.score.negative') }}</HowToParagraph>
+      <HowToHeading>{{ t('howTo.counter.heading') }}</HowToHeading>
+      <HowToParagraph>{{ t('howTo.counter.moves') }}</HowToParagraph>
+      <HowToParagraph>{{ t('howTo.counter.par') }}</HowToParagraph>
+      <HowToParagraph>{{ t('howTo.counter.approximation') }}</HowToParagraph>
 
-    <HowToHeading>{{ t('howTo.marks.heading') }}</HowToHeading>
-    <HowToParagraph>{{ t('howTo.marks.text') }}</HowToParagraph>
+      <HowToHeading>{{ t('howTo.score.heading') }}</HowToHeading>
+      <HowToParagraph>{{ t('howTo.score.deviation') }}</HowToParagraph>
+      <HowToParagraph>{{ t('howTo.score.negative') }}</HowToParagraph>
+
+      <HowToHeading>{{ t('howTo.marks.heading') }}</HowToHeading>
+      <HowToParagraph>{{ t('howTo.marks.text') }}</HowToParagraph>
+    </HowToMore>
   </div>
 </template>
 
@@ -82,10 +88,12 @@ function boardLabel(board: Board): string {
   align-items: center;
   justify-content: center;
   height: 3rem;
-  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-  font-weight: 700;
-  font-size: 1.5rem;
-  line-height: 1;
+}
+
+.example-cell .mark-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  stroke-width: 2.5;
 }
 
 .cell--0 {

@@ -1,16 +1,11 @@
 @layer layout {
-  .page {
-    box-sizing: border-box;
-    max-width: 40rem;
-    margin-inline: auto;
-    padding: var(--spacing-md);
+  #app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
   }
 
-  .page-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-md);
-    margin-block-end: var(--spacing-lg);
+  #app > main {
+    flex: 1 0 auto;
   }
 }

@@ -30,6 +30,7 @@ describe('contract types', () => {
   it('accept plain objects', () => {
     const manifest = {
       id: 'x',
+      symbol: 'x',
       gameVersion: 1,
       scoringVersion: 0,
       interfaceVersion: 1,

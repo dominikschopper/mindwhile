@@ -22,6 +22,8 @@ export interface ScorePosition {
 
 export interface GameManifest {
   id: string
+  /** Icon name from the list offered by game-kit, the platform maps it to a component. */
+  symbol: string
   gameVersion: number
   scoringVersion: number
   interfaceVersion: number

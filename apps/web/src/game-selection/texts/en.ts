@@ -1,5 +1,5 @@
 export const en = {
   'page.title': 'Mindwhile',
   'page.heading': 'Choose a game',
-  'challenge.list': 'Challenges of {game}',
+  'tile.noResult': 'No result yet',
 } as const
