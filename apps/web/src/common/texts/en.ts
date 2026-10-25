@@ -1,8 +1,4 @@
 export const en = {
-  'theme.label': 'Color theme: {choice}',
-  'theme.choice.system': 'System',
-  'theme.choice.light': 'Light',
-  'theme.choice.dark': 'Dark',
   'app.name': 'Mindwhile',
   'menu.button': 'Menu',
   'menu.settings': 'Settings',
@@ -12,4 +8,6 @@ export const en = {
   'footer.gamerTagLabel': 'Gamer tag',
   'footer.backToGames': 'Back to games',
   'footer.abort': 'Abort',
+  'notice.dismiss': 'Dismiss notice',
+  'notice.roundDiscarded': 'Something went wrong, the round was discarded',
 } as const

@@ -8,10 +8,10 @@ Status: draft, filled decision by decision. The contract is the interface betwee
 
 - A game is split into pure logic and a view. The logic knows nothing about Vue, the view draws what the logic provides
 - A game may only know `core` and `game-kit` (a package with Vue building blocks for games, see `tech-stack.md`), nothing of the platform
-- A game package exports a module with: a manifest, a function `createRound({ challenge, seed, saved })`, a Vue component `View` that receives the round object and a how-to-play component. Scoring tests are not part of the module (see below)
+- A game package has three entries (see Package entries below): the manifest, the texts with the score display, and the module with a function `createRound({ challenge, seed, saved })`, a Vue component `View` that receives the round object and a how-to-play component. Scoring tests are not part of any entry (see below)
 - `createRound` returns a round object with a fixed interface (`apply(move)`, `serialize()`, `result()`). The platform controls saving and round end through this interface. Pause and time are not part of it, they belong to the game (see Pause and Time)
 - Scoring tests run directly against the logic (seed and move sequence produce the expected board, score and par). They are Vitest files in the game package (`src/scoring.<challenge>.test.ts`, one per challenge) and never ship in the bundle. `core` brings one shared test helper for all games. A repository check (`checks/scoring-tests.test.ts`) fails when a challenge in a manifest has no such file
-- **One default `View` per game, and every challenge may bring its own.** A challenge without its own view uses the default of the game. The platform only chooses which component it loads and hands it the round. The own views live in the module (`views`, loaded on demand), not in the manifest, because the manifest is read for the game list without loading any view. The logic is unaffected, `createRound` receives the challenge anyway and may differ per challenge
+- **One default `View` per game, and every challenge may bring its own.** A challenge without its own view uses the default of the game. The platform only chooses which component it loads and hands it the round. The own views live in the module (`views`, loaded on demand), not in the manifest, because the manifest is read for the game list without loading any view. The logic is unaffected, `createRound` receives the challenge anyway and may differ per challenge. **Not yet implemented:** the platform ignores `views` and always renders `View`
 - The types live in `packages/core/src/contract.ts` (`Round`, `RoundResult`, `GameManifest`, `GameModule`). `core` has no Vue, so `GameModule` is generic over the view component type: `GameModule<TView>`, `game-kit` and the platform use Vue's `Component`. `playMoves(round, moves)` in `core` applies moves and returns `result()`, it is the helper for scoring tests. Sketch:
 
 ```ts
@@ -24,10 +24,18 @@ interface GameModule<TView = unknown> {
   manifest: GameManifest
   createRound(p: { challenge: string; seed: number; saved?: unknown }): Round
   View: TView                 // default view, receives the round
-  views?: Record<string, () => Promise<TView>> // optional, per challenge
+  views?: Record<string, () => Promise<TView>> // optional, per challenge (not used by the platform yet)
   HowToPlay: TView            // rules and scoring content (game page)
 }
 ```
+
+### Package entries
+
+- `.` (`src/manifest.ts`): the manifest, pure data. The platform reads it for the game list without loading any view
+- `./texts` (`src/texts.ts`): `GameTexts` with `name`, `challengeName(challenge)` and `formatScore(score)`. Loaded with the game list, so the start page and the result panel need no view
+- `./module` (`src/module.ts`): `GameModule` with `createRound`, `View` and `HowToPlay`, loaded on demand when a game is opened
+- The platform builds one registry from these entries (`apps/web/src/common/composables/game-registry.ts`). It has one entry per game folder, and the folder name must equal `manifest.id`. A missing entry or a wrong folder name throws when the registry is built. A module that declares another ID throws when it is loaded. Tests inject a fake registry instead of the real games
+- The registry reads the files by path (`src/manifest.ts`, `src/texts.ts`, `src/module.ts`), the package `exports` declare the same entries for other packages
 
 ### Navigation
 
@@ -35,6 +43,8 @@ interface GameModule<TView = unknown> {
 - Screens inside a running round are state of the view
 - Choosing before the round (challenge, for fixed boards the number of the board), round end and the rules page belong to the platform
 - If a game opens a layer of its own inside a round (for example a dialog), it reports this to the platform through a small service, so that back closes this layer first
+- Leaving a running round (back key, links, abort) is confirmed by the platform through the leave guard. A game does not handle it
+- Keys pressed inside a platform dialog or the open menu do not reach the game, the platform stops `keydown` there. A game's own window key handler should ignore form fields, modifier keys, repeated keys and events that are already `defaultPrevented` (Spillit does this in `keyboard.ts`)
 - If a later game needs more, the rule is extended for that case. Taking freedoms away again would be more expensive
 
 ### Platform chrome (header and footer)
@@ -82,12 +92,14 @@ Two different things, only one of them is optional.
 - The parameters of a challenge (grid size, number of colors) stay in the game logic, so the numbers exist in one place. The rule "if a parameter of a challenge changes, the scoring version goes up" stays with the logic and its scoring tests
 - Display names (of the game and of the challenges, for example "6×6 · 4 colors") come from the texts of the game, not from the manifest
 - The three versions are integers, not texts. `gameVersion` and `interfaceVersion` start at 1, `scoringVersion` may be 0 until the first release of the app. Comparability depends only on `scoringVersion`, and for `gameVersion` traceability counts, not semantics
+- **Not yet implemented:** the platform does not check `interfaceVersion` yet
 
 ### Showing a score
 
 - **Order is generic, display is the game's.** The platform compares score values position by position with the `better` direction from the manifest (no game code needed, so import, merge and old scoring versions need none either). How a score looks is up to the game
 - The `key` of each score position is also the text key of its label, taken from the language file of the game
-- For the value itself the game provides a small display function or text template (for example "2 under par" instead of `-2`), separate from the view and loaded with the game package. The platform only calls it. The exact shape is fixed when the game list is built
+- For the value itself the game provides `formatScore(score)` as part of `GameTexts` (for example "2 under par" instead of `-2`), in the `./texts` entry and separate from the view. The platform only calls it, for the result panel. Decided: a function, not text templates with parameters
+- The start page tile still shows the first score value unformatted (see `architecture.md`, Open questions)
 
 ### Reporting moves and round end
 
@@ -105,8 +117,10 @@ Two different things, only one of them is optional.
 
 ### Errors
 
-- The platform catches errors: `createRound` and the view run inside an error guard (also while resuming a saved round)
-- On an error the app shows a hint ("Something went wrong, the round was discarded"), deletes the saved state, creates no result and returns to the game selection. Nothing is sent anywhere
+- The platform catches errors: `createRound` runs in a try/catch, the view runs inside an error guard (`onErrorCaptured` on the play page). A failing module load takes the same path
+- On an error the round is discarded, no result is created, the app shows a notice ("Something went wrong, the round was discarded", see `architecture.md`) and goes to the start page. Nothing is sent anywhere
+- Saved states: the platform does not store rounds yet, so there is nothing to delete. When resuming a saved round is built, the same error path deletes its saved state. **Not yet implemented:** resuming and saving
+- An unknown game or challenge in the URL is not an error of the game: the play page keeps its inline error with a link back and shows no notice
 - A broken state can therefore never trap the app in a loop. The console helps during development, the scoring tests cover the logic
 
 ### Deferred until needed

@@ -1,8 +1,48 @@
 // @vitest-environment happy-dom
 import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
+import { h } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
+import type { GameManifest, GameModule, GameTexts } from '@mindwhile/core'
+import type { Component } from 'vue'
+import { defaultGameRegistry, gameRegistryKey } from '../common/composables/game-registry'
+import type { GameEntry, GameRegistry } from '../common/composables/game-registry'
+import * as bestResults from '../common/composables/use-best-results'
 import GameView from './GameView.vue'
+
+function otherEntry(): GameEntry {
+  const manifest: GameManifest = {
+    id: 'other',
+    symbol: 'grid-2x2',
+    gameVersion: 1,
+    scoringVersion: 1,
+    interfaceVersion: 1,
+    challenges: ['x', 'y'],
+    scoring: [{ key: 'points', better: 'higher' }],
+  }
+  const texts: GameTexts = {
+    name: 'Other game',
+    challengeName: (challenge) => `Other ${challenge}`,
+    formatScore: (score) => `${score[0]} other points`,
+  }
+  const gameModule: GameModule<Component> = {
+    manifest,
+    createRound: () => {
+      throw new Error('not used in this test')
+    },
+    View: () => null,
+    HowToPlay: () => h('p', 'Rules of the other game'),
+  }
+  return { id: 'other', manifest, texts, loadModule: async () => gameModule }
+}
+
+function twoGameRegistry(): GameRegistry {
+  const games = [defaultGameRegistry.getGame('spill-it')!, otherEntry()]
+  return {
+    listGames: () => games,
+    getGame: (id) => games.find((game) => game.id === id),
+  }
+}
 
 async function mountView(id: string, router = makeRouter()) {
   await router.push(`/games/${id}`)
@@ -36,6 +76,14 @@ describe('GameView', () => {
     expect(wrapper.find('.best').text()).toContain('—')
   })
 
+  it('shows the points of the best score list of the selected challenge', async () => {
+    vi.spyOn(bestResults, 'useBestResults').mockReturnValue({ 'spill-it': { a: [640, 3] } })
+    const { wrapper } = await mountView('spill-it')
+    expect(wrapper.find('.best').text()).toContain('640')
+    expect(wrapper.find('.best').text()).not.toContain('—')
+    vi.restoreAllMocks()
+  })
+
   it('keeps the selection across navigation and Go uses it', async () => {
     const { wrapper, router } = await mountView('spill-it')
     await wrapper.find('select').setValue('b')
@@ -58,6 +106,28 @@ describe('GameView', () => {
     expect(wrapper.find('[aria-expanded="true"]').exists()).toBe(false)
     await toggle!.trigger('click')
     expect(wrapper.findAll('button').some((b) => b.text() === 'Less')).toBe(true)
+  })
+
+  it('shows the other game when the route changes to its id', async () => {
+    const registry = twoGameRegistry()
+    const router = makeRouter()
+    await router.push('/games/spill-it')
+    await router.isReady()
+    const wrapper = mount(
+      { template: '<RouterView />' },
+      { global: { plugins: [router], provide: { [gameRegistryKey]: registry } } },
+    )
+    await flushPromises()
+    expect(wrapper.find('h1').text()).toBe('Spillit')
+
+    await router.push('/games/other')
+    await flushPromises()
+    expect(wrapper.find('h1').text()).toBe('Other game')
+    const options = wrapper.findAll('option').map((o) => o.text())
+    expect(options).toEqual(['Other x', 'Other y'])
+    expect((wrapper.find('select').element as HTMLSelectElement).value).toBe('x')
+    await vi.waitFor(() => expect(wrapper.text()).toContain('Rules of the other game'))
+    expect(wrapper.text()).not.toContain('Loading')
   })
 
   it('shows an error and a link back for an unknown id', async () => {

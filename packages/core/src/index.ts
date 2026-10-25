@@ -1,5 +1,3 @@
-export const coreName = 'core' as const
-
 export { roundEnds } from './contract'
 export type {
   GameManifest,

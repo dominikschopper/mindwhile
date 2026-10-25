@@ -77,4 +77,16 @@ describe('scoring challenge b', () => {
     const moves = [0, 4, 1, 0, 3, 1, 2, 0, 4, 3, 1, 2, 0, 3, 4, 0, 1]
     expect(playMoves(round, moves.map(pick))).toEqual({ roundEnd: 'won', score: [750, 0] })
   })
+
+  it('scores a detour above par with a positive deviation', () => {
+    // seed 12: par is 13. The first move is a detour (color 2 absorbs one cell, not the
+    // greedy choice), then the greedy solution of the resulting board follows: 14 moves.
+    // points = floor(750 * 13 / 14 / 10) * 10 = floor(69.64) * 10 = 690, deviation 14 - 13 = 1
+    const round = createRound({ challenge: 'b', seed: 12 })
+    expect(round.par).toBe(13)
+    const moves = [2, 1, 2, 0, 4, 3, 2, 0, 1, 3, 2, 4, 0, 1]
+    expect(moves).toHaveLength(14)
+    expect(playMoves(round, moves.map(pick))).toEqual({ roundEnd: 'won', score: [690, 1] })
+    expect(round.moves).toHaveLength(14)
+  })
 })

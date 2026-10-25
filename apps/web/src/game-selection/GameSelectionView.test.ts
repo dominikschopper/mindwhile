@@ -33,7 +33,7 @@ describe('GameSelectionView', () => {
 
   it('shows the result of the highest challenge with a result', () => {
     vi.spyOn(bestResults, 'useBestResults').mockReturnValue({
-      'spill-it': { a: 900, b: 1000 },
+      'spill-it': { a: [900, 0], b: [1000, 2] },
     })
     const result = mountView().find('.tile-result')
     expect(result.text()).toContain('1000')

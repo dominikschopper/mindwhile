@@ -30,7 +30,7 @@ Spelling in code: identifiers in `camelCase`, types in `PascalCase`, folders and
 
 | Term (code name) | Meaning |
 |---|---|
-| interface version (`interfaceVersion`) | Version of the contract between platform and game |
+| interface version (`interfaceVersion`) | Version of the contract between platform and game. Not checked by the platform yet |
 | game version (`gameVersion`) | Version of a game package |
 | data format version (`dataFormatVersion`) | Version of profile, saved states and results |
 | scoring version (`scoringVersion`) | Goes up only when what a score means changes |
@@ -57,7 +57,10 @@ Spelling in code: identifiers in `camelCase`, types in `PascalCase`, folders and
 | game page (`game-page`, route `/games/:id`) | Page of one game: symbol and name, challenge select with Go, best result, "Game rules". Entry point to a round |
 | chrome slot (`ChromeSlot`, names `header-left` to `footer-right`) | Place in the platform's header or footer that a game fills, for example the time display in `header-center` or the pause in `footer-center`. The platform renders the bars, the game only names the slot |
 | how-to-play content (`HowToPlay`) | Rules and scoring of a game, delivered as a component. Shown on the game page under "Game rules", goal first, details behind "More" (`HowToMore`) |
-| game module (`GameModule`) | What a game package exports: manifest, `createRound`, default view, optional views per challenge, how-to-play content. Scoring tests are Vitest files next to it, not part of the module |
+| game module (`GameModule`) | What the `./module` entry of a game package exports: `createRound`, default view, how-to-play content, optional views per challenge (not used by the platform yet). The manifest and `GameTexts` (name, challenge names, `formatScore`) are separate entries. Scoring tests are Vitest files next to it, not part of the module |
+| game registry (`GameRegistry`, `createGameRegistry`) | Platform map from game ID to manifest, texts and lazy module loader, built from the game package entries. Checks that the folder name equals the manifest ID. See `tech-stack.md` |
+| notice (`notice`, `showNotice`) | One-time message under the header, for example after an error in a game. Only one at a time, a newer one replaces it |
+| leave guard | Confirmation before a running round is left by back key, link or abort button. See `architecture.md` |
 | round object (`Round`) | Pure logic of a running round (`apply`, `serialize`, `result`), wrapped by the platform |
 | active time (`elapsedMs`) | Play time without pause and background, measured by the game with the active clock |
 | active clock (`ActiveClock`, `createActiveClock`) | Framework-free clock in `core` that stops during pause and in the background |

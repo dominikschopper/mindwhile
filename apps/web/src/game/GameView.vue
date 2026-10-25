@@ -1,42 +1,60 @@
 <script setup lang="ts">
 import { gameSymbols } from '@mindwhile/game-kit'
-import { computed, onMounted, ref, shallowRef } from 'vue'
+import { computed, ref, shallowRef, watch } from 'vue'
 import type { Component } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import { discoverGames } from '../common/composables/discoverGames'
-import { gameTexts } from '../common/composables/game-texts'
-import { loadGameModule } from '../common/composables/load-game-module'
-import { useBestResults } from '../common/composables/use-best-results'
+import { useGameRegistry } from '../common/composables/game-registry'
+import { pointsOf, useBestResults } from '../common/composables/use-best-results'
 import { useSelectedChallenge } from './use-selected-challenge'
 import { t } from './texts'
 
 const props = defineProps<{ id: string }>()
 const router = useRouter()
-
-const manifest = discoverGames().find((game) => game.id === props.id)
-const texts = gameTexts[props.id]
-const selected = useSelectedChallenge(props.id, manifest?.challenges ?? [])
-const symbol = manifest ? (gameSymbols as Record<string, Component>)[manifest.symbol] : undefined
-
-const options = (manifest?.challenges ?? []).map((challenge) => ({
-  id: challenge,
-  label: texts?.challengeName(challenge) ?? challenge,
-}))
-
+const registry = useGameRegistry()
 const bestResults = useBestResults()
-const best = computed(() => bestResults[props.id]?.[selected.value])
+
+const game = computed(() => registry.getGame(props.id))
+const manifest = computed(() => game.value?.manifest)
+const texts = computed(() => game.value?.texts)
+const symbol = computed(() =>
+  manifest.value ? (gameSymbols as Record<string, Component>)[manifest.value.symbol] : undefined,
+)
+
+const options = computed(() =>
+  (manifest.value?.challenges ?? []).map((challenge) => ({
+    id: challenge,
+    label: texts.value?.challengeName(challenge) ?? challenge,
+  })),
+)
+
+const selected = computed({
+  get: () => useSelectedChallenge(props.id, manifest.value?.challenges ?? []).value,
+  set: (value: string) => {
+    useSelectedChallenge(props.id, manifest.value?.challenges ?? []).value = value
+  },
+})
+const best = computed(() => pointsOf(bestResults[props.id]?.[selected.value]))
 
 const HowToPlay = shallowRef<Component | null>(null)
 const rulesFailed = ref(false)
 
-onMounted(async () => {
-  if (!manifest) return
-  try {
-    HowToPlay.value = (await loadGameModule(props.id)).HowToPlay
-  } catch {
-    rulesFailed.value = true
-  }
-})
+// Loads the rules of the game in the route. A rules load for a previous id is dropped.
+watch(
+  () => props.id,
+  async (id) => {
+    HowToPlay.value = null
+    rulesFailed.value = false
+    const entry = registry.getGame(id)
+    if (!entry) return
+    try {
+      const { HowToPlay: rules } = await entry.loadModule()
+      if (props.id === id) HowToPlay.value = rules
+    } catch {
+      if (props.id === id) rulesFailed.value = true
+    }
+  },
+  { immediate: true },
+)
 
 function go(): void {
   void router.push(`/play/${props.id}/${selected.value}`)
@@ -55,7 +73,7 @@ function go(): void {
     </div>
     <div class="challenge-row">
       <label for="challenge-select">{{ t('challenge.label') }}</label>
-      <select id="challenge-select" v-model="selected">
+      <select id="challenge-select" :key="props.id" v-model="selected">
         <option v-for="option in options" :key="option.id" :value="option.id">
           {{ option.label }}
         </option>

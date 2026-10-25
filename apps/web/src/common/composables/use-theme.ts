@@ -2,12 +2,6 @@ import { readonly, ref } from 'vue'
 
 export type ThemeChoice = 'system' | 'light' | 'dark'
 
-const nextChoice: Record<ThemeChoice, ThemeChoice> = {
-  system: 'light',
-  light: 'dark',
-  dark: 'system',
-}
-
 // Session only: the choice is not persisted, storage belongs to the platform.
 const choice = ref<ThemeChoice>('system')
 
@@ -25,10 +19,6 @@ function setTheme(value: ThemeChoice): void {
   apply(value)
 }
 
-function cycle(): void {
-  setTheme(nextChoice[choice.value])
-}
-
 export function useTheme() {
-  return { choice: readonly(choice), setTheme, cycle }
+  return { choice: readonly(choice), setTheme }
 }

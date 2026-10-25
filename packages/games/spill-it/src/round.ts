@@ -45,7 +45,7 @@ function parseSaved(saved: unknown, colors: number): number[] {
 }
 
 export function createRound(p: { challenge: string; seed: number; saved?: unknown }): SpillItRound {
-  if (!(p.challenge in challengeParams)) {
+  if (!Object.hasOwn(challengeParams, p.challenge)) {
     throw new Error(`unknown challenge: ${p.challenge}`)
   }
   const challenge = p.challenge as SpillItChallenge

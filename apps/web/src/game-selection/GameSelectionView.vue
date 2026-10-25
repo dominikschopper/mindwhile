@@ -2,27 +2,29 @@
 import { highestChallengeWithResult } from '@mindwhile/core'
 import { gameSymbols } from '@mindwhile/game-kit'
 import { RouterLink } from 'vue-router'
-import { discoverGames } from '../common/composables/discoverGames'
-import { gameTexts } from '../common/composables/game-texts'
-import { useBestResults } from '../common/composables/use-best-results'
+import { useGameRegistry } from '../common/composables/game-registry'
+import { pointsOf, useBestResults } from '../common/composables/use-best-results'
 import { t } from './texts'
 
 const bestResults = useBestResults()
 
-const games = discoverGames().map((game) => {
-  const texts = gameTexts[game.id]
-  const best = highestChallengeWithResult(game.challenges, bestResults[game.id] ?? {})
-  return {
-    id: game.id,
-    name: texts?.name ?? game.id,
-    symbol: (gameSymbols as Record<string, (typeof gameSymbols)[keyof typeof gameSymbols]>)[
-      game.symbol
-    ],
-    best: best
-      ? { score: best.result, label: texts?.challengeName(best.challenge) ?? best.challenge }
-      : undefined,
-  }
-})
+const games = useGameRegistry()
+  .listGames()
+  .map(({ manifest: game, texts }) => {
+    const best = highestChallengeWithResult(game.challenges, bestResults[game.id] ?? {})
+    const points = best ? pointsOf(best.result) : undefined
+    return {
+      id: game.id,
+      name: texts.name,
+      symbol: (gameSymbols as Record<string, (typeof gameSymbols)[keyof typeof gameSymbols]>)[
+        game.symbol
+      ],
+      best:
+        best && points !== undefined
+          ? { score: points, label: texts.challengeName(best.challenge) ?? best.challenge }
+          : undefined,
+    }
+  })
 </script>
 
 <template>

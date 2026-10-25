@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { describe, expect, it } from 'vitest'
+import { startRegion } from './flood'
 import { greedyMoves } from './par'
 import { createRound } from './round'
 import { useSpillItRound } from './use-spill-it-round'
@@ -68,5 +69,18 @@ describe('useSpillItRound', () => {
     expect(restored.moveCount.value).toBe(r.moveCount.value)
     expect(restored.regionColor.value).toBe(r.regionColor.value)
     expect(restored.regionSize.value).toBe(r.regionSize.value)
+  })
+
+  it('takes the region size from startRegion for several seeds and moves', () => {
+    for (const seed of [1, 7, 42]) {
+      const round = createRound({ challenge: 'a', seed })
+      const r = useSpillItRound(round)
+      expect(r.regionSize.value).toBe(startRegion(round.board).length)
+      for (const color of greedyMoves(round.startBoard, r.colorCount).slice(0, 4)) {
+        r.pick(color)
+        expect(r.regionSize.value).toBe(startRegion(round.board).length)
+        expect(r.regionColor.value).toBe(round.board.cells[0])
+      }
+    }
   })
 })

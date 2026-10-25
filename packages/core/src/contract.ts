@@ -42,4 +42,6 @@ export interface GameModule<TView = unknown> {
 export interface GameTexts {
   name: string
   challengeName(challenge: string): string
+  // Score is the game's own score vector, returned as one display line.
+  formatScore(score: readonly number[]): string
 }

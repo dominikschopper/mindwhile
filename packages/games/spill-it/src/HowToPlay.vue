@@ -63,7 +63,7 @@ function boardLabel(board: Board): string {
       <HowToParagraph>{{ t('howTo.counter.approximation') }}</HowToParagraph>
 
       <HowToHeading>{{ t('howTo.score.heading') }}</HowToHeading>
-      <HowToParagraph>{{ t('howTo.score.deviation') }}</HowToParagraph>
+      <HowToParagraph>{{ t('howTo.score.points') }}</HowToParagraph>
       <HowToParagraph>{{ t('howTo.score.negative') }}</HowToParagraph>
 
       <HowToHeading>{{ t('howTo.marks.heading') }}</HowToHeading>

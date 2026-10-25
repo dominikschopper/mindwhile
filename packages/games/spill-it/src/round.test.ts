@@ -14,13 +14,13 @@ describe('createRound', () => {
     expect(createRound({ challenge: 'a', seed: 0 }).result()).toBeNull()
   })
 
-  it('scores 0 when the greedy sequence is played', () => {
+  it('scores 500 points with deviation 0 when the greedy sequence is played', () => {
     const round = createRound({ challenge: 'a', seed: 5 })
     const moves = greedyMoves(round.startBoard, challengeParams.a.colors).map(pick)
     expect(playMoves(round, moves)).toEqual({ roundEnd: 'won', score: [500, 0] })
   })
 
-  it('scores negative for a sequence shorter than par', () => {
+  it('scores 570 points with deviation -1 for a sequence shorter than par', () => {
     const round = createRound({ challenge: 'a', seed: 0 })
     expect(round.par).toBe(8)
     expect(playMoves(round, shorterThanPar.map(pick))).toEqual({
@@ -87,6 +87,13 @@ describe('invalid input', () => {
   it('rejects an unknown challenge', () => {
     expect(() => createRound({ challenge: 'z', seed: 0 })).toThrow()
   })
+
+  it.each(['toString', 'constructor'])(
+    'rejects the inherited property %s as a challenge at once',
+    (challenge) => {
+      expect(() => createRound({ challenge, seed: 1 })).toThrow('unknown challenge: ' + challenge)
+    },
+  )
 
   it.each([
     ['no object', 'x'],

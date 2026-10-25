@@ -83,7 +83,7 @@ describe('boundary rules', () => {
   it('allows a game importing core', async () => {
     const rules = await messagesFor(
       'packages/games/spill-it/src/tmp.ts',
-      "import { coreName } from '../../../core/src/index'\nexport const x = coreName\n",
+      "import { createRng } from '../../../core/src/index'\nexport const x = createRng\n",
     )
     expect(rules).toEqual([])
   })

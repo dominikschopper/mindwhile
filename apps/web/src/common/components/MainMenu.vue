@@ -5,10 +5,17 @@ import { usePopover } from '../composables/use-popover'
 import { t } from '../texts'
 
 const { open, root, button, close, onKeydown } = usePopover()
+
+// Keys pressed in the open menu must not reach handlers behind it (for example game shortcuts).
+function onMenuKeydown(event: Parameters<typeof onKeydown>[0]): void {
+  const wasOpen = open.value
+  onKeydown(event)
+  if (wasOpen) event.stopPropagation()
+}
 </script>
 
 <template>
-  <div ref="root" class="main-menu" @keydown="onKeydown">
+  <div ref="root" class="main-menu" @keydown="onMenuKeydown">
     <button
       ref="button"
       type="button"

@@ -119,6 +119,21 @@ describe('SpillItView', () => {
     wrapper.unmount()
   })
 
+  it('does not pick a color for a keydown that stopped propagation before the window', async () => {
+    const { round, wrapper } = setup()
+    const shield = document.createElement('div')
+    shield.addEventListener('keydown', (e) => e.stopPropagation())
+    document.body.appendChild(shield)
+    shield.dispatchEvent(
+      new KeyboardEvent('keydown', { key: String(otherColor(round) + 1), bubbles: true }),
+    )
+    await wrapper.vm.$nextTick()
+    expect(round.moves).toHaveLength(0)
+    expect(wrapper.find('[aria-live]').text()).toBe('Moves 0')
+    shield.remove()
+    wrapper.unmount()
+  })
+
   it('removes the key listener on unmount', () => {
     const add = vi.spyOn(window, 'addEventListener')
     const remove = vi.spyOn(window, 'removeEventListener')

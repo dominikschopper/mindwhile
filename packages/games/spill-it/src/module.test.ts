@@ -1,7 +1,6 @@
 // @vitest-environment happy-dom
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import { formatScore } from './format-score'
 import HowToPlay from './HowToPlay.vue'
 import { gameModule } from './module'
 import { createRound } from './round'
@@ -22,9 +21,9 @@ describe('gameModule', () => {
     expect(typeof round.result).toBe('function')
   })
 
-  it('exports formatScore', async () => {
+  it('does not export formatScore, it lives in the game texts', async () => {
     const mod = await import('./module')
-    expect(mod.formatScore).toBe(formatScore)
+    expect('formatScore' in mod).toBe(false)
   })
 })
 

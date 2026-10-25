@@ -6,6 +6,7 @@ import { defineComponent, h } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import App from './App.vue'
 import { registerAbortHandler, setRoundState } from './common/composables/use-chrome'
+import { dismissNotice, showNotice } from './common/composables/use-notice'
 
 const SlotChild = defineComponent({
   render: () => h(ChromeSlot, { name: 'footer-center' }, () => h('span', { id: 'probe' }, 'probe')),
@@ -31,7 +32,18 @@ describe('App', () => {
     registerAbortHandler(null)
   })
   afterEach(() => {
+    dismissNotice()
     document.body.innerHTML = ''
+  })
+
+  it('shows a notice in the shell', async () => {
+    const wrapper = await setup()
+    showNotice('Something went wrong, the round was discarded')
+    await wrapper.vm.$nextTick()
+    const alert = wrapper.get('[role="alert"]')
+    expect(alert.text()).toContain('Something went wrong, the round was discarded')
+    expect(wrapper.get('header').element.nextElementSibling?.getAttribute('role')).toBe('alert')
+    wrapper.unmount()
   })
 
   it('renders the landmarks and the app name link', async () => {

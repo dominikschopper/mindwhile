@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted } from 'vue'
 import './styles/tokens.css'
 import './styles/layout.css'
+import { colorForKey, type ColorKeyEvent } from './keyboard'
 import { marks } from './marks'
 import type { SpillItRound } from './round'
 import { t } from './texts'
@@ -12,10 +13,10 @@ const props = defineProps<{ round: SpillItRound }>()
 const { cells, size, colorCount, moveCount, par, regionColor, regionSize, solved, pick } =
   useSpillItRound(props.round)
 
-type ColorKey = `color.${1 | 2 | 3 | 4 | 5 | 6}`
+type ColorKey = `color.${0 | 1 | 2 | 3 | 4 | 5}`
 
 function colorName(color: number): string {
-  return t(`color.${color + 1}` as ColorKey)
+  return t(`color.${color}` as ColorKey)
 }
 
 const colorIndexes = computed(() => Array.from({ length: colorCount }, (_, i) => i))
@@ -26,17 +27,9 @@ function buttonLabel(color: number): string {
   return t('colorButton.label', { color: colorName(color), mark: t(marks[color]!.nameKey) })
 }
 
-function onKeydown(event: {
-  key: string
-  ctrlKey: boolean
-  metaKey: boolean
-  altKey: boolean
-  shiftKey: boolean
-}): void {
-  if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) return
-  if (!/^[1-9]$/.test(event.key)) return
-  const color = Number(event.key) - 1
-  if (color < colorCount) pick(color)
+function onKeydown(event: ColorKeyEvent): void {
+  const color = colorForKey(event, colorCount)
+  if (color !== undefined) pick(color)
 }
 
 onMounted(() => globalThis.addEventListener('keydown', onKeydown))

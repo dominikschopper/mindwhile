@@ -48,6 +48,9 @@ Routes (only the platform router): `/` start page with the tiles of all games, `
 
 - **Header** (sticky, full-width bar, content in the centered column): app name (link to the start page) and a menu button. The menu lists Settings and Language (disabled, with a hint that more languages follow). Keyboard: Escape closes it and focus returns to the button
 - **Footer** (sticky, same layout): during a round the gamer tag (left, a fixed placeholder until the profile exists), the game's pause (center, optional) and abort (right). Abort asks for confirmation; a confirmed abort discards the round and opens the game page, "Keep playing" keeps the round running. Outside a round and after the round end the footer shows "Back to games" (start page) instead of pause and abort. The gamer tag is shown everywhere
+- **Leave guard:** while a round is running, leaving it by the back key or gesture, by a link (app name, Settings in the menu) or by the footer abort button opens the abort dialog. "Keep playing" stays on the round and the current route. "Abort round" discards the round and opens the game page of that game, also when another link was followed. Without a running round and after the round end there is no dialog. Only one dialog opens, even with several navigations in a row
+- **Notice:** a one-time message under the header ("Something went wrong, the round was discarded" after an error in a game). It is announced as an alert, can be dismissed with a button, and a newer notice replaces the older one
+- **Keyboard:** keys pressed inside the abort dialog or the open menu do not reach the game (the platform stops `keydown` there). The menu keeps its own Escape handling
 - **Game page** `/games/:id`: symbol and name, a challenge select with a Go button, the best result of the selected challenge ("—" while there is none), the heading "Game rules" and the rules of the game (`HowToPlay`). The selected challenge is remembered for the session
 - **Settings** `/settings`: color scheme (system, light, dark). The choice is not persisted yet
 - **Width:** the content column is at most 960px and centered; on narrow screens it takes 98% of the width (1% spacing on both sides)
@@ -97,7 +100,8 @@ The exact keys, types, envelope, limits and transport are fixed in `data-formats
 
 - A game always runs exactly one round (one board). While a round is running, no other game can be started
 - The rules of the game are on its game page (see Platform shell), not during a round. At round end the result offers "Next round", the footer offers "Back to games"
-- Leaving a round is only possible after the round end (won, lost or ended) or after a confirmed abort ("Abort round? Progress will be lost"). An abort opens the game page, "Back to games" the start page
+- Leaving a running round asks first (leave guard, see Platform shell). A round is only left after the round end (won, lost or ended) or after a confirmed abort ("Abort round? Progress will be lost"). A confirmed abort opens the game page of that game, "Back to games" the start page
+- An error in the game (creating the round, rendering the view) discards the round, creates no result and shows a notice on the start page (see `game-contract.md`, Errors)
 - An abort discards the state, neither a result nor a best result is created
 - The device's back gesture and back key trigger the same abort confirmation as the back button
 - Daily and group boards may be played any number of times for now, the better value counts (merge rule)
@@ -165,7 +169,7 @@ The platform shows it on the game page under the heading "Game rules" (see Platf
 ## Open architecture questions
 
 - **Comparability of score values in free play:** Define per game that the values do not depend on the random board. Decided for Spillit (points from the ratio of par to moves, deviation from par as tie-break), still open for Merge and the other games
-- **Game list display:** the start page tile shows the best result of the highest challenge with a result, with the challenge name as a small label. Still open is the exact shape of the value display: function versus text templates with parameters (see `game-contract.md`). The tile shows the stored value unformatted for now, and "—" until storage exists
+- **Game list display:** the start page tile shows the best result of the highest challenge with a result, with the challenge name as a small label. The shape of the value display is decided: `formatScore` in the game's `GameTexts` (see `game-contract.md`). The tile does not use it yet and shows the first score value unformatted, and "—" until storage exists
 - **Game-owned data in the export:** whether a game may keep own small data (settings) that goes into the export, for example as an opaque slot per game with a size limit. Not needed by any game yet, not decided
 - **Deep links:** A URL scheme that opens a game with challenge and seed (for group boards) belongs to the platform router. Deferred, not part of the beta, decided together with groups. Games never route themselves
 - Limit for QR codes: size of a profile in a QR code, measured when QR is built (after the beta, see `data-formats.md`)

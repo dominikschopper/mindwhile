@@ -1,9 +1,9 @@
-import { createT } from '@mindwhile/core'
 import type { GameTexts } from '@mindwhile/core'
+import { formatScore } from './format-score'
 import { manifest } from './manifest'
-import { en } from './texts/en'
+import { t } from './texts/translate'
 
-export const t = createT(en)
+export { t }
 
 export const gameTexts: GameTexts = {
   name: t('game.name'),
@@ -13,4 +13,5 @@ export const gameTexts: GameTexts = {
     }
     return t(`challenge.${challenge as (typeof manifest.challenges)[number]}`)
   },
+  formatScore,
 }

@@ -1,96 +1,63 @@
 <script setup lang="ts">
-import { newSeed } from '@mindwhile/core'
-import type { Round } from '@mindwhile/core'
-import { computed, nextTick, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
-import { loadGameModule } from '../common/composables/load-game-module'
-import type { LoadedGameModule } from '../common/composables/load-game-module'
-import { registerAbortHandler, setRoundState } from '../common/composables/use-chrome'
-import { useRoundFrame } from './use-round-frame'
+import { onErrorCaptured, ref, toRef } from 'vue'
+import { RouterLink, onBeforeRouteLeave, useRouter } from 'vue-router'
+import { roundState, setRoundState } from '../common/composables/use-chrome'
+import AbortDialog from './AbortDialog.vue'
+import { usePlaySession } from './use-play-session'
 import { t } from './texts'
 
 const props = defineProps<{ gameId: string; challenge: string }>()
 const router = useRouter()
+const abortDialog = ref<InstanceType<typeof AbortDialog> | null>(null)
 
-const module = shallowRef<LoadedGameModule | null>(null)
-const error = ref<string | null>(null)
-const framed = shallowRef<ReturnType<typeof useRoundFrame<Round>> | null>(null)
-const roundKey = ref(0)
-const abortDialog = ref<{ showModal(): void; close(): void } | null>(null)
+const { module, error, framed, roundKey, result, scoreText, startRound, discardRound, failRound } =
+  usePlaySession(
+    toRef(props, 'gameId'),
+    toRef(props, 'challenge'),
+    () => void router.push(gamePage()),
+    () => void router.replace('/'),
+  )
 
-const result = computed(() => framed.value?.result.value ?? null)
+// Error guard for the game's view and its descendants.
+onErrorCaptured((cause) => {
+  failRound(cause)
+  return false
+})
 
-function startRound(): void {
-  const loaded = module.value
-  if (!loaded) return
-  framed.value = useRoundFrame(loaded.createRound({ challenge: props.challenge, seed: newSeed() }))
-  roundKey.value++
+function gamePage(): string {
+  return `/games/${props.gameId}`
 }
 
-async function load(): Promise<void> {
-  module.value = null
-  framed.value = null
-  error.value = null
-  let loaded: LoadedGameModule
-  try {
-    loaded = await loadGameModule(props.gameId)
-  } catch {
-    error.value = t('error.unknownGame', { game: props.gameId })
-    return
+// One shared question while the dialog is open: a second navigation waits for the same answer.
+let pendingAnswer: Promise<boolean> | null = null
+let answer: ((confirmed: boolean) => void) | null = null
+
+function askAbort(): Promise<boolean> {
+  if (!pendingAnswer) {
+    pendingAnswer = new Promise<boolean>((resolve) => {
+      answer = resolve
+    })
+    void abortDialog.value?.open()
   }
-  if (!loaded.manifest.challenges.includes(props.challenge)) {
-    error.value = t('error.unknownChallenge', { challenge: props.challenge })
-    return
-  }
-  module.value = loaded
-  startRound()
+  return pendingAnswer
 }
 
-watch(() => [props.gameId, props.challenge], load, { immediate: true })
+function settle(confirmed: boolean): void {
+  const resolve = answer
+  pendingAnswer = null
+  answer = null
+  resolve?.(confirmed)
+}
 
-// Drive the shell: running while a round is open, ended once the result is there.
-watch(
-  [framed, result],
-  () => {
-    if (!framed.value) {
-      setRoundState('idle')
-      registerAbortHandler(null)
-    } else if (result.value) {
-      setRoundState('ended')
-      registerAbortHandler(null)
-    } else {
-      setRoundState('running')
-      registerAbortHandler(openAbort)
-    }
-  },
-  { immediate: true },
-)
-
-onBeforeUnmount(() => {
+// Leave guard: only a running round asks. Confirm discards the round and goes to the game page
+// (also for links and the back button). The state is idle before the redirect, so it passes.
+onBeforeRouteLeave(async (to) => {
+  if (roundState.value !== 'running') return true
+  if (!(await askAbort())) return false
+  discardRound()
   setRoundState('idle')
-  registerAbortHandler(null)
+  return to.path === gamePage() ? true : gamePage()
 })
-
-const scoreText = computed(() => {
-  const score = result.value?.score
-  if (!score) return ''
-  return module.value?.formatScore?.(score) ?? score.join(' ')
-})
-
-async function openAbort(): Promise<void> {
-  await nextTick()
-  abortDialog.value?.showModal()
-}
-
-function keepPlaying(): void {
-  abortDialog.value?.close()
-}
-
-function confirmAbort(): void {
-  abortDialog.value?.close()
-  framed.value = null
-  void router.push(`/games/${props.gameId}`)
-}
 </script>
 
 <template>
@@ -113,23 +80,7 @@ function confirmAbort(): void {
       </div>
     </section>
 
-    <dialog
-      ref="abortDialog"
-      class="abort-dialog"
-      @keydown.esc.prevent="keepPlaying"
-      @cancel.prevent="keepPlaying"
-    >
-      <h2>{{ t('abort.heading') }}</h2>
-      <p>{{ t('abort.text') }}</p>
-      <div class="play-actions">
-        <button type="button" class="abort-confirm" @click="confirmAbort">
-          {{ t('abort.confirm') }}
-        </button>
-        <button type="button" class="abort-cancel" @click="keepPlaying">
-          {{ t('abort.cancel') }}
-        </button>
-      </div>
-    </dialog>
+    <AbortDialog ref="abortDialog" @confirm="settle(true)" @cancel="settle(false)" />
   </template>
 </template>
 
