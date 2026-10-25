@@ -12,7 +12,7 @@
 - Maintenance-free: weeks without intervention must be possible, an outage must never affect the games
 - Offline-first: everything essential works without a network
 - Identity without an account: a gamer tag, a symbol and a random player ID live on the device and move between devices by export
-- Small app: as few runtime dependencies as possible (Vue and vue-router in the beta)
+- Small app: as few runtime dependencies as possible (Vue, vue-router and the Lucide icons in the beta)
 
 ## What it will be
 
@@ -35,7 +35,7 @@
 
 ## Technology in short
 
-TypeScript, Vue 3 and vue-router, Vite and Vitest as dev tools, a pnpm workspace (`packages/core`, `packages/game-kit`, `packages/games/*`, `apps/web`), an own small service worker, localStorage behind a small interface, own `t()` for texts. Details in [`tech-stack.md`](docs/tech-stack.md).
+TypeScript, Vue 3, vue-router and Lucide icons (`@lucide/vue`), Vite and Vitest as dev tools, a pnpm workspace (`packages/core`, `packages/game-kit`, `packages/games/*`, `apps/web`), an own small service worker, localStorage behind a small interface, own `t()` for texts. Details in [`tech-stack.md`](docs/tech-stack.md).
 
 ## Conventions
 

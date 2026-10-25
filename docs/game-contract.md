@@ -25,7 +25,7 @@ interface GameModule<TView = unknown> {
   createRound(p: { challenge: string; seed: number; saved?: unknown }): Round
   View: TView                 // default view, receives the round
   views?: Record<string, () => Promise<TView>> // optional, per challenge
-  HowToPlay: TView            // rules and scoring dialog content
+  HowToPlay: TView            // rules and scoring content (game page)
 }
 ```
 
@@ -33,9 +33,16 @@ interface GameModule<TView = unknown> {
 
 - Games have no routes of their own and do not use the History API. This includes memory and hash routers inside a game: a second router would have to be coordinated with the one of the platform for back key and back gesture, and the hash is already used by the platform for import links. The platform is the only place that handles back key and back gesture (abort confirmation as guard)
 - Screens inside a running round are state of the view
-- Choosing before the round (challenge, for fixed boards the number of the board), round end and the how-to-play dialog belong to the platform
-- If a game opens a layer of its own inside a round (for example a dialog), it reports this to the platform through a small service, so that back closes this layer first, like the how-to-play dialog
+- Choosing before the round (challenge, for fixed boards the number of the board), round end and the rules page belong to the platform
+- If a game opens a layer of its own inside a round (for example a dialog), it reports this to the platform through a small service, so that back closes this layer first
 - If a later game needs more, the rule is extended for that case. Taking freedoms away again would be more expensive
+
+### Platform chrome (header and footer)
+
+- The platform renders the one header and the one footer. `game-kit` provides `AppHeader` and `AppFooter`, each with the named slots `left`, `center` and `right`. The platform fills its own slots (app name and menu, gamer tag and abort or "Back to games")
+- A game fills the bars through `ChromeSlot` with one of these names: `header-left`, `header-center`, `header-right`, `footer-left`, `footer-center`, `footer-right` (type `ChromeSlotName`, list `chromeSlotNames`, both in `game-kit`). The content is teleported into the matching bar. The target is looked up when rendered, so the slot may mount before or after the bar; without a target nothing is rendered
+- Intended use: the time display of a game goes into `header-center`, its pause into `footer-center`. A game that has neither leaves the slots empty
+- A game never knows the platform: it only names its slots and does not know what the other slots contain
 
 ### Pause and system interruptions
 
@@ -49,7 +56,7 @@ Two different things, only one of them is optional.
   - it restores the round on the next start through `saved`
 - **What happens on return is the decision of the game:** continue (the default, the clock did not run in the meantime), pause itself, or end the round with a move (for example a real-time game that cannot continue)
 - The round object does not learn about pause or activity, only the clock and the view do. This keeps the interface small
-- During a round the how-to-play dialog is reachable if the game offers it (for example from its pause screen), through the small service for layers. The dialog lies over the cover, as described in `architecture.md`
+- The rules are not shown during a round. They are on the game page (see Platform chrome and How-to-play content). Whether a game may offer its rules from its own pause is not decided
 
 ### Time
 
@@ -60,14 +67,18 @@ Two different things, only one of them is optional.
 - The logic gets the clock as a parameter (`{ elapsedMs(): number }`) and stays free of real time. `result()` has no time parameter. Scoring tests pass a fake clock (for example 93000 ms)
 - A game may use the time during the round as well (for example a time limit), the clock is available at any moment
 
-### How-to-play dialog
+### How-to-play content
 
-- The game delivers a Vue component `HowToPlay` with free content: text, headings, a small example board that shows a move. The platform puts it into its dialog (frame, scrolling, closing, "Start game" button on the first start). The texts live in the language file of the game
-- `game-kit` offers shared building blocks (heading, paragraph, example box) that games may use but do not have to, for a similar look
+- The game delivers a Vue component `HowToPlay` with free content: text, headings, a small example board that shows a move. The platform shows it on the game page under the heading "Game rules" (the heading text comes from the platform). There is no dialog. The texts live in the language file of the game
+- The content starts with the goal as one paragraph. The details and examples follow inside `HowToMore`, which renders a "More" button that turns into "Less" (`aria-expanded`, `aria-controls`). Collapsed on every visit, the hidden part is neither visible nor focusable. Without details there is no button. Labels are props, filled from the game's texts
+- `game-kit` offers shared building blocks (`HowToHeading`, `HowToParagraph`, `HowToExample`, `HowToMore`) that games may use but do not have to, for a similar look
 
 ### Manifest
 
-- Only what the platform needs, pure data and small: `id`, `gameVersion`, `scoringVersion`, `interfaceVersion`, the list of challenges with their IDs (`a`, `b`, `c`) and the direction of every score position (`scoring: [{ key: 'points', better: 'higher' }, { key: 'deviation', better: 'lower' }]`)
+- Only what the platform needs, pure data and small: `id`, `symbol`, `gameVersion`, `scoringVersion`, `interfaceVersion`, the list of challenges with their IDs (`a`, `b`, `c`) and the direction of every score position (`scoring: [{ key: 'points', better: 'higher' }, { key: 'deviation', better: 'lower' }]`)
+- `symbol` is the name of an icon from the list that `game-kit` offers (the keys of `gameSymbols`, for example `grid-2x2` for Spillit). The platform turns the name into the icon for the tile and the game page. Pure data, nothing is loaded for it. A game cannot bring its own artwork this way
+- **Challenge order:** the challenges in the manifest are in ascending order. "Highest challenge" means the last one in that list that has a result (`highestChallengeWithResult` in `core`). It is used for the tile on the start page. Without any result there is none
+- The challenge letters say nothing about difficulty; the order is the only meaning the platform gives them
 - The parameters of a challenge (grid size, number of colors) stay in the game logic, so the numbers exist in one place. The rule "if a parameter of a challenge changes, the scoring version goes up" stays with the logic and its scoring tests
 - Display names (of the game and of the challenges, for example "6×6 · 4 colors") come from the texts of the game, not from the manifest
 - The three versions are integers, not texts. `gameVersion` and `interfaceVersion` start at 1, `scoringVersion` may be 0 until the first release of the app. Comparability depends only on `scoringVersion`, and for `gameVersion` traceability counts, not semantics

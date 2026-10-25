@@ -29,7 +29,7 @@ Concept level: principles, contracts and rules that hold permanently. Technology
 
 | Area | Platform | Game |
 |---|---|---|
-| Game list | shows name, short description and best results per challenge (texts from the game) | delivers texts and manifest |
+| Game list | start page tiles: symbol, name and the best result of the highest challenge with a result (texts from the game) | delivers texts, manifest and symbol (name of an icon) |
 | Identity and data | gamer tag, symbol, ID, best results, export and import, merge | nothing |
 | Routing | the only router, back key and back gesture, abort confirmation | no routes of its own, screens are view state |
 | Rounds | frame, saves the state (after every move and when going to the background), restores it, reports the round end | logic, `apply`, `serialize`, `result`, challenges, generator, par |
@@ -37,9 +37,21 @@ Concept level: principles, contracts and rules that hold permanently. Technology
 | Time | publishes the activity signal | measures time with the clock from `core`, shows it if it wants |
 | Pause | detects interruptions, safety net | optional pause with `PauseCover`, reaction on return |
 | Updates, news | service worker, activation rules, news | nothing |
-| Help | frame of the how-to-play dialog | content (`HowToPlay`) |
+| Help | game page with the heading "Game rules" and the "More" toggle | content (`HowToPlay`: goal first, details inside `HowToMore`) |
+| Chrome (header, footer) | renders both bars, fills their own slots, menu, gamer tag, abort with confirmation, "Back to games" | fills its slots (time in the header center, pause in the footer center) through `ChromeSlot`, never knows the platform |
 
 Both sides share `core` (contract, types, clock, activity signal) and `game-kit` (Vue building blocks for games). A game knows nothing of the platform.
+
+## Platform shell
+
+Routes (only the platform router): `/` start page with the tiles of all games, `/games/:id` game page, `/play/:gameId/:challenge` round, `/settings` settings.
+
+- **Header** (sticky, full-width bar, content in the centered column): app name (link to the start page) and a menu button. The menu lists Settings and Language (disabled, with a hint that more languages follow). Keyboard: Escape closes it and focus returns to the button
+- **Footer** (sticky, same layout): during a round the gamer tag (left, a fixed placeholder until the profile exists), the game's pause (center, optional) and abort (right). Abort asks for confirmation; a confirmed abort discards the round and opens the game page, "Keep playing" keeps the round running. Outside a round and after the round end the footer shows "Back to games" (start page) instead of pause and abort. The gamer tag is shown everywhere
+- **Game page** `/games/:id`: symbol and name, a challenge select with a Go button, the best result of the selected challenge ("—" while there is none), the heading "Game rules" and the rules of the game (`HowToPlay`). The selected challenge is remembered for the session
+- **Settings** `/settings`: color scheme (system, light, dark). The choice is not persisted yet
+- **Width:** the content column is at most 960px and centered; on narrow screens it takes 98% of the width (1% spacing on both sides)
+- A game that has no time display or no pause leaves the header center or footer center empty without layout shift
 
 ## Expansion stages (draft)
 
@@ -84,8 +96,8 @@ The exact keys, types, envelope, limits and transport are fixed in `data-formats
 ## Round flow
 
 - A game always runs exactly one round (one board). While a round is running, no other game can be started
-- The how-to-play dialog of the game (see Game package and versions) is reachable at round end and in the game selection, and during a round if the game offers it (for example from its pause screen)
-- Going back to the game selection is only possible after the round end (won, lost or ended) or after a confirmed abort ("Abort round? Progress will be lost")
+- The rules of the game are on its game page (see Platform shell), not during a round. At round end the result offers "Next round", the footer offers "Back to games"
+- Leaving a round is only possible after the round end (won, lost or ended) or after a confirmed abort ("Abort round? Progress will be lost"). An abort opens the game page, "Back to games" the start page
 - An abort discards the state, neither a result nor a best result is created
 - The device's back gesture and back key trigger the same abort confirmation as the back button
 - Daily and group boards may be played any number of times for now, the better value counts (merge rule)
@@ -112,14 +124,9 @@ The interface between platform and game (module shape, navigation, pause, time, 
 
 **Game manifest (central description per game):** ID, game version, scoring version, interface version, challenges (their IDs only, the parameters stay in the game logic), the direction of every score position. Display names are not part of the manifest but live in the texts of the game
 
-**How-to-play dialog:** Every game ships a how-to-play dialog of its own that describes rules and scoring (for example how par is calculated in Spillit and why the deviation can be negative). It is part of the game contract, its texts live in the language file of the game.
+**How-to-play content:** Every game ships its rules and scoring (for example how par is calculated in Spillit and why the deviation can be negative) as a `HowToPlay` component. It is part of the game contract, its texts live in the language file of the game. The content starts with the goal as one paragraph; the details and examples sit inside `HowToMore` (collapsed by default, a "More" button that turns into "Less").
 
-It appears as a scrollable dialog inside the game route, not as a page of its own:
-- **First start of a game:** The dialog opens by itself, with a "Start game" button at the end. Closing it lands in the game
-- **Round end:** The choices are "Next round", "How to play" and "Back to game selection"
-- **Pause (games that have one):** The dialog is reachable here as well and lies over the paused round, the state stays unchanged
-- **Game selection:** Every game has a help icon that opens the same dialog
-- Back key and back gesture close the dialog first and trigger the abort confirmation only afterwards. The dialog needs a focus trap, closing with Escape and a screen reader label
+The platform shows it on the game page under the heading "Game rules" (see Platform shell). There is no dialog around it. Round end offers "Next round" and "Back to games".
 
 **Rules:**
 - Code: all or nothing, partial updates never become active
@@ -158,7 +165,7 @@ It appears as a scrollable dialog inside the game route, not as a page of its ow
 ## Open architecture questions
 
 - **Comparability of score values in free play:** Define per game that the values do not depend on the random board. Decided for Spillit (points from the ratio of par to moves, deviation from par as tie-break), still open for Merge and the other games
-- **Game list display:** the game shows its scores (label via the `key` of each score position, value via a display function or text template of the game, see `game-contract.md`). Open is only the exact shape: function versus text templates with parameters. Decided when the game list is built
+- **Game list display:** the start page tile shows the best result of the highest challenge with a result, with the challenge name as a small label. Still open is the exact shape of the value display: function versus text templates with parameters (see `game-contract.md`). The tile shows the stored value unformatted for now, and "—" until storage exists
 - **Game-owned data in the export:** whether a game may keep own small data (settings) that goes into the export, for example as an opaque slot per game with a size limit. Not needed by any game yet, not decided
 - **Deep links:** A URL scheme that opens a game with challenge and seed (for group boards) belongs to the platform router. Deferred, not part of the beta, decided together with groups. Games never route themselves
 - Limit for QR codes: size of a profile in a QR code, measured when QR is built (after the beta, see `data-formats.md`)

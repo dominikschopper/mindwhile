@@ -12,7 +12,7 @@ Spelling in code: identifiers in `camelCase`, types in `PascalCase`, folders and
 | round (`round`) | One run of a game from start to round end |
 | board (`board`, state at the start: `startBoard`) | The concrete playing field of a round, determined by `seed` and `challenge` |
 | seed (`seed`) | Identifier from which the start board is generated reproducibly. For games with fixed boards (for example Sokoban) the seed selects the board from the fixed list, there is no second name for the identifier |
-| challenge (`challenge`, values `a`, `b`, `c`, more later) | A fixed variant of a game with its own parameters, for example grid size and number of colors in Spillit. The letters are neutral, permanent IDs and say nothing about difficulty. The display name comes from the texts of the game. A challenge ID is never reassigned |
+| challenge (`challenge`, values `a`, `b`, `c`, more later) | A fixed variant of a game with its own parameters, for example grid size and number of colors in Spillit. The letters are neutral, permanent IDs and say nothing about difficulty. The display name comes from the texts of the game. A challenge ID is never reassigned. Order: the manifest lists the challenges in ascending order, "highest challenge" is the last one in that list that has a result (`highestChallengeWithResult`) |
 | result (`result`) | Result of a finished round |
 | score values (`scoreValues`) | Ordered list of integers by which results are compared. The direction of each position (`higher` or `lower` is better) is declared in the game manifest, not in the result |
 | best result (`bestResult`) | Best result per game, challenge and scoring version |
@@ -52,16 +52,19 @@ Spelling in code: identifiers in `camelCase`, types in `PascalCase`, folders and
 | Term (code name) | Meaning |
 |---|---|
 | game contract (`GameContract`) | Interface that every game has to fulfill |
-| game manifest (`GameManifest`) | Central description of a game (ID, versions, challenges, scoring type) |
-| how-to-play dialog (`howToPlay`) | Dialog with the rules and scoring of a game. The game delivers the content as a component (`HowToPlay`) |
-| game module (`GameModule`) | What a game package exports: manifest, `createRound`, default view, optional views per challenge, how-to-play component. Scoring tests are Vitest files next to it, not part of the module |
+| game manifest (`GameManifest`) | Central description of a game (ID, symbol, versions, challenges, scoring type) |
+| symbol (`symbol`) | Name of an icon from the list `game-kit` offers (for example `grid-2x2`). The manifest field that the platform uses for the tile and the game page |
+| game page (`game-page`, route `/games/:id`) | Page of one game: symbol and name, challenge select with Go, best result, "Game rules". Entry point to a round |
+| chrome slot (`ChromeSlot`, names `header-left` to `footer-right`) | Place in the platform's header or footer that a game fills, for example the time display in `header-center` or the pause in `footer-center`. The platform renders the bars, the game only names the slot |
+| how-to-play content (`HowToPlay`) | Rules and scoring of a game, delivered as a component. Shown on the game page under "Game rules", goal first, details behind "More" (`HowToMore`) |
+| game module (`GameModule`) | What a game package exports: manifest, `createRound`, default view, optional views per challenge, how-to-play content. Scoring tests are Vitest files next to it, not part of the module |
 | round object (`Round`) | Pure logic of a running round (`apply`, `serialize`, `result`), wrapped by the platform |
 | active time (`elapsedMs`) | Play time without pause and background, measured by the game with the active clock |
 | active clock (`ActiveClock`, `createActiveClock`) | Framework-free clock in `core` that stops during pause and in the background |
 | activity signal (`activity`) | Published by the platform: app in the foreground or background. The clock and games listen to it |
 | game kit (`game-kit`) | Package with Vue building blocks for games: `usePause`, `PauseCover`, `useElapsed`, how-to-play building blocks |
 | envelope (`app`, `fmtv`, `kind`) | Outer layer of every export, QR and link that tells the reader what it holds |
-| game selection (`game-selection`) | Overview of the games |
+| game selection (`game-selection`) | Start page with one tile per game (symbol, name, best result of the highest challenge). Tiles lead to the game page |
 | news (`news`, `news.json`) | File with entries per version, types `new`, `improved`, `fixed` |
 | update activation (`updateActivation`) | Moment at which a downloaded complete state becomes active |
 | group (`group`) | 2 to 10 people comparing the same board |
