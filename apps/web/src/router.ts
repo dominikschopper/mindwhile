@@ -5,7 +5,7 @@ import PlayView from './play/PlayView.vue'
 import SettingsView from './settings/SettingsView.vue'
 
 export const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     { path: '/', name: 'game-selection', component: GameSelectionView },
     { path: '/games/:id', name: 'game', component: GameView, props: true },
