@@ -7,11 +7,11 @@ export { t }
 
 export const gameTexts: GameTexts = {
   name: t('game.name'),
-  challengeName(challenge) {
-    if (!(manifest.challenges as readonly string[]).includes(challenge)) {
-      throw new Error(`Unknown challenge: ${challenge}`)
+  levelName(level) {
+    if (!(manifest.levels as readonly string[]).includes(level)) {
+      throw new Error(`Unknown level: ${level}`)
     }
-    return t(`challenge.${challenge as (typeof manifest.challenges)[number]}`)
+    return t(`level.${level as (typeof manifest.levels)[number]}`)
   },
   formatScore,
 }

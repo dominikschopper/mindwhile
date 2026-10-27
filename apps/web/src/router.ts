@@ -9,7 +9,7 @@ export const router = createRouter({
   routes: [
     { path: '/', name: 'game-selection', component: GameSelectionView },
     { path: '/games/:id', name: 'game', component: GameView, props: true },
-    { path: '/play/:gameId/:challenge', name: 'play', component: PlayView, props: true },
+    { path: '/play/:gameId/:level', name: 'play', component: PlayView, props: true },
     { path: '/settings', name: 'settings', component: SettingsView },
   ],
 })

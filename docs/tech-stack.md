@@ -69,7 +69,7 @@ Status: draft. Functional rules live in `architecture.md`, terms and English nam
 - **Shared `tsconfig.base.json`**, one `tsconfig` per package (`core` without the DOM lib), type check via `vue-tsc` for the web app and `tsc` for the packages
 - **Lint and format:** ESLint (flat config) with `eslint-plugin-boundaries`, relative imports are resolved with the node resolver (`.ts` and `.vue` extensions). Prettier for code, Markdown is excluded. Boundaries cover game, game-kit, core and the web features. Imports by package name are not resolved by the plugin, there the declared `dependencies` of each package are the guard
 - **Game discovery:** see Game registry (structure section). The globs work in dev (`server.fs.allow` for the workspace) and in build
-- **Scoring tests:** Vitest files `src/scoring.<challenge>.test.ts` in the game package, enforced by `checks/scoring-tests.test.ts`
+- **Scoring tests:** Vitest files `src/scoring.<level>.test.ts` in the game package, enforced by `checks/scoring-tests.test.ts`
 
 ## Proposals (still to be confirmed)
 

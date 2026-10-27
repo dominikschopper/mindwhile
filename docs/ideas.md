@@ -27,7 +27,7 @@ Status: collection. Nothing here is decided or planned. An idea becomes a decisi
 
 - The start page should be more colorful
 - Each game has a dominating color. The game's icon uses that color, maybe also the title
-- Score and challenge are shown as pills: one at the top left, one at the top right of the title or the icon
+- Score and level are shown as pills: one at the top left, one at the top right of the title or the icon
 - Both pills have a light background (for example light yellow) and dark text
 
 ## Shared components
@@ -39,4 +39,4 @@ Status: collection. Nothing here is decided or planned. An idea becomes a decisi
 
 - Each animation needs a reduced-motion variant, tested like the existing fill transition of the Spillit cells
 - The dominating color of a game is per game data, so it would belong to the game's own tokens and to a field the platform can read without loading the view (like the manifest field `symbol`). Contrast of icon, title and pills has to hold in light and dark
-- The score pill on the start page shows the same information as the best result line of the game tile (best result of the highest challenge, with its challenge label); the pills would show it in a different form
+- The score pill on the start page shows the same information as the best result line of the game tile (best result of the highest level, with its level label); the pills would show it in a different form

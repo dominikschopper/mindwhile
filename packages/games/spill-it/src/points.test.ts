@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { challengeParams } from './challenges'
+import { levelParams } from './levels'
 import { pointsFor } from './points'
 
 describe('pointsFor', () => {
-  it.each(['a', 'b', 'c'] as const)('gives the base value on par (challenge %s)', (challenge) => {
-    expect(pointsFor(challenge, 9, 9)).toBe(challengeParams[challenge].basePoints)
+  it.each(['a', 'b', 'c'] as const)('gives the base value on par (level %s)', (level) => {
+    expect(pointsFor(level, 9, 9)).toBe(levelParams[level].basePoints)
   })
 
   it('gives more points for fewer moves and fewer for more moves', () => {

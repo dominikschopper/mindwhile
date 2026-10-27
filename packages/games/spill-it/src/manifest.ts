@@ -1,6 +1,6 @@
-const challenges = ['a', 'b', 'c'] as const
+const levels = ['a', 'b', 'c'] as const
 
-export type SpillItChallenge = (typeof challenges)[number]
+export type SpillItLevel = (typeof levels)[number]
 
 export const manifest = {
   id: 'spill-it',
@@ -8,7 +8,7 @@ export const manifest = {
   gameVersion: 1,
   scoringVersion: 0,
   interfaceVersion: 1,
-  challenges,
+  levels,
   scoring: [
     { key: 'points', better: 'higher' },
     { key: 'deviation', better: 'lower' },

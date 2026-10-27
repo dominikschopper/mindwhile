@@ -17,12 +17,12 @@ function otherEntry(): GameEntry {
     gameVersion: 1,
     scoringVersion: 1,
     interfaceVersion: 1,
-    challenges: ['x', 'y'],
+    levels: ['x', 'y'],
     scoring: [{ key: 'points', better: 'higher' }],
   }
   const texts: GameTexts = {
     name: 'Other game',
-    challengeName: (challenge) => `Other ${challenge}`,
+    levelName: (level) => `Other ${level}`,
     formatScore: (score) => `${score[0]} other points`,
   }
   const gameModule: GameModule<Component> = {
@@ -58,13 +58,13 @@ function makeRouter() {
     routes: [
       { path: '/', component: { template: '<p>home</p>' } },
       { path: '/games/:id', component: GameView, props: true },
-      { path: '/play/:gameId/:challenge', component: { template: '<p>play</p>' } },
+      { path: '/play/:gameId/:level', component: { template: '<p>play</p>' } },
     ],
   })
 }
 
 describe('GameView', () => {
-  it('shows symbol, name, challenges and the first one selected', async () => {
+  it('shows symbol, name, levels and the first one selected', async () => {
     const { wrapper } = await mountView('spill-it')
     expect(wrapper.find('svg').exists()).toBe(true)
     expect(wrapper.find('h1').text()).toBe('Spillit')
@@ -72,11 +72,11 @@ describe('GameView', () => {
     expect(options).toHaveLength(3)
     expect(options.map((o) => o.text()).every((text) => text.length > 0)).toBe(true)
     expect((wrapper.find('select').element as HTMLSelectElement).value).toBe('a')
-    expect(wrapper.find('label').text()).toBe('Challenge')
+    expect(wrapper.find('label').text()).toBe('Level')
     expect(wrapper.find('.best').text()).toContain('—')
   })
 
-  it('shows the points of the best score list of the selected challenge', async () => {
+  it('shows the points of the best score list of the selected level', async () => {
     vi.spyOn(bestResults, 'useBestResults').mockReturnValue({ 'spill-it': { a: [640, 3] } })
     const { wrapper } = await mountView('spill-it')
     expect(wrapper.find('.best').text()).toContain('640')

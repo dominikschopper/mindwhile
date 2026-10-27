@@ -1,10 +1,10 @@
 import type { Round, RoundResult } from '@mindwhile/core'
 import type { Board } from './board'
-import { challengeParams } from './challenges'
+import { levelParams } from './levels'
 import { applyColor, isSolved } from './flood'
 import { generateBoard } from './generate'
 import { pointsFor } from './points'
-import type { SpillItChallenge } from './manifest'
+import type { SpillItLevel } from './manifest'
 
 export interface SpillItSavedState {
   moves: number[]
@@ -44,13 +44,13 @@ function parseSaved(saved: unknown, colors: number): number[] {
   throw new Error('invalid saved state')
 }
 
-export function createRound(p: { challenge: string; seed: number; saved?: unknown }): SpillItRound {
-  if (!Object.hasOwn(challengeParams, p.challenge)) {
-    throw new Error(`unknown challenge: ${p.challenge}`)
+export function createRound(p: { level: string; seed: number; saved?: unknown }): SpillItRound {
+  if (!Object.hasOwn(levelParams, p.level)) {
+    throw new Error(`unknown level: ${p.level}`)
   }
-  const challenge = p.challenge as SpillItChallenge
-  const { colors, size } = challengeParams[challenge]
-  const { board: startBoard, par } = generateBoard(challenge, p.seed)
+  const level = p.level as SpillItLevel
+  const { colors, size } = levelParams[level]
+  const { board: startBoard, par } = generateBoard(level, p.seed)
   let board = startBoard
   const moves: number[] = []
 
@@ -85,7 +85,7 @@ export function createRound(p: { challenge: string; seed: number; saved?: unknow
     },
     result(): RoundResult | null {
       return isSolved(board)
-        ? { roundEnd: 'won', score: [pointsFor(challenge, moves.length, par), moves.length - par] }
+        ? { roundEnd: 'won', score: [pointsFor(level, moves.length, par), moves.length - par] }
         : null
     },
   }

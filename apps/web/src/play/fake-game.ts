@@ -10,13 +10,13 @@ export const fakeManifest: GameManifest = {
   gameVersion: 1,
   scoringVersion: 1,
   interfaceVersion: 1,
-  challenges: ['a'],
+  levels: ['a'],
   scoring: [{ key: 'points', better: 'higher' }],
 }
 
 export const fakeTexts: GameTexts = {
   name: 'Fake',
-  challengeName: (challenge) => `Fake ${challenge}`,
+  levelName: (level) => `Fake ${level}`,
   formatScore: (score) => `${score[0]} fake points`,
 }
 
@@ -43,7 +43,7 @@ export function createFakeGame(
   const rounds: FakeRound[] = []
   let attempts = 0
 
-  function createRound(p: { challenge: string; seed: number }): FakeRound {
+  function createRound(p: { level: string; seed: number }): FakeRound {
     attempts++
     if (options.failCreateRound || attempts <= (options.failFirstRounds ?? 0)) {
       throw new Error('createRound failed')

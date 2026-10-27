@@ -1,13 +1,13 @@
 // @vitest-environment happy-dom
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
-import { challengeParams } from './challenges'
+import { levelParams } from './levels'
 import { greedyMoves } from './par'
 import { createRound } from './round'
 import SpillItView from './SpillItView.vue'
 
-function setup(challenge = 'a', seed = 5) {
-  const round = createRound({ challenge, seed })
+function setup(level = 'a', seed = 5) {
+  const round = createRound({ level, seed })
   const wrapper = mount(SpillItView, { props: { round }, attachTo: document.body })
   return { round, wrapper }
 }
@@ -47,7 +47,7 @@ describe('SpillItView', () => {
 
   it('marks only the top left cell as the origin of every move', () => {
     const wrapper = mount(SpillItView, {
-      props: { round: createRound({ challenge: 'a', seed: 5 }) },
+      props: { round: createRound({ level: 'a', seed: 5 }) },
     })
     const cells = wrapper.findAll('.cell')
     expect(cells[0]!.classes()).toContain('cell--origin')
@@ -57,7 +57,7 @@ describe('SpillItView', () => {
   it('renders one labeled button per color', () => {
     const { wrapper } = setup()
     const buttons = wrapper.findAll('button')
-    expect(buttons).toHaveLength(challengeParams.a.colors)
+    expect(buttons).toHaveLength(levelParams.a.colors)
     expect(buttons[0]!.attributes('aria-label')).toBe('Orange, infinity')
     expect(buttons[1]!.attributes('aria-label')).toBe('Sky blue, alert')
     buttons.forEach((b) => expect(b.find('svg').exists()).toBe(true))
@@ -108,7 +108,7 @@ describe('SpillItView', () => {
   it('shows the solved status and disables all buttons after the solving moves', async () => {
     const { round, wrapper } = setup()
     expect(wrapper.find('[role="status"]').exists()).toBe(false)
-    const moves = greedyMoves(round.startBoard, challengeParams.a.colors)
+    const moves = greedyMoves(round.startBoard, levelParams.a.colors)
     for (const color of moves) {
       await wrapper.findAll('button')[color]!.trigger('click')
     }

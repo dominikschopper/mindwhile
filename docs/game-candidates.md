@@ -27,7 +27,7 @@ Guardrails and core decisions (scoring, groups, identity, backend) live in `arch
 | Hanoi | Planning | Moves (par) | + | + | + | + | + | + | Public domain, 4 pegs and color rules as a twist |
 | Mines | Deduction | Time | o | o | o | o | + | o | Solvable without guessing via solver, "Minesweeper" is a trademark |
 | Lights Out | Pattern | Moves | + | + | + | + | + | + | Twist: neighborhood patterns, hex |
-| Flood-Fill | Strategy | Deviation from par | + | + | + | + | + | + | **Decided, first game of the beta** (our version, called Spillit in the app), details in `game-spill-it.md`. Move limit later as a challenge of its own |
+| Flood-Fill | Strategy | Deviation from par | + | + | + | + | + | + | **Decided, first game of the beta** (our version, called Spillit in the app), details in `game-spill-it.md`. Move limit later as a level of its own |
 | Takuzu (symbols) | Deduction | Time | o | + | + | + | + | o | More symbols as a difficulty step, tell symbols apart by shape |
 | Sokoban variant | Planning | **none** (see below) | - | o | o | - | o | - | Own name and own levels needed |
 
@@ -50,7 +50,7 @@ Guardrails and core decisions (scoring, groups, identity, backend) live in `arch
 | Kakuro-light | Numbers | Time | - | o | - | + | + | - | Small grids only |
 | Mastermind variant | Deduction | Moves | + | + | + | o | + | + | Colors with rules, "Mastermind" is a trademark |
 | Nim against AI | Strategy | Wins/moves | + | + | + | + | o | + | Difficulty via flawed opponents |
-| Peg solitaire | Planning | Moves/leftovers | o | + | o | + | o | o | Board layouts as challenges |
+| Peg solitaire | Planning | Moves/leftovers | o | + | o | + | o | o | Board layouts as levels |
 | Connect-four variant | Strategy | Wins | o | + | n/a | o | - | o | Against AI, check the name |
 | Word ladder | Word | Moves | o | o | o | o | + | o | Language dependent, check the word list license |
 | Memory (symbol pairs) | Memory | Time/moves | + | + | + | + | + | + | Very simple, also for children |

@@ -1,8 +1,8 @@
 export const en = {
   'game.name': 'Spillit',
-  'challenge.a': '6×6 · 4 colors',
-  'challenge.b': '10×10 · 5 colors',
-  'challenge.c': '14×14 · 6 colors',
+  'level.a': '6×6 · 4 colors',
+  'level.b': '10×10 · 5 colors',
+  'level.c': '14×14 · 6 colors',
   'counter.moves': 'Moves {moves}',
   'counter.par': 'Par {par}',
   'board.summary': 'Board {size} by {size}, {regionCount} cells in your region',
@@ -50,10 +50,10 @@ export const en = {
     'Par is an approximation, not the best possible solution. You can beat it.',
   'howTo.score.heading': 'Your score',
   'howTo.score.points':
-    'Your score is points: the base value of the challenge times par divided by your moves, rounded down to tens. Par gives the base value, fewer moves give more points, more moves fewer.',
+    'Your score is points: the base value of the level times par divided by your moves, rounded down to tens. Par gives the base value, fewer moves give more points, more moves fewer.',
   'howTo.score.negative':
     'You can beat par. Par comes from a simple greedy method, so fewer moves than par give more than the base points.',
   'howTo.marks.heading': 'Marks',
   'howTo.marks.text':
-    'Every color has a fixed mark in its cells and on its button, so colors never depend on sight alone. The marks are small icons, in this order: infinity, alert, pulse, plane, sun and moon, apple. A challenge uses as many marks as it has colors.',
+    'Every color has a fixed mark in its cells and on its button, so colors never depend on sight alone. The marks are small icons, in this order: infinity, alert, pulse, plane, sun and moon, apple. A level uses as many marks as it has colors.',
 } as const

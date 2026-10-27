@@ -5,7 +5,7 @@ import type { Component } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useGameRegistry } from '../common/composables/game-registry'
 import { pointsOf, useBestResults } from '../common/composables/use-best-results'
-import { useSelectedChallenge } from './use-selected-challenge'
+import { useSelectedLevel } from './use-selected-level'
 import { t } from './texts'
 
 const props = defineProps<{ id: string }>()
@@ -21,16 +21,16 @@ const symbol = computed(() =>
 )
 
 const options = computed(() =>
-  (manifest.value?.challenges ?? []).map((challenge) => ({
-    id: challenge,
-    label: texts.value?.challengeName(challenge) ?? challenge,
+  (manifest.value?.levels ?? []).map((level) => ({
+    id: level,
+    label: texts.value?.levelName(level) ?? level,
   })),
 )
 
 const selected = computed({
-  get: () => useSelectedChallenge(props.id, manifest.value?.challenges ?? []).value,
+  get: () => useSelectedLevel(props.id, manifest.value?.levels ?? []).value,
   set: (value: string) => {
-    useSelectedChallenge(props.id, manifest.value?.challenges ?? []).value = value
+    useSelectedLevel(props.id, manifest.value?.levels ?? []).value = value
   },
 })
 const best = computed(() => pointsOf(bestResults[props.id]?.[selected.value]))
@@ -71,14 +71,14 @@ function go(): void {
       <component :is="symbol" v-if="symbol" class="game-symbol" aria-hidden="true" />
       <h1>{{ texts?.name ?? props.id }}</h1>
     </div>
-    <div class="challenge-row">
-      <label for="challenge-select">{{ t('challenge.label') }}</label>
-      <select id="challenge-select" :key="props.id" v-model="selected">
+    <div class="level-row">
+      <label for="level-select">{{ t('level.label') }}</label>
+      <select id="level-select" :key="props.id" v-model="selected">
         <option v-for="option in options" :key="option.id" :value="option.id">
           {{ option.label }}
         </option>
       </select>
-      <button type="button" class="go" @click="go">{{ t('challenge.go') }}</button>
+      <button type="button" class="go" @click="go">{{ t('level.go') }}</button>
     </div>
     <p class="best">
       {{ t('best.label') }}:
@@ -111,7 +111,7 @@ function go(): void {
   height: 3rem;
 }
 
-.challenge-row {
+.level-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;

@@ -15,7 +15,7 @@ describe('gameModule', () => {
   })
 
   it('creates a round with apply, serialize and result', () => {
-    const round = gameModule.createRound({ challenge: 'a', seed: 1 })
+    const round = gameModule.createRound({ level: 'a', seed: 1 })
     expect(typeof round.apply).toBe('function')
     expect(typeof round.serialize).toBe('function')
     expect(typeof round.result).toBe('function')

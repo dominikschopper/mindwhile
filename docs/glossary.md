@@ -10,12 +10,12 @@ Spelling in code: identifiers in `camelCase`, types in `PascalCase`, folders and
 |---|---|
 | game (`game`, `gameId`) | One game of the collection, for example Spillit. It never means a single board or round |
 | round (`round`) | One run of a game from start to round end |
-| board (`board`, state at the start: `startBoard`) | The concrete playing field of a round, determined by `seed` and `challenge` |
+| board (`board`, state at the start: `startBoard`) | The concrete playing field of a round, determined by `seed` and `level` |
 | seed (`seed`) | Identifier from which the start board is generated reproducibly. For games with fixed boards (for example Sokoban) the seed selects the board from the fixed list, there is no second name for the identifier |
-| challenge (`challenge`, values `a`, `b`, `c`, more later) | A fixed variant of a game with its own parameters, for example grid size and number of colors in Spillit. The letters are neutral, permanent IDs and say nothing about difficulty. The display name comes from the texts of the game. A challenge ID is never reassigned. Order: the manifest lists the challenges in ascending order, "highest challenge" is the last one in that list that has a result (`highestChallengeWithResult`) |
+| level (`level`, values `a`, `b`, `c`, more later) | A fixed variant of a game with its own parameters, for example grid size and number of colors in Spillit. The letters are neutral, permanent IDs and say nothing about difficulty. The display name comes from the texts of the game. A level ID is never reassigned. Order: the manifest lists the levels in ascending order, "highest level" is the last one in that list that has a result (`highestLevelWithResult`) |
 | result (`result`) | Result of a finished round |
 | score values (`scoreValues`) | Ordered list of integers by which results are compared. The direction of each position (`higher` or `lower` is better) is declared in the game manifest, not in the result |
-| best result (`bestResult`) | Best result per game, challenge and scoring version |
+| best result (`bestResult`) | Best result per game, level and scoring version |
 | par (`par`) | Reference value of a board (in Spillit: the moves of the greedy method) |
 | deviation (`deviation`) | Moves minus par |
 | points (`points`) | Spillit score value derived from moves and par (`basePoints * par / moves`, rounded down to tens), higher is better |
@@ -52,12 +52,12 @@ Spelling in code: identifiers in `camelCase`, types in `PascalCase`, folders and
 | Term (code name) | Meaning |
 |---|---|
 | game contract (`GameContract`) | Interface that every game has to fulfill |
-| game manifest (`GameManifest`) | Central description of a game (ID, symbol, versions, challenges, scoring type) |
+| game manifest (`GameManifest`) | Central description of a game (ID, symbol, versions, levels, scoring type) |
 | symbol (`symbol`) | Name of an icon from the list `game-kit` offers (for example `grid-2x2`). The manifest field that the platform uses for the tile and the game page |
-| game page (`game-page`, route `/games/:id`) | Page of one game: symbol and name, challenge select with Go, best result, "Game rules". Entry point to a round |
+| game page (`game-page`, route `/games/:id`) | Page of one game: symbol and name, level select with Go, best result, "Game rules". Entry point to a round |
 | chrome slot (`ChromeSlot`, names `header-left` to `footer-right`) | Place in the platform's header or footer that a game fills, for example the time display in `header-center` or the pause in `footer-center`. The platform renders the bars, the game only names the slot |
 | how-to-play content (`HowToPlay`) | Rules and scoring of a game, delivered as a component. Shown on the game page under "Game rules", goal first, details behind "More" (`HowToMore`) |
-| game module (`GameModule`) | What the `./module` entry of a game package exports: `createRound`, default view, how-to-play content, optional views per challenge (not used by the platform yet). The manifest and `GameTexts` (name, challenge names, `formatScore`) are separate entries. Scoring tests are Vitest files next to it, not part of the module |
+| game module (`GameModule`) | What the `./module` entry of a game package exports: `createRound`, default view, how-to-play content, optional views per level (not used by the platform yet). The manifest and `GameTexts` (name, level names, `formatScore`) are separate entries. Scoring tests are Vitest files next to it, not part of the module |
 | game registry (`GameRegistry`, `createGameRegistry`) | Platform map from game ID to manifest, texts and lazy module loader, built from the game package entries. Checks that the folder name equals the manifest ID. See `tech-stack.md` |
 | notice (`notice`, `showNotice`) | One-time message under the header, for example after an error in a game. Only one at a time, a newer one replaces it |
 | leave guard | Confirmation before a running round is left by back key, link or abort button. See `architecture.md` |
@@ -67,7 +67,7 @@ Spelling in code: identifiers in `camelCase`, types in `PascalCase`, folders and
 | activity signal (`activity`) | Published by the platform: app in the foreground or background. The clock and games listen to it |
 | game kit (`game-kit`) | Package with Vue building blocks for games: `usePause`, `PauseCover`, `useElapsed`, how-to-play building blocks |
 | envelope (`app`, `fmtv`, `kind`) | Outer layer of every export, QR and link that tells the reader what it holds |
-| game selection (`game-selection`) | Start page with one tile per game (symbol, name, best result of the highest challenge). Tiles lead to the game page |
+| game selection (`game-selection`) | Start page with one tile per game (symbol, name, best result of the highest level). Tiles lead to the game page |
 | news (`news`, `news.json`) | File with entries per version, types `new`, `improved`, `fixed` |
 | update activation (`updateActivation`) | Moment at which a downloaded complete state becomes active |
 | group (`group`) | 2 to 10 people comparing the same board |
@@ -84,5 +84,5 @@ Display names live in the language files. The game ID follows the working title 
 
 ## Open
 
-- **Avoid `level`:** In conversation "level" was used for challenge and for board or round. In code we avoid `level` entirely: the challenge is `challenge`, a run is `round`, the playing field is `board`, its identifier is `seed`
+- **Level vs. round vs. board:** In conversation "level" is sometimes used for board or round. In code `level` means only the fixed variant of a game (IDs `a`, `b`, `c`), a run is `round`, the playing field is `board`, its identifier is `seed`. The one other `level` is the heading level prop of `HowToHeading`, which is HTML wording and unrelated. The former name `challenge` is no longer used
 - **Merge:** "Merge" is the working title of a game and also the rule for combining data. The game keeps its working title as package name until its final name exists, the rule is called `mergeRule` in code

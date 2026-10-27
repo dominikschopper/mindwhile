@@ -1,6 +1,6 @@
 export const en = {
-  'challenge.label': 'Challenge',
-  'challenge.go': 'Go',
+  'level.label': 'Level',
+  'level.go': 'Go',
   'best.label': 'Best result',
   'best.none': 'No result yet',
   'rules.heading': 'Game rules',

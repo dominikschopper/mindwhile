@@ -29,10 +29,10 @@ Concept level: principles, contracts and rules that hold permanently. Technology
 
 | Area | Platform | Game |
 |---|---|---|
-| Game list | start page tiles: symbol, name and the best result of the highest challenge with a result (texts from the game) | delivers texts, manifest and symbol (name of an icon) |
+| Game list | start page tiles: symbol, name and the best result of the highest level with a result (texts from the game) | delivers texts, manifest and symbol (name of an icon) |
 | Identity and data | gamer tag, symbol, ID, best results, export and import, merge | nothing |
 | Routing | the only router, back key and back gesture, abort confirmation | no routes of its own, screens are view state |
-| Rounds | frame, saves the state (after every move and when going to the background), restores it, reports the round end | logic, `apply`, `serialize`, `result`, challenges, generator, par |
+| Rounds | frame, saves the state (after every move and when going to the background), restores it, reports the round end | logic, `apply`, `serialize`, `result`, levels, generator, par |
 | Scoring | stores and compares score values | computes score values, scoring tests |
 | Time | publishes the activity signal | measures time with the clock from `core`, shows it if it wants |
 | Pause | detects interruptions, safety net | optional pause with `PauseCover`, reaction on return |
@@ -44,14 +44,14 @@ Both sides share `core` (contract, types, clock, activity signal) and `game-kit`
 
 ## Platform shell
 
-Routes (only the platform router): `/` start page with the tiles of all games, `/games/:id` game page, `/play/:gameId/:challenge` round, `/settings` settings.
+Routes (only the platform router): `/` start page with the tiles of all games, `/games/:id` game page, `/play/:gameId/:level` round, `/settings` settings.
 
 - **Header** (sticky, full-width bar, content in the centered column): app name (link to the start page) and a menu button. The menu lists Settings and Language (disabled, with a hint that more languages follow). Keyboard: Escape closes it and focus returns to the button
 - **Footer** (sticky, same layout): during a round the gamer tag (left, a fixed placeholder until the profile exists), the game's pause (center, optional) and abort (right). Abort asks for confirmation; a confirmed abort discards the round and opens the game page, "Keep playing" keeps the round running. Outside a round and after the round end the footer shows "Back to games" (start page) instead of pause and abort. The gamer tag is shown everywhere
 - **Leave guard:** while a round is running, leaving it by the back key or gesture, by a link (app name, Settings in the menu) or by the footer abort button opens the abort dialog. "Keep playing" stays on the round and the current route. "Abort round" discards the round and opens the game page of that game, also when another link was followed. Without a running round and after the round end there is no dialog. Only one dialog opens, even with several navigations in a row
 - **Notice:** a one-time message under the header ("Something went wrong, the round was discarded" after an error in a game). It is announced as an alert, can be dismissed with a button, and a newer notice replaces the older one
 - **Keyboard:** keys pressed inside the abort dialog or the open menu do not reach the game (the platform stops `keydown` there). The menu keeps its own Escape handling
-- **Game page** `/games/:id`: symbol and name, a challenge select with a Go button, the best result of the selected challenge ("—" while there is none), the heading "Game rules" and the rules of the game (`HowToPlay`). The selected challenge is remembered for the session
+- **Game page** `/games/:id`: symbol and name, a level select with a Go button, the best result of the selected level ("—" while there is none), the heading "Game rules" and the rules of the game (`HowToPlay`). The selected level is remembered for the session
 - **Settings** `/settings`: color scheme (system, light, dark). The choice is not persisted yet
 - **Width:** the content column is at most 960px and centered; on narrow screens it takes 98% of the width (1% spacing on both sides)
 - A game that has no time display or no pause leaves the header center or footer center empty without layout shift
@@ -72,11 +72,11 @@ News and updates need no backend of their own, only static hosting.
 
 The exact keys, types, envelope, limits and transport are fixed in `data-formats.md`. This section keeps the principles.
 
-- **Result:** versioned, contains game, game version, scoring version, seed, challenge, score values, player ID
+- **Result:** versioned, contains game, game version, scoring version, seed, level, score values, player ID
 - **Score values:** A result has no single score but an ordered list of integers. Each position has a direction (more or less is better), which is declared in the game manifest per scoring version and not stored in the result (see `data-formats.md`). Comparison goes in order, and on a tie the next value decides. Raw values are stored and transferred, no decimals. Changing the values or their order is a scoring change (the scoring version goes up)
   - Merge: highest tile (more is better), then moves until that tile was first reached (fewer is better). The classic point sum is only displayed and not used for ranking
 - **Merge rule:** exactly one entry per player and board, the order of arrival does not matter
-- **Best result:** the best result per game, challenge and scoring version (free play). For daily and group boards additionally the result per seed
+- **Best result:** the best result per game, level and scoring version (free play). For daily and group boards additionally the result per seed
 - **Storage format:** with a version number and a migration path from the start
 - **Player ID:** a random local key, the gamer tag is display only. A later backend can use the same ID
 
@@ -86,7 +86,7 @@ The exact keys, types, envelope, limits and transport are fixed in `data-formats
 - **Symbol:** A separate field next to the tag, helps tell identical tags apart in group lists. Picked randomly on first start from a fixed set of about two dozen shapes that differ in form and not only in color (color-blind friendly). Changeable in the profile menu
 - **First start:** Nothing is mandatory. The app creates a default profile (tag and ID automatic) and the user can play right away. The default tag is built from an adjective and an animal (100 entries each, maintained by hand and checked for unfortunate combinations), for example "Swift Fox". The lists are English only and stay so after a later language switch. The finished text is stored, not the list position. Changing the tag, backup and restore are in the profile menu and always reachable
 - **Backup:** An export file is the basis (tag, symbol, ID, time of the last tag change, own best results, later also own results per board for daily and group boards; no group states of other players, those come from sharing again), offered through the system share menu. Additionally QR or link from device to device (data in the part after the `#`, which never goes to a server). File, QR and link use the same compact format (versioned JSON, compressed). If a profile does not fit into a QR code, the app offers only the file for that profile and says so openly
-- **Restore on a device that already has a profile:** Merge. Best results are merged per game, challenge and scoring version, the better value wins (merge rule). The player ID comes from the file, the local ID is dropped. The gamer tag also comes from the file if the IDs differ. With the same ID the tag with the more recent change time wins (the profile stores it). The user sees only the tag, the ID is an internal key. Before applying, a single confirmation dialog shows what will happen (tag, number of best results, "Your current profile will be merged with this one"). No wizard. Results that were already shared in groups under the old local ID stay there as a separate player
+- **Restore on a device that already has a profile:** Merge. Best results are merged per game, level and scoring version, the better value wins (merge rule). The player ID comes from the file, the local ID is dropped. The gamer tag also comes from the file if the IDs differ. With the same ID the tag with the more recent change time wins (the profile stores it). The user sees only the tag, the ID is an internal key. Before applying, a single confirmation dialog shows what will happen (tag, number of best results, "Your current profile will be merged with this one"). No wizard. Results that were already shared in groups under the old local ID stay there as a separate player
 - **The same player ID on several devices is intended.** The ID is pure randomness and contains nothing about the device (no fingerprint). Until the first import, two devices are two players. Import overwrites the local ID with the one from the file and never creates a new one. This way devices can be synchronized as often as wanted without orphaned IDs staying behind in group lists
 - No automatic file writing as a basis, because only Chrome and Edge on desktop can do that. Conceivable later as a desktop extra
 - **Installation:** A one-time hint after the first finished round with instructions (iOS: Share, then Add to Home Screen; Android: install button), afterwards only in the profile menu. In addition the app requests persistent storage in the background without asking the user. Reason: Safari on iOS may delete data of sites that have not been visited for a long time, and installing protects best against that
@@ -120,13 +120,13 @@ The interface between platform and game (module shape, navigation, pause, time, 
 - Every game is a package of its own with a hash in the file name, fully cached up front
 - An update is always one complete state of platform and all games, never a partial update. Thanks to the hashes the download is still per game
 
-**Four version levels:**
+**Four version tiers:**
 1. **Interface version:** Which contract between platform and game was the game built against? If it does not match, "Please reload the app" appears instead of a crash
 2. **Game version:** Stored in the manifest and in every result, serves traceability. Bug fixes and UX improvements change it without affecting the comparability of scores
 3. **Data format version:** For profile, saved states and results, with a migration path
-4. **Scoring version (per game):** A number of its own that only goes up when what a score means changes: generator (the same seed must produce the same board), scoring formula, par calculation or the parameters of a challenge (for example grid size and number of colors). Scores are comparable exactly when game, challenge and scoring version match
+4. **Scoring version (per game):** A number of its own that only goes up when what a score means changes: generator (the same seed must produce the same board), scoring formula, par calculation or the parameters of a level (for example grid size and number of colors). Scores are comparable exactly when game, level and scoring version match
 
-**Game manifest (central description per game):** ID, game version, scoring version, interface version, challenges (their IDs only, the parameters stay in the game logic), the direction of every score position. Display names are not part of the manifest but live in the texts of the game
+**Game manifest (central description per game):** ID, game version, scoring version, interface version, levels (their IDs only, the parameters stay in the game logic), the direction of every score position. Display names are not part of the manifest but live in the texts of the game
 
 **How-to-play content:** Every game ships its rules and scoring (for example how par is calculated in Spillit and why the deviation can be negative) as a `HowToPlay` component. It is part of the game contract, its texts live in the language file of the game. The content starts with the goal as one paragraph; the details and examples sit inside `HowToMore` (collapsed by default, a "More" button that turns into "Less").
 
@@ -154,7 +154,7 @@ The platform shows it on the game page under the heading "Game rules" (see Platf
 
 ## Groups with different app versions
 
-- Values are compared only for the same game, the same challenge and the same scoring version. With a different scoring version the app asks for an update and **refuses to compare values** until both sides have the same scoring version
+- Values are compared only for the same game, the same level and the same scoring version. With a different scoring version the app asks for an update and **refuses to compare values** until both sides have the same scoring version
 - Different app or game versions without a scoring change are no obstacle
 - Results of unknown newer formats are not merged but rejected ("The sender uses a newer version")
 - Results of different scoring versions never appear in the same list
@@ -169,7 +169,7 @@ The platform shows it on the game page under the heading "Game rules" (see Platf
 ## Open architecture questions
 
 - **Comparability of score values in free play:** Define per game that the values do not depend on the random board. Decided for Spillit (points from the ratio of par to moves, deviation from par as tie-break), still open for Merge and the other games
-- **Game list display:** the start page tile shows the best result of the highest challenge with a result, with the challenge name as a small label. The shape of the value display is decided: `formatScore` in the game's `GameTexts` (see `game-contract.md`). The tile does not use it yet and shows the first score value unformatted, and "—" until storage exists
+- **Game list display:** the start page tile shows the best result of the highest level with a result, with the level name as a small label. The shape of the value display is decided: `formatScore` in the game's `GameTexts` (see `game-contract.md`). The tile does not use it yet and shows the first score value unformatted, and "—" until storage exists
 - **Game-owned data in the export:** whether a game may keep own small data (settings) that goes into the export, for example as an opaque slot per game with a size limit. Not needed by any game yet, not decided
-- **Deep links:** A URL scheme that opens a game with challenge and seed (for group boards) belongs to the platform router. Deferred, not part of the beta, decided together with groups. Games never route themselves
+- **Deep links:** A URL scheme that opens a game with level and seed (for group boards) belongs to the platform router. Deferred, not part of the beta, decided together with groups. Games never route themselves
 - Limit for QR codes: size of a profile in a QR code, measured when QR is built (after the beta, see `data-formats.md`)

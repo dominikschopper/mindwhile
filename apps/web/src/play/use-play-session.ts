@@ -9,11 +9,11 @@ import { t as commonT } from '../common/texts'
 import { useRoundFrame } from './use-round-frame'
 import { t } from './texts'
 
-// Loads the game module, validates game and challenge, owns the current round and
+// Loads the game module, validates game and level, owns the current round and
 // drives the shell state. `onAbortRequest` is called when the shell asks to abort.
 export function usePlaySession(
   gameId: Ref<string>,
-  challenge: Ref<string>,
+  level: Ref<string>,
   onAbortRequest: () => void,
   onRoundFailed: () => void = () => {},
 ) {
@@ -41,9 +41,7 @@ export function usePlaySession(
     const loaded = module.value
     if (!loaded) return
     try {
-      framed.value = useRoundFrame(
-        loaded.createRound({ challenge: challenge.value, seed: newSeed() }),
-      )
+      framed.value = useRoundFrame(loaded.createRound({ level: level.value, seed: newSeed() }))
     } catch (cause) {
       failRound(cause)
       return
@@ -71,15 +69,15 @@ export function usePlaySession(
       failRound(cause)
       return
     }
-    if (!loaded.manifest.challenges.includes(challenge.value)) {
-      error.value = t('error.unknownChallenge', { challenge: challenge.value })
+    if (!loaded.manifest.levels.includes(level.value)) {
+      error.value = t('error.unknownLevel', { level: level.value })
       return
     }
     module.value = loaded
     startRound()
   }
 
-  watch(() => [gameId.value, challenge.value], load, { immediate: true })
+  watch(() => [gameId.value, level.value], load, { immediate: true })
 
   // Drive the shell: running while a round is open, ended once the result is there.
   watch(

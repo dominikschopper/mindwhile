@@ -29,7 +29,7 @@ async function mountAt(path: string, registry?: GameRegistry) {
       { path: '/', name: 'game-selection', component: { template: '<p>selection</p>' } },
       { path: '/games/:id', name: 'game', component: { template: '<p>game page</p>' } },
       { path: '/settings', name: 'settings', component: { template: '<p>settings</p>' } },
-      { path: '/play/:gameId/:challenge', name: 'play', component: PlayView, props: true },
+      { path: '/play/:gameId/:level', name: 'play', component: PlayView, props: true },
     ],
   })
   await router.push(path)
@@ -296,7 +296,7 @@ describe('error guard', () => {
     expect(footer(wrapper).find('button').exists()).toBe(false)
   })
 
-  it('keeps the inline error without a notice for an unknown challenge', async () => {
+  it('keeps the inline error without a notice for an unknown level', async () => {
     const { wrapper } = await mountFake('/play/fake/zzz')
     expect(wrapper.find('[role="alert"]').exists()).toBe(true)
     expect(wrapper.text()).not.toContain(message)

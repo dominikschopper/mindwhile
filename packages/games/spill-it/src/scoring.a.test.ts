@@ -1,11 +1,11 @@
 import { playMoves } from '@mindwhile/core'
 import { describe, expect, it } from 'vitest'
-import { challengeParams } from './challenges'
+import { levelParams } from './levels'
 import { generateBoard } from './generate'
 import { createRound } from './round'
 import { boardText, firstDrawPar, pick } from './scoring-util'
 
-// Pinned scoring cases of challenge a (scoring version 0). If one of them fails,
+// Pinned scoring cases of level a (scoring version 0). If one of them fails,
 // generator, par or flood logic changed: revert it or raise the scoring version.
 const cases = [
   {
@@ -40,29 +40,29 @@ const cases = [
   },
 ]
 
-describe('scoring challenge a', () => {
+describe('scoring level a', () => {
   it.each(cases)('seed : board, par and greedy play', ({ seed, board, par, moves }) => {
     const generated = generateBoard('a', seed)
     expect(boardText(generated.board)).toBe(board)
     expect(generated.par).toBe(par)
     expect(moves).toHaveLength(par)
-    const round = createRound({ challenge: 'a', seed })
+    const round = createRound({ level: 'a', seed })
     expect(playMoves(round, moves.map(pick))).toEqual({ roundEnd: 'won', score: [500, 0] })
     expect(round.moves).toHaveLength(par)
   })
 
   it('redraws a too-easy first board from the same stream', () => {
     const seed = 312
-    expect(firstDrawPar('a', seed)).toBeLessThan(challengeParams.a.minPar)
+    expect(firstDrawPar('a', seed)).toBeLessThan(levelParams.a.minPar)
     const generated = generateBoard('a', seed)
     expect(boardText(generated.board)).toBe('x*xoo-/**ooxx/oox**o/oxox*o/oo-oo-/oo**x*')
     expect(generated.par).toBe(8)
-    expect(generated.par).toBeGreaterThanOrEqual(challengeParams.a.minPar)
+    expect(generated.par).toBeGreaterThanOrEqual(levelParams.a.minPar)
   })
 
   it('chooses the lowest color index on a greedy tie', () => {
     // seed 0 has at least one step where two colors absorb the same number of cells
-    const round = createRound({ challenge: 'a', seed: 0 })
+    const round = createRound({ level: 'a', seed: 0 })
     expect(boardText(round.startBoard)).toBe('o-xxx*/-o*oo*/--oo*o/xo**xo/xo--*-/*o*--o')
     expect(round.par).toBe(8)
     const moves = [3, 2, 1, 0, 3, 2, 1, 3]
@@ -71,7 +71,7 @@ describe('scoring challenge a', () => {
 
   it('scores a negative deviation for a sequence shorter than par', () => {
     // seed 0: greedy par is 8, this 7-move sequence was found by search
-    const round = createRound({ challenge: 'a', seed: 0 })
+    const round = createRound({ level: 'a', seed: 0 })
     expect(round.par).toBe(8)
     expect(playMoves(round, [3, 2, 1, 0, 1, 3, 2].map(pick))).toEqual({
       roundEnd: 'won',

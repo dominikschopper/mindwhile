@@ -6,10 +6,10 @@ describe('gameTexts', () => {
     expect(gameTexts.name).toBe('Spillit')
   })
 
-  it('names the three challenges', () => {
-    expect(gameTexts.challengeName('a')).toBe('6×6 · 4 colors')
-    expect(gameTexts.challengeName('b')).toBe('10×10 · 5 colors')
-    expect(gameTexts.challengeName('c')).toBe('14×14 · 6 colors')
+  it('names the three levels', () => {
+    expect(gameTexts.levelName('a')).toBe('6×6 · 4 colors')
+    expect(gameTexts.levelName('b')).toBe('10×10 · 5 colors')
+    expect(gameTexts.levelName('c')).toBe('14×14 · 6 colors')
   })
 
   it('formats a score with points and deviation from par', () => {
@@ -18,8 +18,8 @@ describe('gameTexts', () => {
     expect(gameTexts.formatScore([470, 2])).toBe('470 points · 2 moves over par')
   })
 
-  it('throws for an unknown challenge', () => {
-    expect(() => gameTexts.challengeName('z')).toThrow()
+  it('throws for an unknown level', () => {
+    expect(() => gameTexts.levelName('z')).toThrow()
   })
 })
 

@@ -7,9 +7,9 @@ import { roundState } from '../common/composables/use-chrome'
 import { createFakeGame } from './fake-game'
 import { usePlaySession } from './use-play-session'
 
-function mountSession(gameId: string, challenge: string) {
+function mountSession(gameId: string, level: string) {
   const id = ref(gameId)
-  const ch = ref(challenge)
+  const ch = ref(level)
   const onAbort = vi.fn()
   let session!: ReturnType<typeof usePlaySession>
   const wrapper = mount(
@@ -36,9 +36,9 @@ describe('usePlaySession', () => {
     expect(session.framed.value).toBeNull()
   })
 
-  it('sets an inline error for an unknown challenge', async () => {
+  it('sets an inline error for an unknown level', async () => {
     const { session } = mountSession('fake', 'zzz')
-    await vi.waitFor(() => expect(session.error.value).toBe('Unknown challenge: zzz'))
+    await vi.waitFor(() => expect(session.error.value).toBe('Unknown level: zzz'))
     expect(session.framed.value).toBeNull()
   })
 

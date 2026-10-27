@@ -1,7 +1,7 @@
 export const en = {
   'error.heading': 'Cannot start this game',
   'error.unknownGame': 'Unknown game: {game}',
-  'error.unknownChallenge': 'Unknown challenge: {challenge}',
+  'error.unknownLevel': 'Unknown level: {level}',
   'error.link': 'Back to the game selection',
   loading: 'Loading…',
   'abort.heading': 'Abort round?',

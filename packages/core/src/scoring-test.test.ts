@@ -34,7 +34,7 @@ describe('contract types', () => {
       gameVersion: 1,
       scoringVersion: 0,
       interfaceVersion: 1,
-      challenges: ['a'],
+      levels: ['a'],
       scoring: [{ key: 'k', better: 'lower' }],
     } satisfies GameManifest
     const module: GameModule<string> = {

@@ -6,14 +6,14 @@ import AbortDialog from './AbortDialog.vue'
 import { usePlaySession } from './use-play-session'
 import { t } from './texts'
 
-const props = defineProps<{ gameId: string; challenge: string }>()
+const props = defineProps<{ gameId: string; level: string }>()
 const router = useRouter()
 const abortDialog = ref<InstanceType<typeof AbortDialog> | null>(null)
 
 const { module, error, framed, roundKey, result, scoreText, startRound, discardRound, failRound } =
   usePlaySession(
     toRef(props, 'gameId'),
-    toRef(props, 'challenge'),
+    toRef(props, 'level'),
     () => void router.push(gamePage()),
     () => void router.replace('/'),
   )

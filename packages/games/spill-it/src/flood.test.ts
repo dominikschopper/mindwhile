@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { neighbors, type Board } from './board'
-import { challengeParams } from './challenges'
+import { levelParams } from './levels'
 import { applyColor, isSolved, startRegion } from './flood'
 
 function board(size: number, rows: string): Board {
@@ -59,9 +59,9 @@ describe('isSolved', () => {
   })
 })
 
-describe('challengeParams', () => {
-  it('matches the documented challenges', () => {
-    expect(challengeParams).toEqual({
+describe('levelParams', () => {
+  it('matches the documented levels', () => {
+    expect(levelParams).toEqual({
       a: { size: 6, colors: 4, minPar: 5, basePoints: 500 },
       b: { size: 10, colors: 5, minPar: 12, basePoints: 750 },
       c: { size: 14, colors: 6, minPar: 20, basePoints: 1000 },

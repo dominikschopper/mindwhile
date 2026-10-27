@@ -31,7 +31,7 @@ describe('GameSelectionView', () => {
     expect(tile.find('.visually-hidden').text()).toBe('No result yet')
   })
 
-  it('shows the result of the highest challenge with a result', () => {
+  it('shows the result of the highest level with a result', () => {
     vi.spyOn(bestResults, 'useBestResults').mockReturnValue({
       'spill-it': { a: [900, 0], b: [1000, 2] },
     })
@@ -41,7 +41,7 @@ describe('GameSelectionView', () => {
     expect(result.text()).not.toContain('900')
   })
 
-  it('has no challenge links', () => {
+  it('has no level links', () => {
     const wrapper = mountView()
     expect(wrapper.findAll('a').every((a) => !a.attributes('href')?.startsWith('/play/'))).toBe(
       true,

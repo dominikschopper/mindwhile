@@ -8,7 +8,7 @@ Status: draft, filled decision by decision. Rules and reasons live in `architect
 
 - A result stores only the numbers: `scoreValues: [2048, 311]` in code, `score: [2048, 311]` in the format
 - The direction of each position (`higher` or `lower` is better) is **not** stored in the result but in the game manifest, per scoring version, for example `{ key: 'points', better: 'higher' }`
-- Results are only compared when game, challenge and scoring version match, so the direction is always unambiguous
+- Results are only compared when game, level and scoring version match, so the direction is always unambiguous
 - Comparison goes through the positions in order, on a tie the next position decides
 - Raw integers only, no decimals
 
@@ -22,7 +22,7 @@ Status: draft, filled decision by decision. Rules and reasons live in `architect
 |---|---|
 | `gameId` | `game` |
 | `gameVersion` | `gamev` |
-| `challenge` | `chall` |
+| `level` | `lvl` |
 | `seed` | `seed` |
 | `scoreValues` | `score` |
 | `scoringVersion` | `scorev` |
@@ -51,7 +51,7 @@ Status: draft, filled decision by decision. Rules and reasons live in `architect
 ### Symbol
 
 - Stored as a fixed name of the shape (for example `"star"`), not as a number, so extending or reordering the set of shapes never changes old profiles
-- Shape names are permanent and never reassigned (same rule as challenge IDs)
+- Shape names are permanent and never reassigned (same rule as level IDs)
 - An unknown shape (from a newer version) is shown as a neutral placeholder symbol, the profile is not rejected because of it
 - The list of shapes itself is defined elsewhere
 
@@ -64,15 +64,15 @@ Status: draft, filled decision by decision. Rules and reasons live in `architect
 
 ### Result
 
-- Fields and types: `game` (text), `gamev` (integer), `chall` (text), `seed` (integer, see Seed), `score` (list of integers), `scorev` (integer, 0 occurs only before the first release, such results are not meant to be kept)
+- Fields and types: `game` (text), `gamev` (integer), `lvl` (text), `seed` (integer, see Seed), `score` (list of integers), `scorev` (integer, 0 occurs only before the first release, such results are not meant to be kept)
 - A stored result has **no** `player`. Own results belong to the profile, whose player ID is stored once. This avoids a result carrying a different ID than the profile after an import overwrote the local ID
 - `player` is added only when a result is shared into a group (later, `kind: board`), because there results of several players stand in one list
 - So there are two forms of a result (with and without `player`), and the code keeps them cleanly apart through separate types
-- Example (stored): `{ "game": "spill-it", "gamev": 1, "chall": "a", "seed": 48213, "score": [720, -2], "scorev": 1 }`
+- Example (stored): `{ "game": "spill-it", "gamev": 1, "lvl": "a", "seed": 48213, "score": [720, -2], "scorev": 1 }`
 
 ### Best results and local flags
 
-- For free play only the best result is stored: exactly one result per game, challenge and scoring version (stored in `best`, same fields as a result). It contains the seed of the board on which it was reached
+- For free play only the best result is stored: exactly one result per game, level and scoring version (stored in `best`, same fields as a result). It contains the seed of the board on which it was reached
 - No history, no counter of played rounds, no statistics. This keeps exports tiny and fits "no tracking"
 - Flags that only apply locally (install hint shown, how-to-play seen, counter of the backup reminder) live apart from the profile and are not exported
 - For daily and group boards the result per seed is added later (see `architecture.md`)
@@ -85,7 +85,7 @@ Status: draft, filled decision by decision. Rules and reasons live in `architect
 
 ### Saved round state
 
-- The platform keeps at most one running round per device and writes it after every move and when the app goes to the background. Envelope fields: `fmtv`, `game`, `gamev`, `chall`, `seed` and an opaque `state`
+- The platform keeps at most one running round per device and writes it after every move and when the app goes to the background. Envelope fields: `fmtv`, `game`, `gamev`, `lvl`, `seed` and an opaque `state`
 - The content of `state` is created and read by the game alone (any JSON), the platform knows nothing about game states
 - If the state cannot be read any more (error, version jump), the app discards the round with a hint
 - Games for which replaying fits (Spillit, Hanoi) may store seed and move list inside `state` themselves, the platform does not require it
@@ -96,7 +96,7 @@ Status: draft, filled decision by decision. Rules and reasons live in `architect
 
 - A running integer starting at 1. It versions the **structure** of the data, not the scoring
 - It goes up only for a structural change that would make reading old data impossible, for example renaming a key, changing the type of a field or restructuring `best`
-- It does **not** go up for: bug fixes, scoring changes (those raise `scorev`), a new optional field, a new `kind`, a new game or a new challenge
+- It does **not** go up for: bug fixes, scoring changes (those raise `scorev`), a new optional field, a new `kind`, a new game or a new level
 - Migration step by step: the reader migrates old data from version to version (1 to 2, 2 to 3, and so on), every step is a small tested function with test data of the old version. Always the current version is written. A newer version than known is rejected with a clear message
 
 ### Profile object
@@ -108,7 +108,7 @@ Status: draft, filled decision by decision. Rules and reasons live in `architect
 
 - An import is input from outside (file, QR, link) and is validated completely before it changes the profile
 - **Strict for envelope and profile:** if `app`, `fmtv` or `kind` do not match, or the profile is invalid (unreadable player ID, tag not following the rules, missing required fields), the whole file is rejected with a clear message
-- **Tolerant for single results:** invalid entries in `best` (unknown game, wrong type, unknown challenge) are skipped and the app says so ("2 results could not be imported")
+- **Tolerant for single results:** invalid entries in `best` (unknown game, wrong type, unknown level) are skipped and the app says so ("2 results could not be imported")
 - Additional unknown fields are ignored so that newer versions stay additive
 - Every field is checked for type and length, and there are upper limits for file size and number of entries
 - The tag is always displayed as plain text, never as HTML
@@ -120,7 +120,7 @@ Status: draft, filled decision by decision. Rules and reasons live in `architect
 | Size of the file (compressed) | 256 KB |
 | Size after decompression | 2 MB, decompression is aborted when exceeded |
 | Entries in `best` | 2000 |
-| Length of texts (`game`, `chall`, `symbol`) | 64 characters |
+| Length of texts (`game`, `lvl`, `symbol`) | 64 characters |
 | Length of `tag` | 16 characters (as in `architecture.md`) |
 | Values in `score` per result | at most 8 |
 | Numbers | integers in the safe range (±2^53), `seed` 0 to 4 294 967 295 |

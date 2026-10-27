@@ -1,5 +1,5 @@
 // Provisional: there is no storage yet. Replaced by the profile plan, which returns
-// the best score list per challenge from the profile.
+// the best score list per level from the profile.
 export type BestResults = Record<string, Record<string, readonly number[] | undefined>>
 
 export function useBestResults(): BestResults {

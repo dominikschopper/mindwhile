@@ -1,31 +1,31 @@
 import { createRng, nextBelow } from '@mindwhile/core'
 import { describe, expect, it } from 'vitest'
-import { challengeParams } from './challenges'
+import { levelParams } from './levels'
 import { generateBoard } from './generate'
-import type { SpillItChallenge } from './manifest'
+import type { SpillItLevel } from './manifest'
 import { greedyPar } from './par'
 
-const challenges: SpillItChallenge[] = ['a', 'b', 'c']
+const levels: SpillItLevel[] = ['a', 'b', 'c']
 
-function drawFirstBoard(challenge: SpillItChallenge, seed: number) {
-  const { size, colors } = challengeParams[challenge]
+function drawFirstBoard(level: SpillItLevel, seed: number) {
+  const { size, colors } = levelParams[level]
   const rng = createRng(seed)
   return { size, cells: Array.from({ length: size * size }, () => nextBelow(rng, colors)) }
 }
 
 describe('generateBoard', () => {
-  it.each(challenges)('is deterministic for challenge %s', (challenge) => {
-    expect(generateBoard(challenge, 123)).toEqual(generateBoard(challenge, 123))
+  it.each(levels)('is deterministic for level %s', (level) => {
+    expect(generateBoard(level, 123)).toEqual(generateBoard(level, 123))
   })
 
   it('usually differs for different seeds', () => {
     expect(generateBoard('a', 1).board).not.toEqual(generateBoard('a', 2).board)
   })
 
-  it.each(challenges)('accepts only boards with par >= minPar (challenge %s)', (challenge) => {
-    const { colors, minPar } = challengeParams[challenge]
+  it.each(levels)('accepts only boards with par >= minPar (level %s)', (level) => {
+    const { colors, minPar } = levelParams[level]
     for (let seed = 0; seed < 50; seed++) {
-      const { board, par } = generateBoard(challenge, seed)
+      const { board, par } = generateBoard(level, seed)
       expect(par).toBeGreaterThanOrEqual(minPar)
       expect(par).toBe(greedyPar(board, colors))
       expect(board.cells).toHaveLength(board.size * board.size)
@@ -38,9 +38,9 @@ describe('generateBoard', () => {
   })
 
   it('redraws from the same stream when the first board is too easy', () => {
-    // challenge c with minPar 20 rejects some first draws, find one
+    // level c with minPar 20 rejects some first draws, find one
     let seed = 0
-    const params = challengeParams.c
+    const params = levelParams.c
     while (greedyPar(drawFirstBoard('c', seed), params.colors) >= params.minPar) seed++
     const first = drawFirstBoard('c', seed)
     const { board } = generateBoard('c', seed)
@@ -63,7 +63,7 @@ describe('generateBoard', () => {
 
   it('throws when no board is accepted within the limit', () => {
     let seed = 0
-    const params = challengeParams.c
+    const params = levelParams.c
     while (greedyPar(drawFirstBoard('c', seed), params.colors) >= params.minPar) seed++
     expect(() => generateBoard('c', seed, 1)).toThrow(/after 1 draws/)
   })

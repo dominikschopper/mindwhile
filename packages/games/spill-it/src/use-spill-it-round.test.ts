@@ -7,7 +7,7 @@ import { useSpillItRound } from './use-spill-it-round'
 
 describe('useSpillItRound', () => {
   it('has initial values', () => {
-    const round = createRound({ challenge: 'a', seed: 5 })
+    const round = createRound({ level: 'a', seed: 5 })
     const r = useSpillItRound(round)
     expect(r.cells.value).toEqual(round.startBoard.cells)
     expect(r.size).toBe(6)
@@ -21,7 +21,7 @@ describe('useSpillItRound', () => {
   })
 
   it('updates reactively on pick', () => {
-    const round = createRound({ challenge: 'a', seed: 5 })
+    const round = createRound({ level: 'a', seed: 5 })
     const r = useSpillItRound(round)
     const snapshot = computed(() => [
       r.cells.value.join(''),
@@ -39,7 +39,7 @@ describe('useSpillItRound', () => {
   })
 
   it('ignores the region color', () => {
-    const r = useSpillItRound(createRound({ challenge: 'a', seed: 5 }))
+    const r = useSpillItRound(createRound({ level: 'a', seed: 5 }))
     const cells = r.cells.value
     r.pick(r.regionColor.value)
     expect(r.moveCount.value).toBe(0)
@@ -47,7 +47,7 @@ describe('useSpillItRound', () => {
   })
 
   it('is solved after the greedy moves and ignores later picks', () => {
-    const round = createRound({ challenge: 'a', seed: 5 })
+    const round = createRound({ level: 'a', seed: 5 })
     const r = useSpillItRound(round)
     for (const color of greedyMoves(round.startBoard, r.colorCount)) r.pick(color)
     expect(r.solved.value).toBe(true)
@@ -59,12 +59,10 @@ describe('useSpillItRound', () => {
   })
 
   it('shows the same state for a restored round', () => {
-    const round = createRound({ challenge: 'a', seed: 3 })
+    const round = createRound({ level: 'a', seed: 3 })
     const r = useSpillItRound(round)
     for (const color of greedyMoves(round.startBoard, 4).slice(0, 3)) r.pick(color)
-    const restored = useSpillItRound(
-      createRound({ challenge: 'a', seed: 3, saved: round.serialize() }),
-    )
+    const restored = useSpillItRound(createRound({ level: 'a', seed: 3, saved: round.serialize() }))
     expect(restored.cells.value).toEqual(r.cells.value)
     expect(restored.moveCount.value).toBe(r.moveCount.value)
     expect(restored.regionColor.value).toBe(r.regionColor.value)
@@ -73,7 +71,7 @@ describe('useSpillItRound', () => {
 
   it('takes the region size from startRegion for several seeds and moves', () => {
     for (const seed of [1, 7, 42]) {
-      const round = createRound({ challenge: 'a', seed })
+      const round = createRound({ level: 'a', seed })
       const r = useSpillItRound(round)
       expect(r.regionSize.value).toBe(startRegion(round.board).length)
       for (const color of greedyMoves(round.startBoard, r.colorCount).slice(0, 4)) {

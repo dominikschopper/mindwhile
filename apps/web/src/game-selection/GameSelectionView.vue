@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { highestChallengeWithResult } from '@mindwhile/core'
+import { highestLevelWithResult } from '@mindwhile/core'
 import { gameSymbols } from '@mindwhile/game-kit'
 import { RouterLink } from 'vue-router'
 import { useGameRegistry } from '../common/composables/game-registry'
@@ -11,7 +11,7 @@ const bestResults = useBestResults()
 const games = useGameRegistry()
   .listGames()
   .map(({ manifest: game, texts }) => {
-    const best = highestChallengeWithResult(game.challenges, bestResults[game.id] ?? {})
+    const best = highestLevelWithResult(game.levels, bestResults[game.id] ?? {})
     const points = best ? pointsOf(best.result) : undefined
     return {
       id: game.id,
@@ -21,7 +21,7 @@ const games = useGameRegistry()
       ],
       best:
         best && points !== undefined
-          ? { score: points, label: texts.challengeName(best.challenge) ?? best.challenge }
+          ? { score: points, label: texts.levelName(best.level) ?? best.level }
           : undefined,
     }
   })

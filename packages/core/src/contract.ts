@@ -27,13 +27,13 @@ export interface GameManifest {
   gameVersion: number
   scoringVersion: number
   interfaceVersion: number
-  challenges: readonly string[]
+  levels: readonly string[]
   scoring: readonly ScorePosition[]
 }
 
 export interface GameModule<TView = unknown> {
   manifest: GameManifest
-  createRound(p: { challenge: string; seed: number; saved?: unknown }): Round
+  createRound(p: { level: string; seed: number; saved?: unknown }): Round
   View: TView
   views?: Record<string, () => Promise<TView>>
   HowToPlay: TView
@@ -41,7 +41,7 @@ export interface GameModule<TView = unknown> {
 
 export interface GameTexts {
   name: string
-  challengeName(challenge: string): string
+  levelName(level: string): string
   // Score is the game's own score vector, returned as one display line.
   formatScore(score: readonly number[]): string
 }

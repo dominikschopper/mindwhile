@@ -1,9 +1,9 @@
 import { expect, it } from 'vitest'
 import { manifest } from './manifest'
 
-it('declares the three challenges', () => {
+it('declares the three levels', () => {
   expect(manifest.id).toBe('spill-it')
-  expect([...manifest.challenges]).toEqual(['a', 'b', 'c'])
+  expect([...manifest.levels]).toEqual(['a', 'b', 'c'])
 })
 
 it('ranks more points as better, then a lower deviation', () => {
