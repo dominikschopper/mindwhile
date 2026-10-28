@@ -5,6 +5,7 @@ export type SpillItLevel = (typeof levels)[number]
 export const manifest = {
   id: 'spill-it',
   symbol: 'grid-2x2',
+  color: 'orange',
   gameVersion: 1,
   scoringVersion: 0,
   interfaceVersion: 1,

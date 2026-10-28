@@ -2,6 +2,8 @@
 
 Status: draft. Spillit is our version of the classic flood-fill game and the test game of the beta. Platform rules, formats and versioning live in `architecture.md`, terms in `glossary.md`. The game ID in code is `spill-it`.
 
+Display name: "Spill It!" (`game.name` in `texts/en.ts`). The ID stays `spill-it`; package names and the spelling "Spillit" in code and prose stay as they are.
+
 ## Basic rule
 
 - The board is a grid of colored cells

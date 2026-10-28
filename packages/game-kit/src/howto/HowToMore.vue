@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppButton from '../buttons/AppButton.vue'
 import { Comment, Text, ref, useId, useSlots, type VNode } from 'vue'
 
 /**
@@ -35,15 +36,14 @@ function toggle(): void {
 
 <template>
   <div v-if="hasContent()" class="how-to-more">
-    <button
-      type="button"
+    <AppButton
       class="how-to-more-button"
       :aria-expanded="expanded ? 'true' : 'false'"
       :aria-controls="contentId"
       @click="toggle"
     >
       {{ expanded ? lessLabel : moreLabel }}
-    </button>
+    </AppButton>
     <div v-show="expanded" :id="contentId" class="how-to-more-content">
       <slot />
     </div>
@@ -53,23 +53,6 @@ function toggle(): void {
 <style scoped>
 .how-to-more {
   margin: 0 0 var(--spacing-md);
-}
-
-.how-to-more-button {
-  min-width: var(--button-min-size);
-  min-height: var(--button-min-size);
-  padding-inline: var(--spacing-md);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  background: var(--surface-raised-color);
-  color: var(--accent-color);
-  font: inherit;
-  cursor: pointer;
-}
-
-.how-to-more-button:focus-visible {
-  outline: 2px solid var(--focus-ring-color);
-  outline-offset: 2px;
 }
 
 .how-to-more-content {

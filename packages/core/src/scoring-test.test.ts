@@ -31,6 +31,7 @@ describe('contract types', () => {
     const manifest = {
       id: 'x',
       symbol: 'x',
+      color: 'blue',
       gameVersion: 1,
       scoringVersion: 0,
       interfaceVersion: 1,

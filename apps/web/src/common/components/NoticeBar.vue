@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IconClose } from '@mindwhile/game-kit'
+import { AppButton, IconClose } from '@mindwhile/game-kit'
 import { dismissNotice, notice } from '../composables/use-notice'
 import { t } from '../texts'
 </script>
@@ -7,14 +7,9 @@ import { t } from '../texts'
 <template>
   <div v-if="notice !== null" class="notice-bar" role="alert">
     <p class="notice-text">{{ notice }}</p>
-    <button
-      type="button"
-      class="chrome-button"
-      :aria-label="t('notice.dismiss')"
-      @click="dismissNotice"
-    >
+    <AppButton class="chrome-button" :aria-label="t('notice.dismiss')" @click="dismissNotice">
       <IconClose aria-hidden="true" />
-    </button>
+    </AppButton>
   </div>
 </template>
 

@@ -29,8 +29,9 @@
   position: sticky;
   bottom: 0;
   z-index: 10;
-  background: var(--surface-raised-color);
-  border-block-start: 1px solid var(--border-color);
+  background: var(--chrome-surface-color);
+  color: var(--on-chrome-color);
+  border-block-start: 3px solid var(--chrome-accent-color);
 }
 
 .app-footer-row {
@@ -54,5 +55,27 @@
 
 .app-footer-right {
   justify-content: flex-end;
+}
+.app-footer :deep(a:not(.app-button)),
+.app-footer :deep(button:not(.app-button)) {
+  color: var(--on-chrome-color);
+  border-radius: var(--radius);
+}
+
+.app-footer :deep(button:not(.app-button)) {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.app-footer :deep(a:not(.app-button):hover),
+.app-footer :deep(button:not(.app-button):hover) {
+  color: var(--chrome-accent-color);
+}
+
+.app-footer :deep(a:focus-visible),
+.app-footer :deep(button:focus-visible) {
+  outline: 2px solid var(--chrome-focus-ring-color);
+  outline-offset: 2px;
 }
 </style>

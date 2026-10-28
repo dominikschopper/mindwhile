@@ -54,6 +54,7 @@ Spelling in code: identifiers in `camelCase`, types in `PascalCase`, folders and
 | game contract (`GameContract`) | Interface that every game has to fulfill |
 | game manifest (`GameManifest`) | Central description of a game (ID, symbol, versions, levels, scoring type) |
 | symbol (`symbol`) | Name of an icon from the list `game-kit` offers (for example `grid-2x2`). The manifest field that the platform uses for the tile and the game page |
+| game color (`color`) | Name from `gameColors` in `core` (`blue`, `green`, `orange`, `red`, `yellow`), resolved by `game-kit` through the class `.game-color-<name>` |
 | game page (`game-page`, route `/games/:id`) | Page of one game: symbol and name, level select with Go, best result, "Game rules". Entry point to a round |
 | chrome slot (`ChromeSlot`, names `header-left` to `footer-right`) | Place in the platform's header or footer that a game fills, for example the time display in `header-center` or the pause in `footer-center`. The platform renders the bars, the game only names the slot |
 | how-to-play content (`HowToPlay`) | Rules and scoring of a game, delivered as a component. Shown on the game page under "Game rules", goal first, details behind "More" (`HowToMore`) |

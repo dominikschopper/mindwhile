@@ -35,7 +35,7 @@ describe('default registry', () => {
     expect(registry.listGames().map((game) => game.id)).toContain('spill-it')
     const game = registry.getGame('spill-it')
     expect(game?.manifest.id).toBe('spill-it')
-    expect(game?.texts.name).toBe('Spillit')
+    expect(game?.texts.name).toBe('Spill It!')
     const module = await game!.loadModule()
     expect(module.manifest.id).toBe('spill-it')
     expect(module.View).toBeTruthy()

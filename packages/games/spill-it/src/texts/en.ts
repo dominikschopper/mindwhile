@@ -1,5 +1,5 @@
 export const en = {
-  'game.name': 'Spillit',
+  'game.name': 'Spill It!',
   'level.a': '6×6 · 4 colors',
   'level.b': '10×10 · 5 colors',
   'level.c': '14×14 · 6 colors',

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { AppButton } from '@mindwhile/game-kit'
 import { onErrorCaptured, ref, toRef } from 'vue'
 import { RouterLink, onBeforeRouteLeave, useRouter } from 'vue-router'
 import { roundState, setRoundState } from '../common/composables/use-chrome'
@@ -76,7 +77,7 @@ onBeforeRouteLeave(async (to) => {
       <h2>{{ t('result.heading') }}</h2>
       <p class="result-score">{{ scoreText }}</p>
       <div class="play-actions">
-        <button type="button" @click="startRound">{{ t('result.next') }}</button>
+        <AppButton variant="primary" @click="startRound">{{ t('result.next') }}</AppButton>
       </div>
     </section>
 

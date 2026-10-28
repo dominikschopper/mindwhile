@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AppFooter, AppHeader, IconClose, IconUserStar } from '@mindwhile/game-kit'
+import { AppButton, AppFooter, AppHeader, IconClose, IconUserStar } from '@mindwhile/game-kit'
 import { RouterLink, RouterView } from 'vue-router'
 import MainMenu from './common/components/MainMenu.vue'
 import NoticeBar from './common/components/NoticeBar.vue'
@@ -27,20 +27,28 @@ import { t } from './common/texts'
       </span>
     </template>
     <template #right>
-      <button
+      <AppButton
         v-if="roundState === 'running'"
-        type="button"
+        variant="secondary"
         class="chrome-button"
         @click="requestAbort"
       >
-        <IconClose />{{ t('footer.abort') }}
-      </button>
-      <RouterLink v-else to="/" class="chrome-button">{{ t('footer.backToGames') }}</RouterLink>
+        <template #icon><IconClose /></template>
+        {{ t('footer.abort') }}
+      </AppButton>
+      <AppButton v-else :as="RouterLink" to="/" class="chrome-button">
+        {{ t('footer.backToGames') }}
+      </AppButton>
     </template>
   </AppFooter>
 </template>
 
 <style scoped>
+.app-name {
+  font-weight: 700;
+  text-decoration: none;
+}
+
 .gamer-tag {
   display: inline-flex;
   align-items: center;

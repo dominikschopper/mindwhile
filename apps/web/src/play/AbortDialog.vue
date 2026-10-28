@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { nextTick, ref, useId } from 'vue'
+import { AppButton, AppDialog } from '@mindwhile/game-kit'
+import { ref } from 'vue'
 import { t } from './texts'
 
 const emit = defineEmits<{ confirm: []; cancel: [] }>()
-const dialog = ref<{ showModal(): void; close(): void } | null>(null)
-const headingId = useId()
+const dialog = ref<{ open(): Promise<void>; close(): void } | null>(null)
 
 async function open(): Promise<void> {
-  await nextTick()
-  dialog.value?.showModal()
+  await dialog.value?.open()
 }
 
 function keepPlaying(): void {
@@ -25,30 +24,15 @@ defineExpose({ open })
 </script>
 
 <template>
-  <dialog
-    ref="dialog"
-    class="abort-dialog"
-    :aria-labelledby="headingId"
-    @keydown.esc.prevent="keepPlaying"
-    @keydown.stop
-    @cancel.prevent="keepPlaying"
-  >
-    <h2 :id="headingId">{{ t('abort.heading') }}</h2>
+  <AppDialog ref="dialog" :heading="t('abort.heading')" @close="emit('cancel')">
     <p>{{ t('abort.text') }}</p>
-    <div class="play-actions">
-      <button type="button" class="abort-confirm" @click="confirmAbort">
+    <template #actions>
+      <AppButton variant="danger" class="abort-confirm" @click="confirmAbort">
         {{ t('abort.confirm') }}
-      </button>
-      <button type="button" class="abort-cancel" @click="keepPlaying">
+      </AppButton>
+      <AppButton variant="secondary" class="abort-cancel" @click="keepPlaying">
         {{ t('abort.cancel') }}
-      </button>
-    </div>
-  </dialog>
+      </AppButton>
+    </template>
+  </AppDialog>
 </template>
-
-<style scoped>
-.play-actions {
-  display: flex;
-  gap: var(--spacing-sm);
-}
-</style>

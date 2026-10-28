@@ -3,7 +3,7 @@ import { gameTexts, t } from './texts'
 
 describe('gameTexts', () => {
   it('has the game name', () => {
-    expect(gameTexts.name).toBe('Spillit')
+    expect(gameTexts.name).toBe('Spill It!')
   })
 
   it('names the three levels', () => {

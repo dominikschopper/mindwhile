@@ -10,7 +10,8 @@
     "./styles/layout.css": "./src/styles/layout.css",
     "./styles/reset.css": "./src/styles/reset.css",
     "./styles/tokens.css": "./src/styles/tokens.css",
-    "./styles/utilities.css": "./src/styles/utilities.css"
+    "./styles/utilities.css": "./src/styles/utilities.css",
+    "./styles/game-colors.css": "./src/styles/game-colors.css"
   },
   "dependencies": {
     "@lucide/vue": "1.59.0",

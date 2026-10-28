@@ -1,3 +1,5 @@
+import type { GameColor } from './game-colors'
+
 export const roundEnds = ['won', 'lost', 'ended'] as const
 
 export type RoundEnd = (typeof roundEnds)[number]
@@ -22,6 +24,8 @@ export interface ScorePosition {
 
 export interface GameManifest {
   id: string
+  /** Name of a game color, game-kit resolves it for light and dark. */
+  color: GameColor
   /** Icon name from the list offered by game-kit, the platform maps it to a component. */
   symbol: string
   gameVersion: number
@@ -37,6 +41,11 @@ export interface GameModule<TView = unknown> {
   View: TView
   views?: Record<string, () => Promise<TView>>
   HowToPlay: TView
+  /**
+   * Optional small, text-free board preview for the level picker. Receives the prop
+   * `level: string`; the picker label carries the meaning, so it should be aria-hidden.
+   */
+  LevelPreview?: TView
 }
 
 export interface GameTexts {

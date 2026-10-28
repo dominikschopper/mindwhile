@@ -7,6 +7,7 @@ import type { GameEntry, GameRegistry } from '../common/composables/game-registr
 export const fakeManifest: GameManifest = {
   id: 'fake',
   symbol: 'grid-2x2',
+  color: 'blue',
   gameVersion: 1,
   scoringVersion: 1,
   interfaceVersion: 1,

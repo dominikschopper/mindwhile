@@ -25,9 +25,10 @@ describe('GameSelectionView', () => {
     const tile = tiles[0]!
     expect(tile.attributes('href')).toBe('/games/spill-it')
     expect(tile.find('svg').exists()).toBe(true)
-    expect(tile.find('.tile-name').text()).toBe('Spillit')
+    expect(tile.find('.tile-name').text()).toBe('Spill It!')
     expect(tile.text()).not.toContain('spill-it')
-    expect(tile.find('.tile-result').text()).toContain('—')
+    expect(tile.classes()).toContain('game-color-orange')
+    expect(tile.find('.pill').exists()).toBe(false)
     expect(tile.find('.visually-hidden').text()).toBe('No result yet')
   })
 
@@ -35,10 +36,10 @@ describe('GameSelectionView', () => {
     vi.spyOn(bestResults, 'useBestResults').mockReturnValue({
       'spill-it': { a: [900, 0], b: [1000, 2] },
     })
-    const result = mountView().find('.tile-result')
-    expect(result.text()).toContain('1000')
-    expect(result.text()).toContain('10×10 · 5 colors')
-    expect(result.text()).not.toContain('900')
+    const wrapper = mountView()
+    expect(wrapper.find('.pill-score').text()).toBe('1000')
+    expect(wrapper.find('.pill-level').text()).toContain('10×10 · 5 colors')
+    expect(wrapper.text()).not.toContain('900')
   })
 
   it('has no level links', () => {

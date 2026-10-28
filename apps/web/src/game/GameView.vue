@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { gameSymbols } from '@mindwhile/game-kit'
+import { AppButton, LevelPicker, gameSymbols } from '@mindwhile/game-kit'
 import { computed, ref, shallowRef, watch } from 'vue'
 import type { Component } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
@@ -20,10 +20,16 @@ const symbol = computed(() =>
   manifest.value ? (gameSymbols as Record<string, Component>)[manifest.value.symbol] : undefined,
 )
 
+function bestPoints(level: string): string | undefined {
+  const points = pointsOf(bestResults[props.id]?.[level])
+  return points === undefined ? undefined : String(points)
+}
+
 const options = computed(() =>
   (manifest.value?.levels ?? []).map((level) => ({
     id: level,
     label: texts.value?.levelName(level) ?? level,
+    best: bestPoints(level),
   })),
 )
 
@@ -36,6 +42,7 @@ const selected = computed({
 const best = computed(() => pointsOf(bestResults[props.id]?.[selected.value]))
 
 const HowToPlay = shallowRef<Component | null>(null)
+const LevelPreview = shallowRef<Component | null>(null)
 const rulesFailed = ref(false)
 
 // Loads the rules of the game in the route. A rules load for a previous id is dropped.
@@ -43,12 +50,16 @@ watch(
   () => props.id,
   async (id) => {
     HowToPlay.value = null
+    LevelPreview.value = null
     rulesFailed.value = false
     const entry = registry.getGame(id)
     if (!entry) return
     try {
-      const { HowToPlay: rules } = await entry.loadModule()
-      if (props.id === id) HowToPlay.value = rules
+      const { HowToPlay: rules, LevelPreview: preview } = await entry.loadModule()
+      if (props.id === id) {
+        HowToPlay.value = rules
+        LevelPreview.value = preview ?? null
+      }
     } catch {
       if (props.id === id) rulesFailed.value = true
     }
@@ -66,20 +77,17 @@ function go(): void {
     <p role="alert">{{ t('error.notFound') }}</p>
     <RouterLink to="/">{{ t('error.back') }}</RouterLink>
   </div>
-  <div v-else class="game-page">
+  <div v-else class="game-page" :class="`game-color-${manifest.color}`">
     <div class="game-title">
       <component :is="symbol" v-if="symbol" class="game-symbol" aria-hidden="true" />
       <h1>{{ texts?.name ?? props.id }}</h1>
     </div>
-    <div class="level-row">
-      <label for="level-select">{{ t('level.label') }}</label>
-      <select id="level-select" :key="props.id" v-model="selected">
-        <option v-for="option in options" :key="option.id" :value="option.id">
-          {{ option.label }}
-        </option>
-      </select>
-      <button type="button" class="go" @click="go">{{ t('level.go') }}</button>
-    </div>
+    <LevelPicker v-model="selected" :levels="options" :legend="t('level.label')">
+      <template #step="{ level }">
+        <component :is="LevelPreview" v-if="LevelPreview" :level="level" />
+      </template>
+    </LevelPicker>
+    <AppButton variant="primary" class="go" @click="go">{{ t('level.go') }}</AppButton>
     <p class="best">
       {{ t('best.label') }}:
       <template v-if="best !== undefined">{{ best }}</template>
@@ -111,11 +119,13 @@ function go(): void {
   height: 3rem;
 }
 
-.level-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--spacing-sm);
+.game-symbol,
+h1,
+h2 {
+  color: var(--game-color);
+}
+
+.go {
   margin-block: var(--spacing-md);
 }
 

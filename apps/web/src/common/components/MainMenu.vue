@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import { IconMenu } from '@mindwhile/game-kit'
+import { AppButton, IconMenu } from '@mindwhile/game-kit'
 import { RouterLink } from 'vue-router'
 import { usePopover } from '../composables/use-popover'
 import { t } from '../texts'
 
 const { open, root, button, close, onKeydown } = usePopover()
+
+// AppButton is a component: its template ref is the instance, the trigger is its root element.
+function setButton(instance: unknown): void {
+  const el = (instance as { $el?: unknown } | null)?.$el
+  button.value = (el as typeof button.value | undefined) ?? null
+}
 
 // Keys pressed in the open menu must not reach handlers behind it (for example game shortcuts).
 function onMenuKeydown(event: Parameters<typeof onKeydown>[0]): void {
@@ -16,9 +22,8 @@ function onMenuKeydown(event: Parameters<typeof onKeydown>[0]): void {
 
 <template>
   <div ref="root" class="main-menu" @keydown="onMenuKeydown">
-    <button
-      ref="button"
-      type="button"
+    <AppButton
+      :ref="setButton"
       class="chrome-button"
       :aria-label="t('menu.button')"
       :aria-expanded="open"
@@ -26,15 +31,15 @@ function onMenuKeydown(event: Parameters<typeof onKeydown>[0]): void {
       @click="open = !open"
     >
       <IconMenu />
-    </button>
+    </AppButton>
     <ul v-show="open" id="main-menu-list" class="main-menu-list">
       <li>
         <RouterLink to="/settings" @click="close">{{ t('menu.settings') }}</RouterLink>
       </li>
       <li>
-        <button type="button" disabled aria-describedby="main-menu-language-hint">
+        <AppButton disabled aria-describedby="main-menu-language-hint">
           {{ t('menu.language') }}
-        </button>
+        </AppButton>
         <small id="main-menu-language-hint">{{ t('menu.languageHint') }}</small>
       </li>
     </ul>

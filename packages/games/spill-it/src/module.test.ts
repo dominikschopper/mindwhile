@@ -2,6 +2,7 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import HowToPlay from './HowToPlay.vue'
+import LevelPreview from './LevelPreview.vue'
 import { gameModule } from './module'
 import { createRound } from './round'
 import { t } from './texts'
@@ -12,6 +13,7 @@ describe('gameModule', () => {
     expect(gameModule.createRound).toBe(createRound)
     expect(gameModule.View).toBeDefined()
     expect(gameModule.HowToPlay).toBe(HowToPlay)
+    expect(gameModule.LevelPreview).toBe(LevelPreview)
   })
 
   it('creates a round with apply, serialize and result', () => {

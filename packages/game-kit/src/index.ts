@@ -1,3 +1,6 @@
+export { default as AppButton } from './buttons/AppButton.vue'
+export { default as AppDialog } from './dialog/AppDialog.vue'
+export { default as LevelPicker } from './level-picker/LevelPicker.vue'
 export { default as HowToExample } from './howto/HowToExample.vue'
 export { default as HowToHeading } from './howto/HowToHeading.vue'
 export { default as HowToMore } from './howto/HowToMore.vue'

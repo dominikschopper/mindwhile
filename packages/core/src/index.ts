@@ -1,3 +1,5 @@
+export { gameColors } from './game-colors'
+export type { GameColor } from './game-colors'
 export { roundEnds } from './contract'
 export type {
   GameManifest,
