@@ -41,7 +41,7 @@ interface GameModule<TView = unknown> {
 
 - Games have no routes of their own and do not use the History API. This includes memory and hash routers inside a game: a second router would have to be coordinated with the one of the platform for back key and back gesture, and the hash is already used by the platform for import links. The platform is the only place that handles back key and back gesture (abort confirmation as guard)
 - Screens inside a running round are state of the view
-- Choosing before the round (level, for fixed boards the number of the board), round end and the rules page belong to the platform
+- Choosing before the round (level, for fixed boards the number of the board), round end and the rules page belong to the platform. The level selection is the shared `LevelPicker` of `game-kit` with a slot per level for game content (see `design.md`). A game may later bring its own level selection if it needs one, nothing is defined for that yet
 - If a game opens a layer of its own inside a round (for example a dialog), it reports this to the platform through a small service, so that back closes this layer first
 - Leaving a running round (back key, links, abort) is confirmed by the platform through the leave guard. A game does not handle it
 - Keys pressed inside a platform dialog or the open menu do not reach the game, the platform stops `keydown` there. A game's own window key handler should ignore form fields, modifier keys, repeated keys and events that are already `defaultPrevented` (Spillit does this in `keyboard.ts`)
@@ -85,8 +85,9 @@ Two different things, only one of them is optional.
 
 ### Manifest
 
-- Only what the platform needs, pure data and small: `id`, `symbol`, `gameVersion`, `scoringVersion`, `interfaceVersion`, the list of levels with their IDs (`a`, `b`, `c`) and the direction of every score position (`scoring: [{ key: 'points', better: 'higher' }, { key: 'deviation', better: 'lower' }]`)
+- Only what the platform needs, pure data and small: `id`, `symbol`, `color`, `gameVersion`, `scoringVersion`, `interfaceVersion`, the list of levels with their IDs (`a`, `b`, `c`) and the direction of every score position (`scoring: [{ key: 'points', better: 'higher' }, { key: 'deviation', better: 'lower' }]`)
 - `symbol` is the name of an icon from the list that `game-kit` offers (the keys of `gameSymbols`, for example `grid-2x2` for Spillit). The platform turns the name into the icon for the tile and the game page. Pure data, nothing is loaded for it. A game cannot bring its own artwork this way
+- `color` is the primary color of the game, the name of a palette token from `game-kit` (never a hex value, so light and dark come from the token). Together with `symbol`, the name and `formatScore` from the texts it is the data that fills the platform's tile, and it colors the headings of the game page. **Not yet implemented:** the manifest has no `color` field yet. The tile itself is a platform component, a game does not bring one (see `design.md`)
 - **Level order:** the levels in the manifest are in ascending order. "Highest level" means the last one in that list that has a result (`highestLevelWithResult` in `core`). It is used for the tile on the start page. Without any result there is none
 - The level letters say nothing about difficulty; the order is the only meaning the platform gives them
 - The parameters of a level (grid size, number of colors) stay in the game logic, so the numbers exist in one place. The rule "if a parameter of a level changes, the scoring version goes up" stays with the logic and its scoring tests

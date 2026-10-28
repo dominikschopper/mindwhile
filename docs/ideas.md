@@ -1,6 +1,6 @@
 # Ideas (Mindwhile)
 
-Status: collection. Nothing here is decided or planned. An idea becomes a decision when it moves into the matching document (`architecture.md`, `tech-stack.md`, `game-contract.md`, a game document) or into a plan. Ideas for further games are in `game-candidates.md`.
+Status: collection. The design direction of the start page, tiles, pills, dialogs and the level selection is in `design.md`. Nothing here is decided or planned. An idea becomes a decision when it moves into the matching document (`architecture.md`, `tech-stack.md`, `game-contract.md`, a game document) or into a plan. Ideas for further games are in `game-candidates.md`.
 
 ## Overall impression
 
@@ -23,20 +23,21 @@ Status: collection. Nothing here is decided or planned. An idea becomes a decisi
 - Buttons and top left cell blink together for 200ms (on and off)
 - Only without reduced motion
 
-## Start page
+## Spillit variants
 
-- The start page should be more colorful
-- Each game has a dominating color. The game's icon uses that color, maybe also the title
-- Score and level are shown as pills: one at the top left, one at the top right of the title or the icon
-- Both pills have a light background (for example light yellow) and dark text
+### Joker
+
+- From a certain point on, the player gets a joker that can be used every N moves, for example colors a whole row or column, or an area, no matter what the neighbors look like. The player keeps playing and gets more options
+- Open: "from a certain point" can mean inside a round (after some moves or a fill level) or across rounds (unlocked by results). Inside a round it is pure game logic and changes nothing in the game contract. Across rounds it is an unlock rule that needs profile and storage and that the platform would have to enforce on the route
+- A variant with a joker is its own level (for example `d`) with its own parameters and its own par, because the greedy par without a joker makes `points = base × par / moves` meaningless. Results are only compared per game, level and scoring version, so a rule variant has to be a level
+- The joker use has to be part of the move list (position, direction), so the same seed and the same moves give the same result on every device
+- A par that takes the joker into account is harder to compute than the greedy par. That is its own topic when this idea is picked up
 
 ## Shared components
 
-- Provide a centralized button component and a centralized dropdown component
+- Provide a centralized button component. The dropdown for the level selection is replaced by the `LevelPicker` (see `design.md`)
 - General rule: whenever a component is used across more than one package, it moves into a shared place (`game-kit`), instead of being built twice
 
 ## Notes for when these ideas are picked up
 
 - Each animation needs a reduced-motion variant, tested like the existing fill transition of the Spillit cells
-- The dominating color of a game is per game data, so it would belong to the game's own tokens and to a field the platform can read without loading the view (like the manifest field `symbol`). Contrast of icon, title and pills has to hold in light and dark
-- The score pill on the start page shows the same information as the best result line of the game tile (best result of the highest level, with its level label); the pills would show it in a different form
