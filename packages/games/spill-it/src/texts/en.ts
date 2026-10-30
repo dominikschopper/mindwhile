@@ -1,5 +1,8 @@
 export const en = {
   'game.name': 'Spill It!',
+  'game.tagline': 'Pour color into a flooded board',
+  'game.summary':
+    'Pick colors to grow the region in the top-left corner until the whole board has one color. Use as few moves as you can.',
   'level.a': '6×6 · 4 colors',
   'level.b': '10×10 · 5 colors',
   'level.c': '14×14 · 6 colors',

@@ -12,7 +12,10 @@ const levels = [
 ]
 
 function make(modelValue = 'b', slots = {}) {
-  return mount(LevelPicker, { props: { modelValue, levels, legend: 'Choose level' }, slots })
+  return mount(LevelPicker, {
+    props: { modelValue, levels, legend: 'Choose level', selectedLabel: 'Selected' },
+    slots,
+  })
 }
 
 describe('LevelPicker', () => {
@@ -59,29 +62,26 @@ describe('LevelPicker', () => {
     expect(legend.classes()).toContain('visually-hidden')
   })
 
-  it('labels each radio and reverses the visual order by CSS', () => {
+  it('labels each radio and lays the cards out as a grid', () => {
     const wrapper = make()
     for (const label of wrapper.findAll('label')) {
       expect(wrapper.find(`#${CSS.escape(label.attributes('for')!)}`).exists()).toBe(true)
     }
     const sfc = readFileSync(join(import.meta.dirname, 'LevelPicker.vue'), 'utf8')
-    expect(sfc).toContain('column-reverse')
+    expect(sfc).toContain('grid')
+    expect(sfc).toContain('minmax(11rem, 1fr)')
   })
 
-  it('derives the highlight row from the visual position of the selected level', async () => {
-    const wrapper = make('a')
-    const steps = () => wrapper.find('.level-picker-steps').attributes('style')
-    expect(steps()).toContain('--selected-row: 2')
-    expect(steps()).toContain('--level-count: 3')
-    await wrapper.setProps({ modelValue: 'b' })
-    expect(steps()).toContain('--selected-row: 1')
+  it('shows the selected mark with the hidden selectedLabel only on the selected card', async () => {
+    const wrapper = make('b')
+    const marks = wrapper.findAll('.level-picker-mark')
+    expect(marks).toHaveLength(1)
+    expect(marks[0]!.find('svg').exists()).toBe(true)
+    expect(marks[0]!.find('.visually-hidden').text()).toBe('Selected')
+    expect(wrapper.findAll('.level-picker-item')[1]!.find('.level-picker-mark').exists()).toBe(true)
     await wrapper.setProps({ modelValue: 'c' })
-    expect(steps()).toContain('--selected-row: 0')
-    expect(wrapper.findAll('.level-picker-item').map((i) => i.attributes('style'))).toEqual([
-      '--row: 2;',
-      '--row: 1;',
-      '--row: 0;',
-    ])
+    expect(wrapper.findAll('.level-picker-item')[2]!.find('.level-picker-mark').exists()).toBe(true)
+    expect(wrapper.findAll('.level-picker-mark')).toHaveLength(1)
   })
 
   it('keeps radio semantics after selecting the second level', async () => {
@@ -97,26 +97,5 @@ describe('LevelPicker', () => {
     const sfc = readFileSync(join(import.meta.dirname, 'LevelPicker.vue'), 'utf8')
     const block = sfc.slice(sfc.indexOf('@media (prefers-reduced-motion: reduce)'))
     expect(block).toContain('transition: none')
-  })
-
-  it('declares --level-width where --level-count is set', () => {
-    // A var() inside a custom property is resolved on the element that declares it.
-    // On the fieldset --level-count does not exist, the width would be invalid and
-    // the highlight slab would collapse to zero width.
-    const sfc = readFileSync(join(import.meta.dirname, 'LevelPicker.vue'), 'utf8')
-    const rule = (selector: string) =>
-      sfc.slice(sfc.indexOf(`${selector} {`), sfc.indexOf('}', sfc.indexOf(`${selector} {`)))
-    expect(rule('.level-picker-steps')).toContain('--level-width')
-    expect(rule('.level-picker')).not.toContain('--level-width')
-  })
-
-  it('sizes the steps by margins, not by a percentage width', () => {
-    // A percentage width breaks when a parent sizes the picker by its content: the slab
-    // and the text would no longer line up.
-    const sfc = readFileSync(join(import.meta.dirname, 'LevelPicker.vue'), 'utf8')
-    const start = sfc.indexOf('.level-picker-item {')
-    const rule = sfc.slice(start, sfc.indexOf('}', start))
-    expect(rule).not.toMatch(/^\s*width\s*:/m)
-    expect(rule).toContain('margin-right')
   })
 })

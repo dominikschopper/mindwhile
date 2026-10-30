@@ -26,14 +26,14 @@ interface GameModule<TView = unknown> {
   View: TView                 // default view, receives the round
   views?: Record<string, () => Promise<TView>> // optional, per level (not used by the platform yet)
   HowToPlay: TView            // rules and scoring content (game page)
-  LevelPreview?: TView        // optional small text-free board preview per level (prop `level`), shown in the LevelPicker
+  LevelPreview?: TView        // optional small text-free board preview per level (prop `level`), shown on the level cards of the LevelPicker
 }
 ```
 
 ### Package entries
 
 - `.` (`src/manifest.ts`): the manifest, pure data. The platform reads it for the game list without loading any view
-- `./texts` (`src/texts.ts`): `GameTexts` with `name`, `levelName(level)` and `formatScore(score)`. Loaded with the game list, so the start page and the result panel need no view
+- `./texts` (`src/texts.ts`): `GameTexts` with `name`, `tagline` (short subtitle), `summary` (one or two sentences, the "TL;DR" of the game page), `levelName(level)` and `formatScore(score)`. Loaded with the game list, so the start page and the result panel need no view
 - `./module` (`src/module.ts`): `GameModule` with `createRound`, `View`, `HowToPlay` and optionally `LevelPreview`, loaded on demand when a game is opened
 - The platform builds one registry from these entries (`apps/web/src/common/composables/game-registry.ts`). It has one entry per game folder, and the folder name must equal `manifest.id`. A missing entry or a wrong folder name throws when the registry is built. A module that declares another ID throws when it is loaded. Tests inject a fake registry instead of the real games
 - The registry reads the files by path (`src/manifest.ts`, `src/texts.ts`, `src/module.ts`), the package `exports` declare the same entries for other packages
@@ -42,7 +42,7 @@ interface GameModule<TView = unknown> {
 
 - Games have no routes of their own and do not use the History API. This includes memory and hash routers inside a game: a second router would have to be coordinated with the one of the platform for back key and back gesture, and the hash is already used by the platform for import links. The platform is the only place that handles back key and back gesture (abort confirmation as guard)
 - Screens inside a running round are state of the view
-- Choosing before the round (level, for fixed boards the number of the board), round end and the rules page belong to the platform. The level selection is the shared `LevelPicker` of `game-kit` with a slot per level in which the platform renders the optional `LevelPreview` of the game (see `design.md`). A game may later bring its own level selection if it needs one, nothing is defined for that yet
+- Choosing before the round (level, for fixed boards the number of the board), round end and the rules page belong to the platform. The level selection is the shared `LevelPicker` of `game-kit` with a slot per level card in which the platform renders the optional `LevelPreview` of the game (see `design.md`). A game may later bring its own level selection if it needs one, nothing is defined for that yet
 - If a game opens a layer of its own inside a round (for example a dialog), it reports this to the platform through a small service, so that back closes this layer first
 - Leaving a running round (back key, links, abort) is confirmed by the platform through the leave guard. A game does not handle it
 - Keys pressed inside a platform dialog or the open menu do not reach the game, the platform stops `keydown` there. A game's own window key handler should ignore form fields, modifier keys, repeated keys and events that are already `defaultPrevented` (Spillit does this in `keyboard.ts`)

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { AppButton, AppFooter, AppHeader, IconClose, IconUserStar } from '@mindwhile/game-kit'
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
 import MainMenu from './common/components/MainMenu.vue'
 import NoticeBar from './common/components/NoticeBar.vue'
 import { requestAbort, roundState } from './common/composables/use-chrome'
 import { t } from './common/texts'
+
+const route = useRoute()
 </script>
 
 <template>
@@ -36,7 +38,7 @@ import { t } from './common/texts'
         <template #icon><IconClose /></template>
         {{ t('footer.abort') }}
       </AppButton>
-      <AppButton v-else :as="RouterLink" to="/" class="chrome-button">
+      <AppButton v-else-if="route.path !== '/'" :as="RouterLink" to="/" class="chrome-button">
         {{ t('footer.backToGames') }}
       </AppButton>
     </template>

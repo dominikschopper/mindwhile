@@ -17,6 +17,8 @@ export const fakeManifest: GameManifest = {
 
 export const fakeTexts: GameTexts = {
   name: 'Fake',
+  tagline: 'Fake tagline',
+  summary: 'Fake summary.',
   levelName: (level) => `Fake ${level}`,
   formatScore: (score) => `${score[0]} fake points`,
 }

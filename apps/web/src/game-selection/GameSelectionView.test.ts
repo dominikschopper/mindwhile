@@ -1,4 +1,6 @@
 // @vitest-environment happy-dom
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
@@ -18,9 +20,28 @@ describe('GameSelectionView', () => {
     vi.restoreAllMocks()
   })
 
+  it('shows the hero heading and the coming soon block', () => {
+    const wrapper = mountView()
+    expect(wrapper.findAll('h1')).toHaveLength(1)
+    expect(wrapper.find('h1').text()).toBe('Welcome to Mindwhile!')
+    expect(wrapper.find('.coming-soon h2').text()).toBe('More games are coming')
+    expect(wrapper.find('.coming-soon').text()).toContain('new puzzles')
+    expect(wrapper.find('.coming-soon a, .coming-soon button, .coming-soon form').exists()).toBe(
+      false,
+    )
+  })
+
+  it('shrinks the hero to the heading in a narrow container', () => {
+    // happy-dom has no layout, so the rule itself is checked in the source.
+    const sfc = readFileSync(join(__dirname, 'GameSelectionView.vue'), 'utf8')
+    expect(sfc).toContain('container-type: inline-size')
+    const rule = sfc.slice(sfc.indexOf('@container (max-width: 60ch)'))
+    expect(rule).toMatch(/\.hero p\s*\{\s*display:\s*none/)
+  })
+
   it('shows one tile for Spillit with symbol, name and no result', () => {
     const wrapper = mountView()
-    const tiles = wrapper.findAll('a')
+    const tiles = wrapper.findAll('.tiles a')
     expect(tiles).toHaveLength(1)
     const tile = tiles[0]!
     expect(tile.attributes('href')).toBe('/games/spill-it')

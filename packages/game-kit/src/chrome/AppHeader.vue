@@ -31,7 +31,8 @@
   z-index: 10;
   background: var(--chrome-surface-color);
   color: var(--on-chrome-color);
-  border-block-end: 3px solid var(--chrome-accent-color);
+  border-block-end: 1px solid color-mix(in srgb, var(--chrome-accent-color) 25%, transparent);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--on-chrome-color) 14%, transparent);
 }
 
 .app-header-row {
@@ -39,6 +40,7 @@
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: var(--spacing-sm);
+  padding-block: var(--spacing-xs);
   min-height: var(--button-min-size);
 }
 
@@ -59,7 +61,8 @@
 .app-header :deep(a:not(.app-button)),
 .app-header :deep(button:not(.app-button)) {
   color: var(--on-chrome-color);
-  border-radius: var(--radius);
+  border-radius: var(--radius-pill);
+  padding-inline: var(--spacing-xs);
 }
 
 .app-header :deep(button:not(.app-button)) {
@@ -71,6 +74,13 @@
 .app-header :deep(a:not(.app-button):hover),
 .app-header :deep(button:not(.app-button):hover) {
   color: var(--chrome-accent-color);
+}
+
+.app-header :deep(a.app-name:not(.app-button)) {
+  color: var(--chrome-accent-color);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 
 .app-header :deep(a:focus-visible),

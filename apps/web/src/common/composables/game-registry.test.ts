@@ -14,7 +14,13 @@ import type { GameGlobs } from './game-registry'
 
 const fakeManifest = (id: string) =>
   ({ id, symbol: 'grid-2x2', levels: ['a'] }) as unknown as GameManifest
-const fakeTexts = { name: 'X', levelName: (c: string) => c, formatScore: () => '' } as GameTexts
+const fakeTexts = {
+  name: 'X',
+  tagline: '',
+  summary: '',
+  levelName: (c: string) => c,
+  formatScore: () => '',
+} as GameTexts
 
 function fakeGlobs(folder: string, manifestId = folder): GameGlobs {
   const path = (file: string) => `/p/packages/games/${folder}/src/${file}.ts`

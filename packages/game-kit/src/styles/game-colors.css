@@ -1,27 +1,35 @@
 /*
  * Game colors: one class per name in `gameColors` (packages/core), values only.
- * `--game-color` is for headings, icons, borders and fills, `--on-game-color`
- * is the text and icon color on a fill of `--game-color`. The helpers below
+ * `--game-color` is for headings, icons, borders and fills (large text and graphics, 3:1 on the page, so
+ * not for small body text), `--on-game-color`
+ * is the text and icon color on a fill of `--game-color` or `--game-color-deep`
+ * (the darker end of a gradient). The helpers below
  * work only on or below an element with a `game-color-<name>` class.
  */
 @layer utilities {
   .game-color-blue {
+    --game-color-deep: light-dark(var(--blue-deep-light), var(--blue-deep-dark));
     --game-color: light-dark(var(--blue-medium), var(--blue-light));
     --on-game-color: light-dark(var(--gray-100), var(--gray-900));
   }
   .game-color-green {
+    --game-color-deep: light-dark(var(--green-deep-light), var(--green-deep-dark));
     --game-color: light-dark(var(--green-dark), var(--green-light));
     --on-game-color: light-dark(var(--gray-100), var(--gray-900));
   }
   .game-color-orange {
-    --game-color: light-dark(var(--orange-dark), var(--orange-light));
-    --on-game-color: light-dark(var(--gray-100), var(--gray-900));
+    --game-color-deep: light-dark(var(--orange-deep-light), var(--orange-deep-dark));
+    --game-color: light-dark(var(--orange-vivid), var(--orange-light));
+    /* Bright orange needs dark text in both themes. */
+    --on-game-color: light-dark(var(--gray-900), var(--gray-900));
   }
   .game-color-red {
+    --game-color-deep: light-dark(var(--red-deep-light), var(--red-deep-dark));
     --game-color: light-dark(var(--red-dark), var(--red-light));
     --on-game-color: light-dark(var(--gray-100), var(--gray-900));
   }
   .game-color-yellow {
+    --game-color-deep: light-dark(var(--yellow-deep-light), var(--yellow-deep-dark));
     --game-color: light-dark(var(--yellow-deep), var(--yellow-medium));
     --on-game-color: light-dark(var(--gray-100), var(--gray-900));
   }

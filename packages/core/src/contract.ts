@@ -50,6 +50,10 @@ export interface GameModule<TView = unknown> {
 
 export interface GameTexts {
   name: string
+  // Short subtitle under the name on the game page.
+  tagline: string
+  // One or two sentences: what the game is about (the "TL;DR" of the game page).
+  summary: string
   levelName(level: string): string
   // Score is the game's own score vector, returned as one display line.
   formatScore(score: readonly number[]): string

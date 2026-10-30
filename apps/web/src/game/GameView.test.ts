@@ -23,6 +23,8 @@ function otherEntry(): GameEntry {
   }
   const texts: GameTexts = {
     name: 'Other game',
+    tagline: 'Other tagline',
+    summary: 'Other summary.',
     levelName: (level) => `Other ${level}`,
     formatScore: (score) => `${score[0]} other points`,
   }
@@ -94,6 +96,19 @@ describe('GameView', () => {
     expect(wrapper.find('.best').text()).toContain('—')
   })
 
+  it('shows name, tagline and summary of the game in the header', async () => {
+    const { wrapper } = await mountView('spill-it')
+    const texts = defaultGameRegistry.getGame('spill-it')!.texts
+    expect(wrapper.find('.game-header h1').text()).toBe(texts.name)
+    expect(wrapper.find('.game-tagline').text()).toBe(texts.tagline)
+    expect(wrapper.find('.game-summary').text()).toBe(texts.summary)
+  })
+
+  it('has the level heading', async () => {
+    const { wrapper } = await mountView('spill-it')
+    expect(wrapper.find('h2.level-heading').text()).toBe('Choose a level')
+  })
+
   it('has the game color class of the manifest', async () => {
     const { wrapper } = await mountView('spill-it')
     expect(wrapper.find('.game-page').classes()).toContain('game-color-orange')
@@ -113,6 +128,7 @@ describe('GameView', () => {
     const { wrapper } = await mountView('spill-it')
     await wrapper.findAll('input[type="radio"]')[2]!.setValue(true)
     expect(wrapper.find('.best').text()).toContain('—')
+    expect(wrapper.find('.best .visually-hidden').text()).toBe('No result yet')
     await wrapper.findAll('input[type="radio"]')[0]!.setValue(true)
     expect(wrapper.find('.best').text()).toContain('640')
     vi.restoreAllMocks()
@@ -161,16 +177,24 @@ describe('GameView', () => {
     expect(wrapper.findAll('input[type="radio"]')).toHaveLength(2)
   })
 
-  it('shows the rules heading, goal and hides details until More', async () => {
+  it('keeps the rules in an accordion that is closed by default', async () => {
     const { wrapper } = await mountView('spill-it')
-    expect(wrapper.find('h2').text()).toBe('Game rules')
-    expect(wrapper.text()).toContain('Loading')
-    await vi.waitFor(() => expect(wrapper.text()).not.toContain('Loading'))
-    const toggle = wrapper.findAll('button').find((b) => b.text() === 'More')
-    expect(toggle).toBeDefined()
-    expect(wrapper.find('[aria-expanded="true"]').exists()).toBe(false)
-    await toggle!.trigger('click')
-    expect(wrapper.findAll('button').some((b) => b.text() === 'Less')).toBe(true)
+    const details = wrapper.find('details.rules')
+    expect(details.exists()).toBe(true)
+    expect(details.find('summary').text()).toBe('Full rules')
+    expect(details.attributes('open')).toBeUndefined()
+    expect(details.text()).toContain('Loading')
+    await vi.waitFor(() => expect(details.text()).not.toContain('Loading'))
+    expect(details.attributes('open')).toBeUndefined()
+    expect(details.find('.rules-body').text().length).toBeGreaterThan(0)
+  })
+
+  it('shows the selected level in the start bar', async () => {
+    const { wrapper } = await mountView('spill-it')
+    const name = defaultGameRegistry.getGame('spill-it')!.texts.levelName('b')
+    await wrapper.findAll('input[type="radio"]')[1]!.setValue(true)
+    expect(wrapper.find('.start-level').text()).toBe(name)
+    expect(wrapper.find('button.go').text()).toContain(name)
   })
 
   it('shows the other game when the route changes to its id', async () => {

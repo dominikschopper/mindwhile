@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AppButton, LevelPicker, gameSymbols } from '@mindwhile/game-kit'
+import { AppButton, IconChevronDown, IconPlay, LevelPicker, gameSymbols } from '@mindwhile/game-kit'
 import { computed, ref, shallowRef, watch } from 'vue'
 import type { Component } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
@@ -39,6 +39,7 @@ const selected = computed({
     useSelectedLevel(props.id, manifest.value?.levels ?? []).value = value
   },
 })
+const selectedName = computed(() => texts.value?.levelName(selected.value) ?? selected.value)
 const best = computed(() => pointsOf(bestResults[props.id]?.[selected.value]))
 
 const HowToPlay = shallowRef<Component | null>(null)
@@ -78,59 +79,234 @@ function go(): void {
     <RouterLink to="/">{{ t('error.back') }}</RouterLink>
   </div>
   <div v-else class="game-page" :class="`game-color-${manifest.color}`">
-    <div class="game-title">
-      <component :is="symbol" v-if="symbol" class="game-symbol" aria-hidden="true" />
-      <h1>{{ texts?.name ?? props.id }}</h1>
-    </div>
-    <LevelPicker v-model="selected" :levels="options" :legend="t('level.label')">
+    <header class="game-header">
+      <span class="game-symbol-tile" aria-hidden="true">
+        <component :is="symbol" v-if="symbol" class="game-symbol" />
+      </span>
+      <div class="game-header-text">
+        <h1>{{ texts?.name ?? props.id }}</h1>
+        <p class="game-tagline">{{ texts?.tagline }}</p>
+      </div>
+      <p class="game-summary">{{ texts?.summary }}</p>
+      <details class="rules">
+        <summary>
+          <span>{{ t('rules.summary') }}</span>
+          <IconChevronDown class="rules-chevron" aria-hidden="true" />
+        </summary>
+        <div class="rules-body">
+          <component :is="HowToPlay" v-if="HowToPlay" />
+          <p v-else-if="rulesFailed" role="alert">{{ t('rules.error') }}</p>
+          <p v-else>{{ t('rules.loading') }}</p>
+        </div>
+      </details>
+    </header>
+    <h2 class="level-heading">{{ t('level.heading') }}</h2>
+    <LevelPicker
+      v-model="selected"
+      :levels="options"
+      :legend="t('level.label')"
+      :selected-label="t('level.selected')"
+    >
       <template #step="{ level }">
         <component :is="LevelPreview" v-if="LevelPreview" :level="level" />
       </template>
     </LevelPicker>
-    <AppButton variant="primary" class="go" @click="go">{{ t('level.go') }}</AppButton>
-    <p class="best">
-      {{ t('best.label') }}:
-      <template v-if="best !== undefined">{{ best }}</template>
-      <template v-else>
-        <span aria-hidden="true">—</span>
-        <span class="visually-hidden">{{ t('best.none') }}</span>
-      </template>
-    </p>
-    <h2>{{ t('rules.heading') }}</h2>
-    <component :is="HowToPlay" v-if="HowToPlay" />
-    <p v-else-if="rulesFailed" role="alert">{{ t('rules.error') }}</p>
-    <p v-else>{{ t('rules.loading') }}</p>
+    <div class="start-bar">
+      <div class="start-info">
+        <p class="start-ready">{{ t('start.ready') }}</p>
+        <p class="start-level">{{ selectedName }}</p>
+      </div>
+      <p class="best">
+        <span class="best-label">{{ t('best.label') }}</span>
+        <span class="best-value">
+          <template v-if="best !== undefined">{{ best }}</template>
+          <template v-else>
+            <span aria-hidden="true">—</span>
+            <span class="visually-hidden">{{ t('best.none') }}</span>
+          </template>
+        </span>
+      </p>
+      <AppButton variant="primary" class="go" @click="go">
+        <IconPlay aria-hidden="true" />{{ t('start.button', { level: selectedName }) }}
+      </AppButton>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.game-title {
+.game-page {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
 }
 
-.game-title h1 {
-  margin: 0;
+.game-header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised-color);
+  box-shadow: var(--shadow-card);
+}
+
+.game-symbol-tile {
+  display: grid;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--game-color), var(--game-color-deep));
+  color: var(--on-game-color);
+  box-shadow: var(--shadow-raised);
 }
 
 .game-symbol {
-  width: 3rem;
-  height: 3rem;
+  width: 2.25rem;
+  height: 2.25rem;
 }
 
-.game-symbol,
-h1,
-h2 {
+.game-header-text h1 {
+  margin: 0;
   color: var(--game-color);
 }
 
-.go {
-  margin-block: var(--spacing-md);
+.game-tagline,
+.game-summary {
+  margin: 0;
+}
+
+.game-tagline {
+  opacity: 0.8;
+}
+
+.game-summary,
+.rules {
+  grid-column: 1 / -1;
+}
+
+.rules {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  background: var(--surface-color);
+}
+
+.rules summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  min-height: var(--button-min-size);
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.rules summary::-webkit-details-marker {
+  display: none;
+}
+
+.rules summary:focus-visible {
+  outline: 3px solid var(--focus-ring-color);
+  outline-offset: 2px;
+}
+
+.rules-chevron {
+  flex: none;
+  transition: transform 0.2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rules-chevron {
+    transition: none;
+  }
+}
+
+.rules[open] .rules-chevron {
+  transform: rotate(180deg);
+}
+
+.rules-body {
+  padding: 0 var(--spacing-md) var(--spacing-md);
+}
+
+.level-heading {
+  margin: var(--spacing-sm) 0 0;
+  color: var(--game-color);
+}
+
+.start-bar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-md);
+  border: 2px solid var(--game-color);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised-color);
+  box-shadow: var(--shadow-card);
+}
+
+.start-info p,
+.best {
+  margin: 0;
+}
+
+.start-ready {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.start-level {
+  font-size: 1.125rem;
+  font-weight: 700;
 }
 
 .best {
-  margin: 0 0 var(--spacing-md);
-  font-size: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  text-align: end;
+}
+
+.best-label {
+  font-size: 0.75rem;
+}
+
+.best-value {
+  font-weight: 700;
+}
+
+.go {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 40rem) {
+  .game-header {
+    grid-template-columns: auto 1fr;
+  }
+
+  .start-bar {
+    grid-template-columns: 1fr auto auto;
+  }
+
+  .go {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 39.999rem) {
+  .start-bar {
+    position: sticky;
+    /* the app footer is sticky at the bottom too: sit on top of it, not behind it */
+    bottom: calc(var(--button-min-size) + var(--spacing-xs) * 2 + 1px);
+    z-index: 1;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
 }
 </style>

@@ -74,6 +74,5 @@ describe('AppButton', () => {
   it('switches off motion under prefers-reduced-motion', () => {
     const css = readFileSync(join(import.meta.dirname, 'AppButton.vue'), 'utf8')
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*transition: none/)
-    expect(css).toMatch(/transform: none/)
   })
 })

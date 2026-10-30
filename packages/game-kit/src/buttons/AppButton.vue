@@ -38,6 +38,7 @@ const isNativeButton = () => props.as === 'button'
 
 <style scoped>
 .app-button {
+  --button-edge-color: var(--button-edge-tone);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -50,33 +51,32 @@ const isNativeButton = () => props.as === 'button'
   background: var(--surface-raised-color);
   color: var(--text-color);
   font: inherit;
+  font-weight: 600;
   text-decoration: none;
   cursor: pointer;
+  box-shadow: 0 var(--button-edge-height) 0 var(--button-edge-color);
   transition:
-    transform 120ms ease,
-    opacity 120ms ease;
+    transform 80ms ease,
+    box-shadow 80ms ease;
 }
 
 .app-button-primary {
+  --button-edge-color: color-mix(in srgb, var(--accent-color) 65%, var(--button-edge-mix-color));
   border-color: var(--accent-color);
   background: var(--accent-color);
   color: var(--on-accent-color);
 }
 
 .app-button-danger {
+  --button-edge-color: color-mix(in srgb, var(--danger-color) 65%, var(--button-edge-mix-color));
   border-color: var(--danger-color);
   background: var(--danger-color);
   color: var(--on-danger-color);
 }
 
-.app-button:hover:not(:disabled, [aria-disabled='true']) {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
 .app-button:active:not(:disabled, [aria-disabled='true']) {
-  opacity: 0.8;
-  transform: translateY(0);
+  transform: translateY(var(--button-edge-height));
+  box-shadow: 0 0 0 var(--button-edge-color);
 }
 
 .app-button:disabled,
@@ -93,11 +93,6 @@ const isNativeButton = () => props.as === 'button'
 @media (prefers-reduced-motion: reduce) {
   .app-button {
     transition: none;
-  }
-
-  .app-button:hover:not(:disabled, [aria-disabled='true']),
-  .app-button:active:not(:disabled, [aria-disabled='true']) {
-    transform: none;
   }
 }
 </style>

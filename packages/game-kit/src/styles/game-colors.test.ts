@@ -30,11 +30,17 @@ it('has no class for a name outside the list', () => {
 it('sets only custom properties in the color classes', () => {
   for (const { name, body } of classBlocks) {
     const props = [...body.matchAll(/([a-z-]+)\s*:/g)].map((m) => m[1]!)
-    expect(props.sort(), `.game-color-${name}`).toEqual(['--game-color', '--on-game-color'])
+    expect(props.sort(), `.game-color-${name}`).toEqual([
+      '--game-color',
+      '--game-color-deep',
+      '--on-game-color',
+    ])
   }
 })
 
-it('reaches 4.5:1 for fill and text in light and dark', () => {
+// The fill is used for headings, icons and borders (large text and graphics: 3:1 on the page).
+// Text on the fill, and on its deep end, needs 4.5:1.
+it('reaches 3:1 for the fill on the page and 4.5:1 for text on the fill in light and dark', () => {
   for (const name of gameColors) {
     const block = classBlocks.find((b) => b.name === name)!.body
     for (const theme of [0, 1] as const) {
@@ -45,12 +51,19 @@ it('reaches 4.5:1 for fill and text in light and dark', () => {
         expect(
           ratio,
           `${name} fill/surface (${theme}) = ${ratio.toFixed(2)}`,
+        ).toBeGreaterThanOrEqual(3)
+      }
+      const deep = resolveLightDark(block, palette, '--game-color-deep', theme)
+      for (const [label, bg] of [
+        ['fill', fill],
+        ['deep', deep],
+      ] as const) {
+        const onRatio = contrast(on, bg)
+        expect(
+          onRatio,
+          `${name} on/${label} (${theme}) = ${onRatio.toFixed(2)}`,
         ).toBeGreaterThanOrEqual(4.5)
       }
-      const onRatio = contrast(on, fill)
-      expect(onRatio, `${name} on/fill (${theme}) = ${onRatio.toFixed(2)}`).toBeGreaterThanOrEqual(
-        4.5,
-      )
     }
   }
 })

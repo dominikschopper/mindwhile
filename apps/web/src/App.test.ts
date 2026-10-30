@@ -12,7 +12,7 @@ const SlotChild = defineComponent({
   render: () => h(ChromeSlot, { name: 'footer-center' }, () => h('span', { id: 'probe' }, 'probe')),
 })
 
-async function setup() {
+async function setup(path = '/') {
   const router = createRouter({
     history: createMemoryHistory(),
     routes: [
@@ -20,7 +20,7 @@ async function setup() {
       { path: '/settings', component: { template: '<div />' } },
     ],
   })
-  await router.push('/')
+  await router.push(path)
   const wrapper = mount(App, { global: { plugins: [router] }, attachTo: document.body })
   await wrapper.vm.$nextTick()
   return wrapper
@@ -64,7 +64,7 @@ describe('App', () => {
   })
 
   it('shows "Back to games" when idle or ended', async () => {
-    const wrapper = await setup()
+    const wrapper = await setup('/settings')
     for (const state of ['idle', 'ended'] as const) {
       setRoundState(state)
       await wrapper.vm.$nextTick()
@@ -72,6 +72,17 @@ describe('App', () => {
       expect(link.text()).toBe('Back to games')
       expect(link.attributes('href')).toBe('/')
       expect(wrapper.find('footer button').exists()).toBe(false)
+    }
+    wrapper.unmount()
+  })
+
+  it('shows no "Back to games" button on the game selection page', async () => {
+    const wrapper = await setup('/')
+    for (const state of ['idle', 'ended'] as const) {
+      setRoundState(state)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.get('footer').text()).not.toContain('Back to games')
+      expect(wrapper.find('footer a').exists()).toBe(false)
     }
     wrapper.unmount()
   })

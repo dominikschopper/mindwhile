@@ -65,5 +65,7 @@ function onMenuKeydown(event: Parameters<typeof onKeydown>[0]): void {
   gap: var(--spacing-sm);
   background: var(--surface-raised-color);
   border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-raised);
 }
 </style>

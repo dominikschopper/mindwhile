@@ -6,6 +6,11 @@ describe('gameTexts', () => {
     expect(gameTexts.name).toBe('Spill It!')
   })
 
+  it('has tagline and summary', () => {
+    expect(gameTexts.tagline).toBe('Pour color into a flooded board')
+    expect(gameTexts.summary).toContain('as few moves as you can')
+  })
+
   it('names the three levels', () => {
     expect(gameTexts.levelName('a')).toBe('6×6 · 4 colors')
     expect(gameTexts.levelName('b')).toBe('10×10 · 5 colors')

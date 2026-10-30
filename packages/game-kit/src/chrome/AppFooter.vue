@@ -31,7 +31,8 @@
   z-index: 10;
   background: var(--chrome-surface-color);
   color: var(--on-chrome-color);
-  border-block-start: 3px solid var(--chrome-accent-color);
+  border-block-start: 1px solid color-mix(in srgb, var(--chrome-accent-color) 25%, transparent);
+  box-shadow: 0 -3px 10px color-mix(in srgb, var(--on-chrome-color) 14%, transparent);
 }
 
 .app-footer-row {
@@ -39,6 +40,7 @@
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: var(--spacing-sm);
+  padding-block: var(--spacing-xs);
   min-height: var(--button-min-size);
 }
 
@@ -59,7 +61,8 @@
 .app-footer :deep(a:not(.app-button)),
 .app-footer :deep(button:not(.app-button)) {
   color: var(--on-chrome-color);
-  border-radius: var(--radius);
+  border-radius: var(--radius-pill);
+  padding-inline: var(--spacing-xs);
 }
 
 .app-footer :deep(button:not(.app-button)) {

@@ -30,21 +30,32 @@ const palette = readPalette(css)
 const resolve = (role: string, theme: 0 | 1): string =>
   resolveLightDark(css, palette, `--${role}-color`, theme)
 
-const pairs = [
+/** Text pairs, WCAG AA 4.5:1. */
+const textPairs = [
   ['text', 'surface'],
   ['text', 'surface-raised'],
   ['accent', 'surface'],
+  ['accent', 'surface-raised'],
   ['danger', 'surface'],
+  ['danger', 'surface-raised'],
   ['success', 'surface'],
+  ['success', 'surface-raised'],
   ['warning', 'surface'],
   ['warning', 'surface-raised'],
   ['on-warning', 'warning'],
   ['on-accent', 'accent'],
   ['on-success', 'success'],
   ['on-danger', 'danger'],
-  ['on-chrome', 'chrome-surface'],
   ['link', 'surface'],
+  ['link', 'surface-raised'],
+  ['on-chrome', 'chrome-surface'],
   ['chrome-accent', 'chrome-surface'],
+] as const
+
+/** Icons and focus rings, WCAG AA 3:1. */
+const graphicPairs = [
+  ['focus-ring', 'surface'],
+  ['focus-ring', 'surface-raised'],
   ['chrome-focus-ring', 'chrome-surface'],
 ] as const
 
@@ -54,17 +65,24 @@ it('defines every role token with light-dark()', () => {
   }
 })
 
-it('reaches 4.5:1 for the role pairs in light and dark', () => {
-  const lowest = { light: Infinity, dark: Infinity }
-  for (const [theme, index] of [
-    ['light', 0],
-    ['dark', 1],
-  ] as const) {
+it('keeps hex values in the palette, roles use var()', () => {
+  const roleBlock = css.slice(css.indexOf('/* Tier 2: roles */'))
+  expect(roleBlock).not.toMatch(/#[0-9a-f]{3,8}\b/i)
+})
+
+const themes = [
+  ['light', 0],
+  ['dark', 1],
+] as const
+
+it.each([
+  ['text', textPairs, 4.5],
+  ['icons and focus rings', graphicPairs, 3],
+] as const)('reaches the AA contrast for %s in light and dark', (_, pairs, minimum) => {
+  for (const [theme, index] of themes) {
     for (const [fg, bg] of pairs) {
       const ratio = contrast(resolve(fg, index), resolve(bg, index))
-      lowest[theme] = Math.min(lowest[theme], ratio)
-      expect(ratio, `${fg}/${bg} (${theme}) = ${ratio.toFixed(2)}`).toBeGreaterThanOrEqual(4.5)
+      expect(ratio, `${fg}/${bg} (${theme}) = ${ratio.toFixed(2)}`).toBeGreaterThanOrEqual(minimum)
     }
   }
-  console.log('lowest contrast', lowest)
 })

@@ -1,4 +1,6 @@
 // @vitest-environment happy-dom
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
@@ -48,5 +50,13 @@ describe('GameTile', () => {
     expect(el.text()).toBe(name)
     expect(el.classes()).toContain('tile-name')
     expect(wrapper.element.innerHTML).toContain('tile-name')
+  })
+
+  it('wraps a 40 character name inside the tile', () => {
+    const wrapper = mountTile({ name: 'B'.repeat(40) })
+    const el = wrapper.find('.tile-name')
+    expect(el.text()).toHaveLength(40)
+    const css = readFileSync(resolve(__dirname, 'GameTile.vue'), 'utf8')
+    expect(css).toMatch(/\.tile-name\s*\{[^}]*overflow-wrap:\s*anywhere/)
   })
 })

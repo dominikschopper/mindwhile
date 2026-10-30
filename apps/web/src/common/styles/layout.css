@@ -7,5 +7,6 @@
 
   #app > main {
     flex: 1 0 auto;
+    padding-top: var(--spacing-xl);
   }
 }

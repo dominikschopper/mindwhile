@@ -15,13 +15,17 @@ defineProps<{
 
 <template>
   <RouterLink :to="`/games/${id}`" class="tile" :class="`game-color-${color}`">
-    <component :is="symbol" v-if="symbol" class="tile-symbol" aria-hidden="true" />
-    <span class="tile-name">{{ name }}</span>
-    <span v-if="best" class="tile-pills">
-      <span class="pill pill-level">{{ best.levelLabel }}</span>
-      <span class="pill pill-score">{{ best.points }}</span>
+    <span class="tile-top">
+      <component :is="symbol" v-if="symbol" class="tile-symbol" aria-hidden="true" />
     </span>
-    <span v-else class="visually-hidden">{{ t('tile.noResult') }}</span>
+    <span class="tile-body">
+      <span class="tile-name">{{ name }}</span>
+      <span v-if="best" class="tile-pills">
+        <span class="pill pill-level">{{ best.levelLabel }}</span>
+        <span class="pill pill-score">{{ best.points }}</span>
+      </span>
+      <span v-else class="visually-hidden">{{ t('tile.noResult') }}</span>
+    </span>
   </RouterLink>
 </template>
 
@@ -30,42 +34,63 @@ defineProps<{
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-sm);
   height: 100%;
-  min-height: 8rem;
-  padding: var(--card-padding);
-  border: 2px solid var(--game-color);
-  border-radius: var(--radius);
-  background: color-mix(in srgb, var(--game-color) 12%, var(--surface-raised-color));
+  max-width: 18rem;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised-color);
   color: var(--text-color);
-  text-align: center;
   text-decoration: none;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
 }
 
-.tile:hover {
-  background: color-mix(in srgb, var(--game-color) 20%, var(--surface-raised-color));
+.tile:hover,
+.tile:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-raised);
 }
 
 .tile:focus-visible {
   outline: 3px solid var(--focus-ring-color);
-  outline-offset: 2px;
+  outline-offset: 3px;
+}
+
+.tile-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 6rem;
+  padding: var(--card-padding);
+  background: linear-gradient(135deg, var(--game-color), var(--game-color-deep));
+  color: var(--on-game-color);
 }
 
 .tile-symbol {
-  width: 3rem;
-  height: 3rem;
-  color: var(--game-color);
+  width: 3.5rem;
+  height: 3.5rem;
+  color: var(--on-game-color);
+}
+
+.tile-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--card-padding);
+  background: var(--surface-raised-color);
+  color: var(--text-color);
 }
 
 .tile-name {
   max-width: 100%;
-  font-weight: 600;
+  font-weight: 700;
   overflow-wrap: anywhere;
 }
 
-/* Pills: position and colors are "to try", change them here. */
 .tile-pills {
   display: flex;
   align-items: center;
@@ -77,7 +102,7 @@ defineProps<{
 
 .pill {
   padding: 0.125rem 0.625rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1.5;
@@ -91,5 +116,16 @@ defineProps<{
 .pill-score {
   background: var(--danger-color);
   color: var(--on-danger-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile {
+    transition: none;
+  }
+
+  .tile:hover,
+  .tile:focus-visible {
+    transform: none;
+  }
 }
 </style>
