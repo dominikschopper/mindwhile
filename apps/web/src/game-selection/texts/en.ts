@@ -5,4 +5,4 @@ export const en = {
   'comingSoon.text':
     'We are working on new puzzles. They will show up here as soon as they are ready.',
   'tile.noResult': 'No result yet',
-} as const
+} as const;

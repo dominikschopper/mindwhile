@@ -5,6 +5,6 @@ export const chromeSlotNames = [
   'footer-left',
   'footer-center',
   'footer-right',
-] as const
+] as const;
 
-export type ChromeSlotName = (typeof chromeSlotNames)[number]
+export type ChromeSlotName = (typeof chromeSlotNames)[number];

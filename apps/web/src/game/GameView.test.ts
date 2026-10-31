@@ -1,14 +1,14 @@
 // @vitest-environment happy-dom
-import { flushPromises, mount } from '@vue/test-utils'
-import { describe, expect, it, vi } from 'vitest'
-import { h } from 'vue'
-import { createMemoryHistory, createRouter } from 'vue-router'
-import type { GameManifest, GameModule, GameTexts } from '@mindwhile/core'
-import type { Component } from 'vue'
-import { defaultGameRegistry, gameRegistryKey } from '../common/composables/game-registry'
-import type { GameEntry, GameRegistry } from '../common/composables/game-registry'
-import * as bestResults from '../common/composables/use-best-results'
-import GameView from './GameView.vue'
+import { flushPromises, mount } from '@vue/test-utils';
+import { describe, expect, it, vi } from 'vitest';
+import { h } from 'vue';
+import { createMemoryHistory, createRouter } from 'vue-router';
+import type { GameManifest, GameModule, GameTexts } from '@mindwhile/core';
+import type { Component } from 'vue';
+import { defaultGameRegistry, gameRegistryKey } from '../common/composables/game-registry';
+import type { GameEntry, GameRegistry } from '../common/composables/game-registry';
+import * as bestResults from '../common/composables/use-best-results';
+import GameView from './GameView.vue';
 
 function otherEntry(): GameEntry {
   const manifest: GameManifest = {
@@ -20,27 +20,27 @@ function otherEntry(): GameEntry {
     interfaceVersion: 1,
     levels: ['x', 'y'],
     scoring: [{ key: 'points', better: 'higher' }],
-  }
+  };
   const texts: GameTexts = {
     name: 'Other game',
     tagline: 'Other tagline',
     summary: 'Other summary.',
     levelName: (level) => `Other ${level}`,
     formatScore: (score) => `${score[0]} other points`,
-  }
+  };
   const gameModule: GameModule<Component> = {
     manifest,
     createRound: () => {
-      throw new Error('not used in this test')
+      throw new Error('not used in this test');
     },
     View: () => null,
     HowToPlay: () => h('p', 'Rules of the other game'),
-  }
-  return { id: 'other', manifest, texts, loadModule: async () => gameModule }
+  };
+  return { id: 'other', manifest, texts, loadModule: async () => gameModule };
 }
 
 function previewRegistry(withPreview: boolean): GameRegistry {
-  const base = otherEntry()
+  const base = otherEntry();
   const entry: GameEntry = {
     ...base,
     loadModule: async () => ({
@@ -52,25 +52,25 @@ function previewRegistry(withPreview: boolean): GameRegistry {
           }
         : {}),
     }),
-  }
-  entry.loadModule = entry.loadModule.bind(entry)
-  return { listGames: () => [entry], getGame: (id) => (id === 'other' ? entry : undefined) }
+  };
+  entry.loadModule = entry.loadModule.bind(entry);
+  return { listGames: () => [entry], getGame: (id) => (id === 'other' ? entry : undefined) };
 }
 
 function twoGameRegistry(): GameRegistry {
-  const games = [defaultGameRegistry.getGame('spill-it')!, otherEntry()]
+  const games = [defaultGameRegistry.getGame('spill-it')!, otherEntry()];
   return {
     listGames: () => games,
     getGame: (id) => games.find((game) => game.id === id),
-  }
+  };
 }
 
 async function mountView(id: string, router = makeRouter()) {
-  await router.push(`/games/${id}`)
-  await router.isReady()
-  const wrapper = mount({ template: '<RouterView />' }, { global: { plugins: [router] } })
-  await flushPromises()
-  return { wrapper, router }
+  await router.push(`/games/${id}`);
+  await router.isReady();
+  const wrapper = mount({ template: '<RouterView />' }, { global: { plugins: [router] } });
+  await flushPromises();
+  return { wrapper, router };
 }
 
 function makeRouter() {
@@ -81,149 +81,149 @@ function makeRouter() {
       { path: '/games/:id', component: GameView, props: true },
       { path: '/play/:gameId/:level', component: { template: '<p>play</p>' } },
     ],
-  })
+  });
 }
 
 describe('GameView', () => {
   it('shows symbol, name, one radio per level and the first one selected', async () => {
-    const { wrapper } = await mountView('spill-it')
-    expect(wrapper.find('svg').exists()).toBe(true)
-    expect(wrapper.find('h1').text()).toBe('Spill It!')
-    expect(wrapper.find('select').exists()).toBe(false)
-    const radios = wrapper.findAll('input[type="radio"]')
-    expect(radios).toHaveLength(3)
-    expect((radios[0]!.element as HTMLInputElement).checked).toBe(true)
-    expect(wrapper.find('.best').text()).toContain('—')
-  })
+    const { wrapper } = await mountView('spill-it');
+    expect(wrapper.find('svg').exists()).toBe(true);
+    expect(wrapper.find('h1').text()).toBe('Spill It!');
+    expect(wrapper.find('select').exists()).toBe(false);
+    const radios = wrapper.findAll('input[type="radio"]');
+    expect(radios).toHaveLength(3);
+    expect((radios[0]!.element as HTMLInputElement).checked).toBe(true);
+    expect(wrapper.find('.best').text()).toContain('—');
+  });
 
   it('shows name, tagline and summary of the game in the header', async () => {
-    const { wrapper } = await mountView('spill-it')
-    const texts = defaultGameRegistry.getGame('spill-it')!.texts
-    expect(wrapper.find('.game-header h1').text()).toBe(texts.name)
-    expect(wrapper.find('.game-tagline').text()).toBe(texts.tagline)
-    expect(wrapper.find('.game-summary').text()).toBe(texts.summary)
-  })
+    const { wrapper } = await mountView('spill-it');
+    const texts = defaultGameRegistry.getGame('spill-it')!.texts;
+    expect(wrapper.find('.game-header h1').text()).toBe(texts.name);
+    expect(wrapper.find('.game-tagline').text()).toBe(texts.tagline);
+    expect(wrapper.find('.game-summary').text()).toBe(texts.summary);
+  });
 
   it('has the level heading', async () => {
-    const { wrapper } = await mountView('spill-it')
-    expect(wrapper.find('h2.level-heading').text()).toBe('Choose a level')
-  })
+    const { wrapper } = await mountView('spill-it');
+    expect(wrapper.find('h2.level-heading').text()).toBe('Choose a level');
+  });
 
   it('has the game color class of the manifest', async () => {
-    const { wrapper } = await mountView('spill-it')
-    expect(wrapper.find('.game-page').classes()).toContain('game-color-orange')
-  })
+    const { wrapper } = await mountView('spill-it');
+    expect(wrapper.find('.game-page').classes()).toContain('game-color-orange');
+  });
 
   it('shows the points of the best score list of the selected level', async () => {
-    vi.spyOn(bestResults, 'useBestResults').mockReturnValue({ 'spill-it': { a: [640, 3] } })
-    const { wrapper } = await mountView('spill-it')
-    expect(wrapper.find('.best').text()).toContain('640')
-    expect(wrapper.find('.best').text()).not.toContain('—')
-    expect(wrapper.find('.level-picker-best').text()).toBe('640')
-    vi.restoreAllMocks()
-  })
+    vi.spyOn(bestResults, 'useBestResults').mockReturnValue({ 'spill-it': { a: [640, 3] } });
+    const { wrapper } = await mountView('spill-it');
+    expect(wrapper.find('.best').text()).toContain('640');
+    expect(wrapper.find('.best').text()).not.toContain('—');
+    expect(wrapper.find('.level-picker-best').text()).toBe('640');
+    vi.restoreAllMocks();
+  });
 
   it('updates the best result line when another level is chosen', async () => {
-    vi.spyOn(bestResults, 'useBestResults').mockReturnValue({ 'spill-it': { a: [640, 3] } })
-    const { wrapper } = await mountView('spill-it')
-    await wrapper.findAll('input[type="radio"]')[2]!.setValue(true)
-    expect(wrapper.find('.best').text()).toContain('—')
-    expect(wrapper.find('.best .visually-hidden').text()).toBe('No result yet')
-    await wrapper.findAll('input[type="radio"]')[0]!.setValue(true)
-    expect(wrapper.find('.best').text()).toContain('640')
-    vi.restoreAllMocks()
-  })
+    vi.spyOn(bestResults, 'useBestResults').mockReturnValue({ 'spill-it': { a: [640, 3] } });
+    const { wrapper } = await mountView('spill-it');
+    await wrapper.findAll('input[type="radio"]')[2]!.setValue(true);
+    expect(wrapper.find('.best').text()).toContain('—');
+    expect(wrapper.find('.best .visually-hidden').text()).toBe('No result yet');
+    await wrapper.findAll('input[type="radio"]')[0]!.setValue(true);
+    expect(wrapper.find('.best').text()).toContain('640');
+    vi.restoreAllMocks();
+  });
 
   it('keeps the selection across navigation and Go uses it', async () => {
-    const { wrapper, router } = await mountView('spill-it')
-    await wrapper.findAll('input[type="radio"]')[1]!.setValue(true)
-    await router.push('/')
-    await router.push('/games/spill-it')
-    await flushPromises()
+    const { wrapper, router } = await mountView('spill-it');
+    await wrapper.findAll('input[type="radio"]')[1]!.setValue(true);
+    await router.push('/');
+    await router.push('/games/spill-it');
+    await flushPromises();
     expect((wrapper.findAll('input[type="radio"]')[1]!.element as HTMLInputElement).checked).toBe(
       true,
-    )
-    await wrapper.find('button.go').trigger('click')
-    await flushPromises()
-    expect(router.currentRoute.value.fullPath).toBe('/play/spill-it/b')
-  })
+    );
+    await wrapper.find('button.go').trigger('click');
+    await flushPromises();
+    expect(router.currentRoute.value.fullPath).toBe('/play/spill-it/b');
+  });
 
   it('renders the level preview after the module is loaded', async () => {
-    const registry = previewRegistry(true)
-    const router = makeRouter()
-    await router.push('/games/other')
-    await router.isReady()
+    const registry = previewRegistry(true);
+    const router = makeRouter();
+    await router.push('/games/other');
+    await router.isReady();
     const wrapper = mount(
       { template: '<RouterView />' },
       { global: { plugins: [router], provide: { [gameRegistryKey]: registry } } },
-    )
-    await flushPromises()
-    const previews = wrapper.findAll('.fake-preview').map((p) => p.text())
-    expect(previews).toEqual(['preview x', 'preview y'])
-    expect(wrapper.find('.game-page').classes()).toContain('game-color-green')
-  })
+    );
+    await flushPromises();
+    const previews = wrapper.findAll('.fake-preview').map((p) => p.text());
+    expect(previews).toEqual(['preview x', 'preview y']);
+    expect(wrapper.find('.game-page').classes()).toContain('game-color-green');
+  });
 
   it('shows no preview for a game without LevelPreview', async () => {
-    const registry = previewRegistry(false)
-    const router = makeRouter()
-    await router.push('/games/other')
-    await router.isReady()
+    const registry = previewRegistry(false);
+    const router = makeRouter();
+    await router.push('/games/other');
+    await router.isReady();
     const wrapper = mount(
       { template: '<RouterView />' },
       { global: { plugins: [router], provide: { [gameRegistryKey]: registry } } },
-    )
-    await flushPromises()
-    expect(wrapper.find('.fake-preview').exists()).toBe(false)
-    expect(wrapper.findAll('input[type="radio"]')).toHaveLength(2)
-  })
+    );
+    await flushPromises();
+    expect(wrapper.find('.fake-preview').exists()).toBe(false);
+    expect(wrapper.findAll('input[type="radio"]')).toHaveLength(2);
+  });
 
   it('keeps the rules in an accordion that is closed by default', async () => {
-    const { wrapper } = await mountView('spill-it')
-    const details = wrapper.find('details.rules')
-    expect(details.exists()).toBe(true)
-    expect(details.find('summary').text()).toBe('Full rules')
-    expect(details.attributes('open')).toBeUndefined()
-    expect(details.text()).toContain('Loading')
-    await vi.waitFor(() => expect(details.text()).not.toContain('Loading'))
-    expect(details.attributes('open')).toBeUndefined()
-    expect(details.find('.rules-body').text().length).toBeGreaterThan(0)
-  })
+    const { wrapper } = await mountView('spill-it');
+    const details = wrapper.find('details.rules');
+    expect(details.exists()).toBe(true);
+    expect(details.find('summary').text()).toBe('Full rules');
+    expect(details.attributes('open')).toBeUndefined();
+    expect(details.text()).toContain('Loading');
+    await vi.waitFor(() => expect(details.text()).not.toContain('Loading'));
+    expect(details.attributes('open')).toBeUndefined();
+    expect(details.find('.rules-body').text().length).toBeGreaterThan(0);
+  });
 
   it('shows the selected level in the start bar', async () => {
-    const { wrapper } = await mountView('spill-it')
-    const name = defaultGameRegistry.getGame('spill-it')!.texts.levelName('b')
-    await wrapper.findAll('input[type="radio"]')[1]!.setValue(true)
-    expect(wrapper.find('.start-level').text()).toBe(name)
-    expect(wrapper.find('button.go').text()).toContain(name)
-  })
+    const { wrapper } = await mountView('spill-it');
+    const name = defaultGameRegistry.getGame('spill-it')!.texts.levelName('b');
+    await wrapper.findAll('input[type="radio"]')[1]!.setValue(true);
+    expect(wrapper.find('.start-level').text()).toBe(name);
+    expect(wrapper.find('button.go').text()).toContain(name);
+  });
 
   it('shows the other game when the route changes to its id', async () => {
-    const registry = twoGameRegistry()
-    const router = makeRouter()
-    await router.push('/games/spill-it')
-    await router.isReady()
+    const registry = twoGameRegistry();
+    const router = makeRouter();
+    await router.push('/games/spill-it');
+    await router.isReady();
     const wrapper = mount(
       { template: '<RouterView />' },
       { global: { plugins: [router], provide: { [gameRegistryKey]: registry } } },
-    )
-    await flushPromises()
-    expect(wrapper.find('h1').text()).toBe('Spill It!')
+    );
+    await flushPromises();
+    expect(wrapper.find('h1').text()).toBe('Spill It!');
 
-    await router.push('/games/other')
-    await flushPromises()
-    expect(wrapper.find('h1').text()).toBe('Other game')
-    const labels = wrapper.findAll('.level-picker-label').map((o) => o.text())
-    expect(labels).toEqual(['Other x', 'Other y'])
+    await router.push('/games/other');
+    await flushPromises();
+    expect(wrapper.find('h1').text()).toBe('Other game');
+    const labels = wrapper.findAll('.level-picker-label').map((o) => o.text());
+    expect(labels).toEqual(['Other x', 'Other y']);
     expect((wrapper.findAll('input[type="radio"]')[0]!.element as HTMLInputElement).checked).toBe(
       true,
-    )
-    await vi.waitFor(() => expect(wrapper.text()).toContain('Rules of the other game'))
-    expect(wrapper.text()).not.toContain('Loading')
-  })
+    );
+    await vi.waitFor(() => expect(wrapper.text()).toContain('Rules of the other game'));
+    expect(wrapper.text()).not.toContain('Loading');
+  });
 
   it('shows an error and a link back for an unknown id', async () => {
-    const { wrapper } = await mountView('nope')
-    expect(wrapper.text()).toContain('Game not found')
-    expect(wrapper.find('a').attributes('href')).toBe('/')
-  })
-})
+    const { wrapper } = await mountView('nope');
+    expect(wrapper.text()).toContain('Game not found');
+    expect(wrapper.find('a').attributes('href')).toBe('/');
+  });
+});

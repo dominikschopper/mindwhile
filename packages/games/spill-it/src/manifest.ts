@@ -1,6 +1,6 @@
-const levels = ['a', 'b', 'c'] as const
+const levels = ['a', 'b', 'c'] as const;
 
-export type SpillItLevel = (typeof levels)[number]
+export type SpillItLevel = (typeof levels)[number];
 
 export const manifest = {
   id: 'spill-it',
@@ -14,4 +14,4 @@ export const manifest = {
     { key: 'points', better: 'higher' },
     { key: 'deviation', better: 'lower' },
   ],
-} as const
+} as const;

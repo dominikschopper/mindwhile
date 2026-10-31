@@ -1,10 +1,10 @@
-import type { SpillItLevel } from './manifest'
+import type { SpillItLevel } from './manifest';
 
 export interface LevelParams {
-  size: number
-  colors: number
-  minPar: number
-  basePoints: number
+  size: number;
+  colors: number;
+  minPar: number;
+  basePoints: number;
 }
 
 // The only place with these numbers. Changing any of them changes what a score means
@@ -13,4 +13,4 @@ export const levelParams = {
   a: { size: 6, colors: 4, minPar: 5, basePoints: 500 },
   b: { size: 10, colors: 5, minPar: 12, basePoints: 750 },
   c: { size: 14, colors: 6, minPar: 20, basePoints: 1000 },
-} as const satisfies Record<SpillItLevel, LevelParams>
+} as const satisfies Record<SpillItLevel, LevelParams>;

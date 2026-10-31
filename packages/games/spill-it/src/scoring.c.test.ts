@@ -1,9 +1,9 @@
-import { playMoves } from '@mindwhile/core'
-import { describe, expect, it } from 'vitest'
-import { levelParams } from './levels'
-import { generateBoard } from './generate'
-import { createRound } from './round'
-import { boardText, firstDrawPar, pick } from './scoring-util'
+import { playMoves } from '@mindwhile/core';
+import { describe, expect, it } from 'vitest';
+import { levelParams } from './levels';
+import { generateBoard } from './generate';
+import { createRound } from './round';
+import { boardText, firstDrawPar, pick } from './scoring-util';
 
 // Pinned scoring cases of level c (scoring version 0). If one of them fails,
 // generator, par or flood logic changed: revert it or raise the scoring version.
@@ -43,54 +43,54 @@ const cases = [
     par: 27,
     moves: [3, 2, 4, 2, 5, 3, 2, 1, 0, 4, 5, 2, 3, 1, 4, 5, 0, 1, 3, 2, 0, 3, 4, 1, 5, 2, 3],
   },
-]
+];
 
 describe('scoring level c', () => {
   it.each(cases)('seed : board, par and greedy play', ({ seed, board, par, moves }) => {
-    const generated = generateBoard('c', seed)
-    expect(boardText(generated.board)).toBe(board)
-    expect(generated.par).toBe(par)
-    expect(moves).toHaveLength(par)
-    const round = createRound({ level: 'c', seed })
-    expect(playMoves(round, moves.map(pick))).toEqual({ roundEnd: 'won', score: [1000, 0] })
-    expect(round.moves).toHaveLength(par)
-  })
+    const generated = generateBoard('c', seed);
+    expect(boardText(generated.board)).toBe(board);
+    expect(generated.par).toBe(par);
+    expect(moves).toHaveLength(par);
+    const round = createRound({ level: 'c', seed });
+    expect(playMoves(round, moves.map(pick))).toEqual({ roundEnd: 'won', score: [1000, 0] });
+    expect(round.moves).toHaveLength(par);
+  });
 
   it('redraws a too-easy first board from the same stream', () => {
-    const seed = 176
-    expect(firstDrawPar('c', seed)).toBeLessThan(levelParams.c.minPar)
-    const generated = generateBoard('c', seed)
+    const seed = 176;
+    expect(firstDrawPar('c', seed)).toBeLessThan(levelParams.c.minPar);
+    const generated = generateBoard('c', seed);
     expect(boardText(generated.board)).toBe(
       'o|x#---|*--|**/*x|o##-xxo-*x|/|o*#--#*-*o---/|xx|-o-x*o|-|*/|o---*-o#-o#ox/oxo|o#***x#|-*/*#|o*#|*|#x*-|/#-x**|ox#o##ox/|-xo-xo|x-*-|#/-*-**#o||o-#-|/||||-||oo*|-|*/#*|o-oxxoo|-*o/*##--|oo-|*x|-/|oo|-||***o#*#',
-    )
-    expect(generated.par).toBe(24)
-    expect(generated.par).toBeGreaterThanOrEqual(levelParams.c.minPar)
-  })
+    );
+    expect(generated.par).toBe(24);
+    expect(generated.par).toBeGreaterThanOrEqual(levelParams.c.minPar);
+  });
 
   it('chooses the lowest color index on a greedy tie', () => {
     // seed 0 has at least one step where two colors absorb the same number of cells
-    const round = createRound({ level: 'c', seed: 0 })
+    const round = createRound({ level: 'c', seed: 0 });
     expect(boardText(round.startBoard)).toBe(
       'o*#xx||o-xo-*-/ox|o##*-o#o#|-/-*-x*|*oxx*o#o/x|**x|o##oxo#-/|xooxo|------o/*o|x*-*xx*#-#-/x--*o#xo-#x#x-/xxo--x-xxx*x-#/x#oxx##*x|-**#/ooo#oo*-xo#x|#/|**||*-|*#o|o#/#*-|o|-##-o***/|-o**|xx*-o|o#/###o-o#x*|o#|*',
-    )
-    expect(round.par).toBe(29)
+    );
+    expect(round.par).toBe(29);
     const moves = [
       0, 1, 3, 0, 1, 5, 2, 0, 1, 3, 2, 0, 4, 3, 0, 1, 2, 4, 3, 5, 1, 2, 4, 0, 3, 5, 1, 2, 4,
-    ]
-    expect(playMoves(round, moves.map(pick))).toEqual({ roundEnd: 'won', score: [1000, 0] })
-  })
+    ];
+    expect(playMoves(round, moves.map(pick))).toEqual({ roundEnd: 'won', score: [1000, 0] });
+  });
 
   it('scores a detour above par with a positive deviation', () => {
     // seed 44446: par is 29. The first move is a detour (color 3 absorbs one cell, not the
     // greedy choice), then the greedy solution of the resulting board follows: 30 moves.
     // points = floor(1000 * 29 / 30 / 10) * 10 = floor(96.67) * 10 = 960, deviation 30 - 29 = 1
-    const round = createRound({ level: 'c', seed: 44446 })
-    expect(round.par).toBe(29)
+    const round = createRound({ level: 'c', seed: 44446 });
+    expect(round.par).toBe(29);
     const moves = [
       3, 2, 1, 3, 2, 4, 5, 1, 4, 2, 3, 4, 0, 5, 1, 2, 3, 4, 1, 2, 0, 5, 3, 2, 4, 0, 1, 2, 3, 5,
-    ]
-    expect(moves).toHaveLength(30)
-    expect(playMoves(round, moves.map(pick))).toEqual({ roundEnd: 'won', score: [960, 1] })
-    expect(round.moves).toHaveLength(30)
-  })
-})
+    ];
+    expect(moves).toHaveLength(30);
+    expect(playMoves(round, moves.map(pick))).toEqual({ roundEnd: 'won', score: [960, 1] });
+    expect(round.moves).toHaveLength(30);
+  });
+});

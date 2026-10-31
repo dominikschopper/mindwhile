@@ -4,4 +4,4 @@ export const en = {
   'colorScheme.system': 'System',
   'colorScheme.light': 'Light',
   'colorScheme.dark': 'Dark',
-} as const
+} as const;

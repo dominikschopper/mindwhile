@@ -1,33 +1,33 @@
 <script setup lang="ts">
-import { nextTick, ref, useId } from 'vue'
-import { activeElement, restoreFocus, type FocusTarget } from './focus'
+import { nextTick, ref, useId } from 'vue';
+import { activeElement, restoreFocus, type FocusTarget } from './focus';
 
 withDefaults(defineProps<{ heading: string; backdrop?: 'rainbow' | 'opaque' }>(), {
   backdrop: 'rainbow',
-})
-const emit = defineEmits<{ close: [] }>()
-const dialog = ref<{ showModal(): void; close(): void } | null>(null)
-const headingId = useId()
-let opener: FocusTarget = null
+});
+const emit = defineEmits<{ close: [] }>();
+const dialog = ref<{ showModal(): void; close(): void } | null>(null);
+const headingId = useId();
+let opener: FocusTarget = null;
 
 async function open(): Promise<void> {
-  opener = activeElement()
-  await nextTick()
-  dialog.value?.showModal()
+  opener = activeElement();
+  await nextTick();
+  dialog.value?.showModal();
 }
 
 function close(): void {
-  dialog.value?.close()
-  restoreFocus(opener)
-  opener = null
+  dialog.value?.close();
+  restoreFocus(opener);
+  opener = null;
 }
 
 function dismiss(): void {
-  close()
-  emit('close')
+  close();
+  emit('close');
 }
 
-defineExpose({ open, close })
+defineExpose({ open, close });
 </script>
 
 <template>

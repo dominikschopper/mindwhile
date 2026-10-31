@@ -1,6 +1,6 @@
-export { gameColors } from './game-colors'
-export type { GameColor } from './game-colors'
-export { roundEnds } from './contract'
+export { gameColors } from './game-colors';
+export type { GameColor } from './game-colors';
+export { roundEnds } from './contract';
 export type {
   GameManifest,
   GameModule,
@@ -10,11 +10,11 @@ export type {
   RoundResult,
   ScoreDirection,
   ScorePosition,
-} from './contract'
-export { highestLevelWithResult } from './levels'
-export { createRng, nextBelow } from './rng'
-export { newSeed } from './seed'
-export type { Rng } from './rng'
-export { playMoves } from './scoring-test'
-export { createT } from './translate'
-export type { PluralText, TextKey, TextParams, TextValue, Texts, TranslateFn } from './translate'
+} from './contract';
+export { highestLevelWithResult } from './levels';
+export { createRng, nextBelow } from './rng';
+export { newSeed } from './seed';
+export type { Rng } from './rng';
+export { playMoves } from './scoring-test';
+export { createT } from './translate';
+export type { PluralText, TextKey, TextParams, TextValue, Texts, TranslateFn } from './translate';

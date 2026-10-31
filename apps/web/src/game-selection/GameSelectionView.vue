@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { highestLevelWithResult } from '@mindwhile/core'
-import { IconPuzzle, gameSymbols } from '@mindwhile/game-kit'
-import { useGameRegistry } from '../common/composables/game-registry'
-import { pointsOf, useBestResults } from '../common/composables/use-best-results'
-import GameTile from './GameTile.vue'
-import { t } from './texts'
+import { highestLevelWithResult } from '@mindwhile/core';
+import { IconPuzzle, gameSymbols } from '@mindwhile/game-kit';
+import { useGameRegistry } from '../common/composables/game-registry';
+import { pointsOf, useBestResults } from '../common/composables/use-best-results';
+import GameTile from './GameTile.vue';
+import { t } from './texts';
 
-const bestResults = useBestResults()
+const bestResults = useBestResults();
 
 const games = useGameRegistry()
   .listGames()
   .map(({ manifest: game, texts }) => {
-    const best = highestLevelWithResult(game.levels, bestResults[game.id] ?? {})
-    const points = best ? pointsOf(best.result) : undefined
+    const best = highestLevelWithResult(game.levels, bestResults[game.id] ?? {});
+    const points = best ? pointsOf(best.result) : undefined;
     return {
       id: game.id,
       name: texts.name,
@@ -24,8 +24,8 @@ const games = useGameRegistry()
         best && points !== undefined
           ? { points, levelLabel: texts.levelName(best.level) ?? best.level }
           : undefined,
-    }
-  })
+    };
+  });
 </script>
 
 <template>
@@ -34,11 +34,13 @@ const games = useGameRegistry()
       <h1>{{ t('page.heading') }}</h1>
       <p>{{ t('page.intro') }}</p>
     </section>
+
     <ul class="tiles">
       <li v-for="game in games" :key="game.id">
         <GameTile v-bind="game" />
       </li>
     </ul>
+
     <section class="coming-soon">
       <IconPuzzle class="coming-soon-icon" :size="32" />
       <div>

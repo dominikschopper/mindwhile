@@ -1,6 +1,6 @@
 export interface HighestLevelResult<T> {
-  level: string
-  result: T
+  level: string;
+  result: T;
 }
 
 // `levels` is in manifest order (ascending). Returns the last level in that
@@ -10,14 +10,14 @@ export function highestLevelWithResult<T>(
   results: Readonly<Record<string, T | undefined>>,
 ): HighestLevelResult<T> | undefined {
   for (let index = levels.length - 1; index >= 0; index -= 1) {
-    const level = levels[index]
+    const level = levels[index];
     if (level === undefined || !Object.hasOwn(results, level)) {
-      continue
+      continue;
     }
-    const result = results[level]
+    const result = results[level];
     if (result !== undefined) {
-      return { level, result }
+      return { level, result };
     }
   }
-  return undefined
+  return undefined;
 }

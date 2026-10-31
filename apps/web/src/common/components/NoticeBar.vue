@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { AppButton, IconClose } from '@mindwhile/game-kit'
-import { dismissNotice, notice } from '../composables/use-notice'
-import { t } from '../texts'
+import { AppButton, IconClose } from '@mindwhile/game-kit';
+import { dismissNotice, notice } from '../composables/use-notice';
+import { t } from '../texts';
 </script>
 
 <template>

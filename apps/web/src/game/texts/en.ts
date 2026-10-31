@@ -11,4 +11,4 @@ export const en = {
   'rules.error': 'The game rules could not be loaded.',
   'error.notFound': 'Game not found',
   'error.back': 'Back to all games',
-} as const
+} as const;

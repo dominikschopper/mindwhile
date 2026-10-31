@@ -3,7 +3,7 @@
  * This is the only source of fresh randomness in the repository.
  */
 export function newSeed(): number {
-  const [seed] = crypto.getRandomValues(new Uint32Array(1))
-  if (seed === undefined) throw new Error('crypto.getRandomValues returned no value')
-  return seed
+  const [seed] = crypto.getRandomValues(new Uint32Array(1));
+  if (seed === undefined) throw new Error('crypto.getRandomValues returned no value');
+  return seed;
 }

@@ -1,9 +1,9 @@
-import type { GameTexts } from '@mindwhile/core'
-import { formatScore } from './format-score'
-import { manifest } from './manifest'
-import { t } from './texts/translate'
+import type { GameTexts } from '@mindwhile/core';
+import { formatScore } from './format-score';
+import { manifest } from './manifest';
+import { t } from './texts/translate';
 
-export { t }
+export { t };
 
 export const gameTexts: GameTexts = {
   name: t('game.name'),
@@ -11,9 +11,9 @@ export const gameTexts: GameTexts = {
   summary: t('game.summary'),
   levelName(level) {
     if (!(manifest.levels as readonly string[]).includes(level)) {
-      throw new Error(`Unknown level: ${level}`)
+      throw new Error(`Unknown level: ${level}`);
     }
-    return t(`level.${level as (typeof manifest.levels)[number]}`)
+    return t(`level.${level as (typeof manifest.levels)[number]}`);
   },
   formatScore,
-}
+};

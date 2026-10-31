@@ -1,5 +1,5 @@
 <script setup lang="ts">
-withDefaults(defineProps<{ level?: 2 | 3 }>(), { level: 2 })
+withDefaults(defineProps<{ level?: 2 | 3 }>(), { level: 2 });
 </script>
 
 <template>

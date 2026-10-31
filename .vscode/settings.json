@@ -1,0 +1,4 @@
+{
+  "eslint.bulkSuppression.enable": true,
+  "eslint.format.enable": true
+}

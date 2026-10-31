@@ -4,16 +4,16 @@
 // theme so that all pairs stay apart for normal vision and for protanopia,
 // deuteranopia and tritanopia. Provisional until the browser check.
 
-export const paletteThemes = ['light', 'dark'] as const
-export type PaletteTheme = (typeof paletteThemes)[number]
+export const paletteThemes = ['light', 'dark'] as const;
+export type PaletteTheme = (typeof paletteThemes)[number];
 
 export interface PaletteEntry {
-  readonly color: string
-  readonly mark: string
+  readonly color: string;
+  readonly mark: string;
 }
 
-export const markBlack = '#000000'
-export const markWhite = '#ffffff'
+export const markBlack = '#000000';
+export const markWhite = '#ffffff';
 
 export const palette: Record<PaletteTheme, readonly PaletteEntry[]> = {
   light: [
@@ -32,4 +32,4 @@ export const palette: Record<PaletteTheme, readonly PaletteEntry[]> = {
     { color: '#0067a0', mark: markWhite },
     { color: '#c05500', mark: markBlack },
   ],
-}
+};

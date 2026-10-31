@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import { AppButton, AppDialog } from '@mindwhile/game-kit'
-import { ref } from 'vue'
-import { t } from './texts'
+import { AppButton, AppDialog } from '@mindwhile/game-kit';
+import { ref } from 'vue';
+import { t } from './texts';
 
-const emit = defineEmits<{ confirm: []; cancel: [] }>()
-const dialog = ref<{ open(): Promise<void>; close(): void } | null>(null)
+const emit = defineEmits<{ confirm: []; cancel: [] }>();
+const dialog = ref<{ open(): Promise<void>; close(): void } | null>(null);
 
 async function open(): Promise<void> {
-  await dialog.value?.open()
+  await dialog.value?.open();
 }
 
 function keepPlaying(): void {
-  dialog.value?.close()
-  emit('cancel')
+  dialog.value?.close();
+  emit('cancel');
 }
 
 function confirmAbort(): void {
-  dialog.value?.close()
-  emit('confirm')
+  dialog.value?.close();
+  emit('confirm');
 }
 
-defineExpose({ open })
+defineExpose({ open });
 </script>
 
 <template>

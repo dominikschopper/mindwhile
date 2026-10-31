@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useId } from 'vue'
-import { IconCheck } from '../icons'
+import { useId } from 'vue';
+import { IconCheck } from '../icons';
 
 /**
  * Level selection as a native radio group of cards. The DOM order is ascending
@@ -8,15 +8,15 @@ import { IconCheck } from '../icons'
  * the label of its radio.
  */
 defineProps<{
-  modelValue: string
-  levels: { id: string; label: string; best?: string }[]
-  legend: string
-  selectedLabel: string
-}>()
+  modelValue: string;
+  levels: { id: string; label: string; best?: string }[];
+  legend: string;
+  selectedLabel: string;
+}>();
 
-const emit = defineEmits<{ 'update:modelValue': [level: string] }>()
+const emit = defineEmits<{ 'update:modelValue': [level: string] }>();
 
-const name = useId()
+const name = useId();
 </script>
 
 <template>

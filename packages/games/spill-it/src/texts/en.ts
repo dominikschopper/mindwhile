@@ -1,6 +1,6 @@
 export const en = {
   'game.name': 'Spill It!',
-  'game.tagline': 'Pour color into a flooded board',
+  'game.tagline': 'Spill colors into a flooding board',
   'game.summary':
     'Pick colors to grow the region in the top-left corner until the whole board has one color. Use as few moves as you can.',
   'level.a': '6×6 · 4 colors',
@@ -59,4 +59,4 @@ export const en = {
   'howTo.marks.heading': 'Marks',
   'howTo.marks.text':
     'Every color has a fixed mark in its cells and on its button, so colors never depend on sight alone. The marks are small icons, in this order: infinity, alert, pulse, plane, sun and moon, apple. A level uses as many marks as it has colors.',
-} as const
+} as const;

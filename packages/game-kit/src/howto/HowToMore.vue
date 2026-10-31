@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppButton from '../buttons/AppButton.vue'
-import { Comment, Text, ref, useId, useSlots, type VNode } from 'vue'
+import AppButton from '../buttons/AppButton.vue';
+import { Comment, Text, ref, useId, useSlots, type VNode } from 'vue';
 
 /**
  * Collapsible block for the details of a game's how-to-play text.
@@ -9,28 +9,28 @@ import { Comment, Text, ref, useId, useSlots, type VNode } from 'vue'
  * default slot is empty.
  */
 defineProps<{
-  moreLabel: string
-  lessLabel: string
-}>()
+  moreLabel: string;
+  lessLabel: string;
+}>();
 
-const slots = useSlots()
-const expanded = ref(false)
-const contentId = `how-to-more-${useId()}`
+const slots = useSlots();
+const expanded = ref(false);
+const contentId = `how-to-more-${useId()}`;
 
 function hasContent(): boolean {
-  const nodes: VNode[] = slots.default?.() ?? []
+  const nodes: VNode[] = slots.default?.() ?? [];
   return nodes.some((node) => {
-    if (node.type === Comment) return false
+    if (node.type === Comment) return false;
     if (node.type === Text && typeof node.children === 'string') {
-      return node.children.trim() !== ''
+      return node.children.trim() !== '';
     }
-    if (Array.isArray(node.children)) return node.children.length > 0
-    return true
-  })
+    if (Array.isArray(node.children)) return node.children.length > 0;
+    return true;
+  });
 }
 
 function toggle(): void {
-  expanded.value = !expanded.value
+  expanded.value = !expanded.value;
 }
 </script>
 

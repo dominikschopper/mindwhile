@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import { HowToExample, HowToHeading, HowToMore, HowToParagraph } from '@mindwhile/game-kit'
-import './styles/tokens.css'
-import type { Board } from './board'
-import { applyColor } from './flood'
-import { marks } from './marks'
-import { t } from './texts'
+import { HowToExample, HowToHeading, HowToMore, HowToParagraph } from '@mindwhile/game-kit';
+import './styles/tokens.css';
+import type { Board } from './board';
+import { applyColor } from './flood';
+import { marks } from './marks';
+import { t } from './texts';
 
 // Fixed 3x3 example with three colors, rendered statically.
-const before: Board = { size: 3, cells: [0, 1, 1, 2, 0, 1, 2, 2, 0] }
-const pickedColor = 1
-const after = applyColor(before, pickedColor)
+const before: Board = { size: 3, cells: [0, 1, 1, 2, 0, 1, 2, 2, 0] };
+const pickedColor = 1;
+const after = applyColor(before, pickedColor);
 
 function rowLabel(board: Board, row: number): string {
   const rowMarks = board.cells
     .slice(row * board.size, (row + 1) * board.size)
-    .map((c) => t(marks[c]!.nameKey))
-  return t('howTo.example.row', { row: row + 1, marks: rowMarks.join(', ') })
+    .map((c) => t(marks[c]!.nameKey));
+  return t('howTo.example.row', { row: row + 1, marks: rowMarks.join(', ') });
 }
 
 function boardLabel(board: Board): string {
-  return Array.from({ length: board.size }, (_, row) => rowLabel(board, row)).join('. ')
+  return Array.from({ length: board.size }, (_, row) => rowLabel(board, row)).join('. ');
 }
 </script>
 

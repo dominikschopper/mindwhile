@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { AppButton } from '@mindwhile/game-kit'
-import { onErrorCaptured, ref, toRef } from 'vue'
-import { RouterLink, onBeforeRouteLeave, useRouter } from 'vue-router'
-import { roundState, setRoundState } from '../common/composables/use-chrome'
-import AbortDialog from './AbortDialog.vue'
-import { usePlaySession } from './use-play-session'
-import { t } from './texts'
+import { AppButton } from '@mindwhile/game-kit';
+import { onErrorCaptured, ref, toRef } from 'vue';
+import { RouterLink, onBeforeRouteLeave, useRouter } from 'vue-router';
+import { roundState, setRoundState } from '../common/composables/use-chrome';
+import AbortDialog from './AbortDialog.vue';
+import { usePlaySession } from './use-play-session';
+import { t } from './texts';
 
-const props = defineProps<{ gameId: string; level: string }>()
-const router = useRouter()
-const abortDialog = ref<InstanceType<typeof AbortDialog> | null>(null)
+const props = defineProps<{ gameId: string; level: string }>();
+const router = useRouter();
+const abortDialog = ref<InstanceType<typeof AbortDialog> | null>(null);
 
 const { module, error, framed, roundKey, result, scoreText, startRound, discardRound, failRound } =
   usePlaySession(
@@ -17,48 +17,48 @@ const { module, error, framed, roundKey, result, scoreText, startRound, discardR
     toRef(props, 'level'),
     () => void router.push(gamePage()),
     () => void router.replace('/'),
-  )
+  );
 
 // Error guard for the game's view and its descendants.
 onErrorCaptured((cause) => {
-  failRound(cause)
-  return false
-})
+  failRound(cause);
+  return false;
+});
 
 function gamePage(): string {
-  return `/games/${props.gameId}`
+  return `/games/${props.gameId}`;
 }
 
 // One shared question while the dialog is open: a second navigation waits for the same answer.
-let pendingAnswer: Promise<boolean> | null = null
-let answer: ((confirmed: boolean) => void) | null = null
+let pendingAnswer: Promise<boolean> | null = null;
+let answer: ((confirmed: boolean) => void) | null = null;
 
 function askAbort(): Promise<boolean> {
   if (!pendingAnswer) {
     pendingAnswer = new Promise<boolean>((resolve) => {
-      answer = resolve
-    })
-    void abortDialog.value?.open()
+      answer = resolve;
+    });
+    void abortDialog.value?.open();
   }
-  return pendingAnswer
+  return pendingAnswer;
 }
 
 function settle(confirmed: boolean): void {
-  const resolve = answer
-  pendingAnswer = null
-  answer = null
-  resolve?.(confirmed)
+  const resolve = answer;
+  pendingAnswer = null;
+  answer = null;
+  resolve?.(confirmed);
 }
 
 // Leave guard: only a running round asks. Confirm discards the round and goes to the game page
 // (also for links and the back button). The state is idle before the redirect, so it passes.
 onBeforeRouteLeave(async (to) => {
-  if (roundState.value !== 'running') return true
-  if (!(await askAbort())) return false
-  discardRound()
-  setRoundState('idle')
-  return to.path === gamePage() ? true : gamePage()
-})
+  if (roundState.value !== 'running') return true;
+  if (!(await askAbort())) return false;
+  discardRound();
+  setRoundState('idle');
+  return to.path === gamePage() ? true : gamePage();
+});
 </script>
 
 <template>

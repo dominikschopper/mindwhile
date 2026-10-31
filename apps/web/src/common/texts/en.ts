@@ -10,4 +10,4 @@ export const en = {
   'footer.abort': 'Abort',
   'notice.dismiss': 'Dismiss notice',
   'notice.roundDiscarded': 'Something went wrong, the round was discarded',
-} as const
+} as const;

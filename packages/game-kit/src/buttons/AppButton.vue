@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Component } from 'vue'
+import type { Component } from 'vue';
 
 /**
  * Shared button. Renders a native `<button>` by default.
@@ -10,15 +10,15 @@ import type { Component } from 'vue'
  */
 const props = withDefaults(
   defineProps<{
-    variant?: 'primary' | 'secondary' | 'danger'
-    as?: string | Component
-    type?: 'button' | 'submit' | 'reset'
-    disabled?: boolean
+    variant?: 'primary' | 'secondary' | 'danger';
+    as?: string | Component;
+    type?: 'button' | 'submit' | 'reset';
+    disabled?: boolean;
   }>(),
   { variant: 'secondary', as: 'button', type: 'button', disabled: false },
-)
+);
 
-const isNativeButton = () => props.as === 'button'
+const isNativeButton = () => props.as === 'button';
 </script>
 
 <template>

@@ -1,28 +1,34 @@
 <script setup lang="ts">
-import { AppButton, IconChevronDown, IconPlay, LevelPicker, gameSymbols } from '@mindwhile/game-kit'
-import { computed, ref, shallowRef, watch } from 'vue'
-import type { Component } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
-import { useGameRegistry } from '../common/composables/game-registry'
-import { pointsOf, useBestResults } from '../common/composables/use-best-results'
-import { useSelectedLevel } from './use-selected-level'
-import { t } from './texts'
+import {
+  AppButton,
+  IconChevronDown,
+  IconPlay,
+  LevelPicker,
+  gameSymbols,
+} from '@mindwhile/game-kit';
+import { computed, ref, shallowRef, watch } from 'vue';
+import type { Component } from 'vue';
+import { RouterLink, useRouter } from 'vue-router';
+import { useGameRegistry } from '../common/composables/game-registry';
+import { pointsOf, useBestResults } from '../common/composables/use-best-results';
+import { useSelectedLevel } from './use-selected-level';
+import { t } from './texts';
 
-const props = defineProps<{ id: string }>()
-const router = useRouter()
-const registry = useGameRegistry()
-const bestResults = useBestResults()
+const props = defineProps<{ id: string }>();
+const router = useRouter();
+const registry = useGameRegistry();
+const bestResults = useBestResults();
 
-const game = computed(() => registry.getGame(props.id))
-const manifest = computed(() => game.value?.manifest)
-const texts = computed(() => game.value?.texts)
+const game = computed(() => registry.getGame(props.id));
+const manifest = computed(() => game.value?.manifest);
+const texts = computed(() => game.value?.texts);
 const symbol = computed(() =>
   manifest.value ? (gameSymbols as Record<string, Component>)[manifest.value.symbol] : undefined,
-)
+);
 
 function bestPoints(level: string): string | undefined {
-  const points = pointsOf(bestResults[props.id]?.[level])
-  return points === undefined ? undefined : String(points)
+  const points = pointsOf(bestResults[props.id]?.[level]);
+  return points === undefined ? undefined : String(points);
 }
 
 const options = computed(() =>
@@ -31,45 +37,45 @@ const options = computed(() =>
     label: texts.value?.levelName(level) ?? level,
     best: bestPoints(level),
   })),
-)
+);
 
 const selected = computed({
   get: () => useSelectedLevel(props.id, manifest.value?.levels ?? []).value,
   set: (value: string) => {
-    useSelectedLevel(props.id, manifest.value?.levels ?? []).value = value
+    useSelectedLevel(props.id, manifest.value?.levels ?? []).value = value;
   },
-})
-const selectedName = computed(() => texts.value?.levelName(selected.value) ?? selected.value)
-const best = computed(() => pointsOf(bestResults[props.id]?.[selected.value]))
+});
+const selectedName = computed(() => texts.value?.levelName(selected.value) ?? selected.value);
+const best = computed(() => pointsOf(bestResults[props.id]?.[selected.value]));
 
-const HowToPlay = shallowRef<Component | null>(null)
-const LevelPreview = shallowRef<Component | null>(null)
-const rulesFailed = ref(false)
+const HowToPlay = shallowRef<Component | null>(null);
+const LevelPreview = shallowRef<Component | null>(null);
+const rulesFailed = ref(false);
 
 // Loads the rules of the game in the route. A rules load for a previous id is dropped.
 watch(
   () => props.id,
   async (id) => {
-    HowToPlay.value = null
-    LevelPreview.value = null
-    rulesFailed.value = false
-    const entry = registry.getGame(id)
-    if (!entry) return
+    HowToPlay.value = null;
+    LevelPreview.value = null;
+    rulesFailed.value = false;
+    const entry = registry.getGame(id);
+    if (!entry) return;
     try {
-      const { HowToPlay: rules, LevelPreview: preview } = await entry.loadModule()
+      const { HowToPlay: rules, LevelPreview: preview } = await entry.loadModule();
       if (props.id === id) {
-        HowToPlay.value = rules
-        LevelPreview.value = preview ?? null
+        HowToPlay.value = rules;
+        LevelPreview.value = preview ?? null;
       }
     } catch {
-      if (props.id === id) rulesFailed.value = true
+      if (props.id === id) rulesFailed.value = true;
     }
   },
   { immediate: true },
-)
+);
 
 function go(): void {
-  void router.push(`/play/${props.id}/${selected.value}`)
+  void router.push(`/play/${props.id}/${selected.value}`);
 }
 </script>
 

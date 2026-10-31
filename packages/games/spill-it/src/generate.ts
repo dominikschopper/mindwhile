@@ -1,10 +1,10 @@
-import { createRng, nextBelow } from '@mindwhile/core'
-import type { Board } from './board'
-import { levelParams } from './levels'
-import type { SpillItLevel } from './manifest'
-import { greedyPar } from './par'
+import { createRng, nextBelow } from '@mindwhile/core';
+import type { Board } from './board';
+import { levelParams } from './levels';
+import type { SpillItLevel } from './manifest';
+import { greedyPar } from './par';
 
-export const maxDraws = 1000
+export const maxDraws = 1000;
 
 // Draws full boards from one seeded stream (cells row by row, color = next() mod colors).
 // A board whose greedy par is below the minimum of the level is discarded and the
@@ -14,19 +14,19 @@ export function generateBoard(
   seed: number,
   limit: number = maxDraws,
 ): { board: Board; par: number } {
-  const { size, colors, minPar } = levelParams[level]
-  const rng = createRng(seed)
+  const { size, colors, minPar } = levelParams[level];
+  const rng = createRng(seed);
   for (let draw = 0; draw < limit; draw++) {
     const board: Board = {
       size,
       cells: Array.from({ length: size * size }, () => nextBelow(rng, colors)),
-    }
-    const par = greedyPar(board, colors)
+    };
+    const par = greedyPar(board, colors);
     if (par >= minPar) {
-      return { board, par }
+      return { board, par };
     }
   }
   throw new Error(
     `no board with par >= ${minPar} after ${limit} draws (level ${level}, seed ${seed})`,
-  )
+  );
 }

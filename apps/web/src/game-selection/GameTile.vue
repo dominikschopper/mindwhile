@@ -1,29 +1,34 @@
 <script setup lang="ts">
-import type { GameColor } from '@mindwhile/core'
-import type { Component } from 'vue'
-import { RouterLink } from 'vue-router'
-import { t } from './texts'
+import type { GameColor } from '@mindwhile/core';
+import type { Component } from 'vue';
+import { RouterLink } from 'vue-router';
+import { t } from './texts';
 
 defineProps<{
-  id: string
-  name: string
-  symbol?: Component
-  color: GameColor
-  best?: { points: number; levelLabel: string }
-}>()
+  id: string;
+  name: string;
+  symbol?: Component;
+  color: GameColor;
+  hiScore?: { points: number; levelLabel: string };
+}>();
 </script>
 
 <template>
   <RouterLink :to="`/games/${id}`" class="tile" :class="`game-color-${color}`">
     <span class="tile-top">
-      <component :is="symbol" v-if="symbol" class="tile-symbol" aria-hidden="true" />
-    </span>
-    <span class="tile-body">
-      <span class="tile-name">{{ name }}</span>
-      <span v-if="best" class="tile-pills">
-        <span class="pill pill-level">{{ best.levelLabel }}</span>
-        <span class="pill pill-score">{{ best.points }}</span>
+      <span class="symbol-wrapper">
+        <component :is="symbol" v-if="symbol" class="tile-symbol" aria-hidden="true" />
       </span>
+
+      <span class="tile-name">{{ name }}</span>
+    </span>
+
+    <span class="tile-body">
+      <span v-if="hiScore" class="tile-pills">
+        <span class="pill pill-level">{{ hiScore.levelLabel }}</span>
+        <span class="pill pill-score">{{ hiScore.points }}</span>
+      </span>
+
       <span v-else class="visually-hidden">{{ t('tile.noResult') }}</span>
     </span>
   </RouterLink>
@@ -62,11 +67,17 @@ defineProps<{
 .tile-top {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  gap: var(--spacing-lg);
   min-height: 6rem;
   padding: var(--card-padding);
-  background: linear-gradient(135deg, var(--game-color), var(--game-color-deep));
   color: var(--on-game-color);
+}
+
+.symbol-wrapper {
+  background: linear-gradient(135deg, var(--game-color), var(--game-color-deep));
+  padding: 1rem;
+  border-radius: var(--radius-lg);
 }
 
 .tile-symbol {
@@ -86,9 +97,10 @@ defineProps<{
 }
 
 .tile-name {
-  max-width: 100%;
+  font-size: 20px;
   font-weight: 700;
   overflow-wrap: anywhere;
+  color: var(--game-color);
 }
 
 .tile-pills {

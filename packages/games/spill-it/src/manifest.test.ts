@@ -1,28 +1,28 @@
-import { expect, it } from 'vitest'
-import { gameColors } from '@mindwhile/core'
-import { manifest } from './manifest'
+import { expect, it } from 'vitest';
+import { gameColors } from '@mindwhile/core';
+import { manifest } from './manifest';
 
 it('declares the three levels', () => {
-  expect(manifest.id).toBe('spill-it')
-  expect([...manifest.levels]).toEqual(['a', 'b', 'c'])
-})
+  expect(manifest.id).toBe('spill-it');
+  expect([...manifest.levels]).toEqual(['a', 'b', 'c']);
+});
 
 it('ranks more points as better, then a lower deviation', () => {
   expect(manifest.scoring.map(({ key, better }) => [key, better])).toEqual([
     ['points', 'higher'],
     ['deviation', 'lower'],
-  ])
-})
+  ]);
+});
 
 it('shows the grid-2x2 symbol on the tile', () => {
-  expect(manifest.symbol).toBe('grid-2x2')
-})
+  expect(manifest.symbol).toBe('grid-2x2');
+});
 
 it('uses the orange game color', () => {
-  expect(manifest.color).toBe('orange')
-  expect(gameColors).toContain(manifest.color)
-})
+  expect(manifest.color).toBe('orange');
+  expect(gameColors).toContain(manifest.color);
+});
 
 it('is at scoring version 0 until the first release', () => {
-  expect(manifest.scoringVersion).toBe(0)
-})
+  expect(manifest.scoringVersion).toBe(0);
+});

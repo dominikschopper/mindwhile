@@ -10,4 +10,4 @@ export const en = {
   'abort.cancel': 'Keep playing',
   'result.heading': 'Round finished',
   'result.next': 'Next round',
-} as const
+} as const;

@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { AppButton, IconMenu } from '@mindwhile/game-kit'
-import { RouterLink } from 'vue-router'
-import { usePopover } from '../composables/use-popover'
-import { t } from '../texts'
+import { AppButton, IconMenu } from '@mindwhile/game-kit';
+import { RouterLink } from 'vue-router';
+import { usePopover } from '../composables/use-popover';
+import { t } from '../texts';
 
-const { open, root, button, close, onKeydown } = usePopover()
+const { open, root, button, close, onKeydown } = usePopover();
 
 // AppButton is a component: its template ref is the instance, the trigger is its root element.
 function setButton(instance: unknown): void {
-  const el = (instance as { $el?: unknown } | null)?.$el
-  button.value = (el as typeof button.value | undefined) ?? null
+  const el = (instance as { $el?: unknown } | null)?.$el;
+  button.value = (el as typeof button.value | undefined) ?? null;
 }
 
 // Keys pressed in the open menu must not reach handlers behind it (for example game shortcuts).
 function onMenuKeydown(event: Parameters<typeof onKeydown>[0]): void {
-  const wasOpen = open.value
-  onKeydown(event)
-  if (wasOpen) event.stopPropagation()
+  const wasOpen = open.value;
+  onKeydown(event);
+  if (wasOpen) event.stopPropagation();
 }
 </script>
 

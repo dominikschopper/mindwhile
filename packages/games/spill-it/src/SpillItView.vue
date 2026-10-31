@@ -1,39 +1,39 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted } from 'vue'
-import './styles/tokens.css'
-import './styles/layout.css'
-import { colorForKey, type ColorKeyEvent } from './keyboard'
-import { marks } from './marks'
-import type { SpillItRound } from './round'
-import { t } from './texts'
-import { useSpillItRound } from './use-spill-it-round'
+import { computed, onBeforeUnmount, onMounted } from 'vue';
+import './styles/tokens.css';
+import './styles/layout.css';
+import { colorForKey, type ColorKeyEvent } from './keyboard';
+import { marks } from './marks';
+import type { SpillItRound } from './round';
+import { t } from './texts';
+import { useSpillItRound } from './use-spill-it-round';
 
-const props = defineProps<{ round: SpillItRound }>()
+const props = defineProps<{ round: SpillItRound }>();
 
 const { cells, size, colorCount, moveCount, par, regionColor, regionSize, solved, pick } =
-  useSpillItRound(props.round)
+  useSpillItRound(props.round);
 
-type ColorKey = `color.${0 | 1 | 2 | 3 | 4 | 5}`
+type ColorKey = `color.${0 | 1 | 2 | 3 | 4 | 5}`;
 
 function colorName(color: number): string {
-  return t(`color.${color}` as ColorKey)
+  return t(`color.${color}` as ColorKey);
 }
 
-const colorIndexes = computed(() => Array.from({ length: colorCount }, (_, i) => i))
+const colorIndexes = computed(() => Array.from({ length: colorCount }, (_, i) => i));
 
-const boardLabel = computed(() => t('board.summary', { size, regionCount: regionSize.value }))
+const boardLabel = computed(() => t('board.summary', { size, regionCount: regionSize.value }));
 
 function buttonLabel(color: number): string {
-  return t('colorButton.label', { color: colorName(color), mark: t(marks[color]!.nameKey) })
+  return t('colorButton.label', { color: colorName(color), mark: t(marks[color]!.nameKey) });
 }
 
 function onKeydown(event: ColorKeyEvent): void {
-  const color = colorForKey(event, colorCount)
-  if (color !== undefined) pick(color)
+  const color = colorForKey(event, colorCount);
+  if (color !== undefined) pick(color);
 }
 
-onMounted(() => globalThis.addEventListener('keydown', onKeydown))
-onBeforeUnmount(() => globalThis.removeEventListener('keydown', onKeydown))
+onMounted(() => globalThis.addEventListener('keydown', onKeydown));
+onBeforeUnmount(() => globalThis.removeEventListener('keydown', onKeydown));
 </script>
 
 <template>

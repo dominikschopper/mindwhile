@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import './styles/tokens.css'
-import { levelParams } from './levels'
-import type { SpillItLevel } from './manifest'
+import { computed } from 'vue';
+import './styles/tokens.css';
+import { levelParams } from './levels';
+import type { SpillItLevel } from './manifest';
 
-const props = defineProps<{ level: string }>()
+const props = defineProps<{ level: string }>();
 
-const params = computed(() => levelParams[props.level as SpillItLevel] ?? levelParams.a)
+const params = computed(() => levelParams[props.level as SpillItLevel] ?? levelParams.a);
 const cells = computed(() => {
-  const { size, colors } = params.value
+  const { size, colors } = params.value;
   // Fixed pattern: diagonal stripes with a small column shift, same for every render.
   return Array.from({ length: size * size }, (_, i) => {
-    const row = Math.floor(i / size)
-    const column = i % size
-    return (row * 2 + column + Math.floor(row / 3)) % colors
-  })
-})
+    const row = Math.floor(i / size);
+    const column = i % size;
+    return (row * 2 + column + Math.floor(row / 3)) % colors;
+  });
+});
 </script>
 
 <template>

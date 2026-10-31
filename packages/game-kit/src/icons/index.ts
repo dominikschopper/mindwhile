@@ -22,7 +22,7 @@ import {
   SunMoon as IconSunMoon,
   UserStar as IconUserStar,
   X as IconClose,
-} from '@lucide/vue'
+} from '@lucide/vue';
 
 export {
   IconActivity,
@@ -46,11 +46,11 @@ export {
   IconSquareX,
   IconSunMoon,
   IconUserStar,
-}
+};
 
 // Game symbols: icon name used in manifests -> component (platform resolves manifest.symbol).
 export const gameSymbols = {
   'grid-2x2': IconGrid2x2,
-} as const
+} as const;
 
-export type GameSymbol = keyof typeof gameSymbols
+export type GameSymbol = keyof typeof gameSymbols;

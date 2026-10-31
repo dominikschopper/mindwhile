@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { AppButton, AppFooter, AppHeader, IconClose, IconUserStar } from '@mindwhile/game-kit'
-import { RouterLink, RouterView, useRoute } from 'vue-router'
-import MainMenu from './common/components/MainMenu.vue'
-import NoticeBar from './common/components/NoticeBar.vue'
-import { requestAbort, roundState } from './common/composables/use-chrome'
-import { t } from './common/texts'
+import { AppButton, AppFooter, AppHeader, IconClose, IconUserStar } from '@mindwhile/game-kit';
+import { RouterLink, RouterView, useRoute } from 'vue-router';
+import MainMenu from './common/components/MainMenu.vue';
+import NoticeBar from './common/components/NoticeBar.vue';
+import { requestAbort, roundState } from './common/composables/use-chrome';
+import { t } from './common/texts';
 
-const route = useRoute()
+const route = useRoute();
 </script>
 
 <template>
