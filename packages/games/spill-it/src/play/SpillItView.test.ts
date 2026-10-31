@@ -1,9 +1,9 @@
 // @vitest-environment happy-dom
 import { mount } from '@vue/test-utils';
 import { describe, expect, it, vi } from 'vitest';
-import { levelParams } from './levels';
-import { greedyMoves } from './par';
-import { createRound } from './round';
+import { levelParams } from '../common/levels/levels';
+import { greedyMoves } from '../generator/par';
+import { createRound } from '../round/round';
 import SpillItView from './SpillItView.vue';
 
 function setup(level = 'a', seed = 5) {

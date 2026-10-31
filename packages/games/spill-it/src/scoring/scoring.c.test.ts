@@ -1,8 +1,8 @@
 import { playMoves } from '@mindwhile/core';
 import { describe, expect, it } from 'vitest';
-import { levelParams } from './levels';
-import { generateBoard } from './generate';
-import { createRound } from './round';
+import { levelParams } from '../common/levels/levels';
+import { generateBoard } from '../generator/generate';
+import { createRound } from '../round/round';
 import { boardText, firstDrawPar, pick } from './scoring-util';
 
 // Pinned scoring cases of level c (scoring version 0). If one of them fails,

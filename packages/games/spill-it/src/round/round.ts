@@ -1,10 +1,10 @@
 import type { Round, RoundResult } from '@mindwhile/core';
-import type { Board } from './board';
-import { levelParams } from './levels';
-import { applyColor, isSolved } from './flood';
-import { generateBoard } from './generate';
-import { pointsFor } from './points';
-import type { SpillItLevel } from './manifest';
+import type { Board } from '../common/board/board';
+import { levelParams } from '../common/levels/levels';
+import { applyColor, isSolved } from '../common/board/flood';
+import { generateBoard } from '../generator/generate';
+import { pointsFor } from '../scoring/points';
+import type { SpillItLevel } from '../manifest';
 
 export interface SpillItSavedState {
   moves: number[];

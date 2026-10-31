@@ -2,7 +2,7 @@
   :root {
     color-scheme: light dark;
 
-    /* Tier 1: palette */
+    /* ===== Tier 1: palette/raw ===== */
     /* Platform colors, sampled by eye and script from the design screens in docs/
        (estimates, fine-tuned in the browser later). */
     --white: #ffffff;
@@ -18,7 +18,6 @@
     --aubergine-700: #2b1933; /* dark header and footer */
     --aubergine-800: #26142e; /* dark raised surface */
     --aubergine-900: #1d0c26; /* dark page */
-    --yellow-sun: #ecd632; /* dark accent */
 
     /* Game colors, used by game-colors.css. */
     --green-dark: #0b4611; /* black-forest */
@@ -66,19 +65,19 @@
     --font-family:
       'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
-    /* Tier 2: roles */
+    /* ===== Tier 2: roles ===== */
     /* Light: violet and magenta on rose white. Dark: aubergine with a yellow accent. */
     --text-color: light-dark(var(--violet-950), var(--rose-white));
     --surface-color: light-dark(var(--rose-white), var(--aubergine-900));
     --surface-raised-color: light-dark(var(--white), var(--aubergine-800));
     --border-color: light-dark(var(--violet-200), var(--aubergine-500));
-    --accent-color: light-dark(var(--violet-600), var(--yellow-sun));
+    --accent-color: light-dark(var(--violet-600), var(--yellow-medium));
     --success-color: light-dark(var(--green-medium), var(--green-light));
     --warning-color: light-dark(var(--orange-dark), var(--yellow-medium));
     /* Text and icons on a warning-colored fill. */
     --on-warning-color: light-dark(var(--white), var(--aubergine-900));
     --danger-color: light-dark(var(--red-dark), var(--red-light));
-    --focus-ring-color: light-dark(var(--violet-600), var(--yellow-sun));
+    --focus-ring-color: light-dark(var(--violet-600), var(--yellow-medium));
     /* Text and icons on filled accent, success and danger backgrounds. */
     --on-accent-color: light-dark(var(--white), var(--aubergine-900));
     --on-success-color: light-dark(var(--white), var(--aubergine-900));
@@ -89,10 +88,10 @@
        dark page. */
     --chrome-surface-color: light-dark(var(--aubergine-700), var(--lilac-200));
     --on-chrome-color: light-dark(var(--rose-white), var(--aubergine-900));
-    --chrome-accent-color: light-dark(var(--yellow-sun), var(--magenta-800));
-    --chrome-focus-ring-color: light-dark(var(--yellow-sun), var(--violet-600));
+    --chrome-accent-color: light-dark(var(--yellow-medium), var(--magenta-800));
+    --chrome-focus-ring-color: light-dark(var(--yellow-medium), var(--violet-600));
 
-    /* Tier 3: components */
+    /* ===== Tier 3: components ===== */
     --card-padding: var(--spacing-md);
     --button-min-size: 2.75rem;
     /* Bottom edge of the 3D buttons; the pressed state moves down by this height. */

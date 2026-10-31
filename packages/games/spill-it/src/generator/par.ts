@@ -1,5 +1,5 @@
-import type { Board } from './board';
-import { applyColor, isSolved, startRegion } from './flood';
+import type { Board } from '../common/board/board';
+import { applyColor, isSolved, startRegion } from '../common/board/flood';
 
 // Deterministic approximation: every step takes the color that makes the region
 // absorb the most new cells, a tie goes to the lowest color index.

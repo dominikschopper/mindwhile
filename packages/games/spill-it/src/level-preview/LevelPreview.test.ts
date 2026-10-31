@@ -2,7 +2,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 import LevelPreview from './LevelPreview.vue';
-import { levelParams } from './levels';
+import { levelParams } from '../common/levels/levels';
 
 describe('LevelPreview', () => {
   for (const level of ['a', 'b', 'c'] as const) {

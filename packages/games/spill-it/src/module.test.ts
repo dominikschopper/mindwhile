@@ -1,10 +1,10 @@
 // @vitest-environment happy-dom
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
-import HowToPlay from './HowToPlay.vue';
-import LevelPreview from './LevelPreview.vue';
+import HowToPlay from './how-to-play/HowToPlay.vue';
+import LevelPreview from './level-preview/LevelPreview.vue';
 import { gameModule } from './module';
-import { createRound } from './round';
+import { createRound } from './round/round';
 import { t } from './texts';
 
 describe('gameModule', () => {

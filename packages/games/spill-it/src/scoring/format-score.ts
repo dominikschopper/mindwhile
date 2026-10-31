@@ -1,4 +1,4 @@
-import { t } from './texts/translate';
+import { t } from '../common/texts/translate';
 
 // Score is [points, deviation]: points first, the deviation from par as detail.
 export function formatScore(score: readonly number[]): string {

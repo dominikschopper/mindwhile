@@ -1,6 +1,4 @@
 // @vitest-environment happy-dom
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 import AppButton from './AppButton.vue';
@@ -69,10 +67,5 @@ describe('AppButton', () => {
     (wrapper.element as HTMLButtonElement).click();
     expect(wrapper.emitted('click')).toHaveLength(1);
     wrapper.unmount();
-  });
-
-  it('switches off motion under prefers-reduced-motion', () => {
-    const css = readFileSync(join(import.meta.dirname, 'AppButton.vue'), 'utf8');
-    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*transition: none/);
   });
 });

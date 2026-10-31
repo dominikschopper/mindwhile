@@ -2,7 +2,7 @@
 
 Status: draft. Spillit is our version of the classic flood-fill game and the test game of the beta. Platform rules, formats and versioning live in `architecture.md`, terms in `glossary.md`. The game ID in code is `spill-it`.
 
-Display name: "Spill It!" (`game.name` in `texts/en.ts`). The ID stays `spill-it`; package names and the spelling "Spillit" in code and prose stay as they are.
+Display name: "Spill It!" (`game.name` in `common/texts/en.ts`). The ID stays `spill-it`; package names and the spelling "Spillit" in code and prose stay as they are.
 
 ## Basic rule
 
@@ -25,7 +25,7 @@ Display name: "Spill It!" (`game.name` in `texts/en.ts`). The ID stays `spill-it
 - **Controls: color and mark always together.** Every color has a fixed mark in the cell, in this order, as Lucide icons (SVG shapes, not characters): `infinity`, `circle-alert`, `activity`, `plane`, `sun-moon`, `apple`. Their screen reader names are "infinity", "alert", "pulse", "plane", "sun and moon", "apple". A level uses as many of the first marks as it has colors (4, 5 or 6). The reserve icons `paw-print`, `film` and `square-x` are offered by `game-kit` but not used yet. The marks belong to the presentation, not to the scoring (no version bump when they change). A color bar at the bottom to tap, the same marks on the color buttons. Reduced motion (following the system setting) switches off the fill animation. Every color button has a screen reader label with color name and mark name (for example "Orange, infinity"), the board is one labelled image, keyboard operation is possible. Browser check: icons and colors fit, including 14×14 cells in both themes
 - **Round behavior.** A move is `{ type: 'pick', color }`. Picking the color the start region already has, or any move after the board is solved, is ignored and not counted. Invalid data throws. `serialize()` returns `{ moves }` (the counted colors), board and counter are replayed from seed and moves on restore
 - **Scoring version 0 until the first release.** `scoringVersion` is 0 while no release exists and becomes 1 with the first release. Until then generator, par and minimum par may change without raising it, from the release on every change raises it
-- **Scoring tests: fixed test cases per level (mandatory).** Several fixed seeds per level. Every test checks the generated grid as text (mark per cell), the par and a move sequence with the expected move count and deviation. In addition edge cases: discarded boards that were too easy, ties in the greedy choice, negative deviation. If generator or par change, the tests fail and force a new scoring version. The seeds and expected values were generated once from the implementation and pinned (5 seeds per level in `src/scoring.<level>.test.ts`)
+- **Scoring tests: fixed test cases per level (mandatory).** Several fixed seeds per level. Every test checks the generated grid as text (mark per cell), the par and a move sequence with the expected move count and deviation. In addition edge cases: discarded boards that were too easy, ties in the greedy choice, negative deviation. If generator or par change, the tests fail and force a new scoring version. The seeds and expected values were generated once from the implementation and pinned (5 seeds per level in `src/scoring/scoring.<level>.test.ts`)
 
 ## Ideas for later (not decided)
 

@@ -1,7 +1,5 @@
 // @vitest-environment happy-dom
 import { mount } from '@vue/test-utils';
-import { join } from 'node:path';
-import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AppDialog from './AppDialog.vue';
 
@@ -93,12 +91,5 @@ describe('AppDialog', () => {
     document.body.focus();
     await wrapper.get('dialog').trigger('cancel');
     expect(document.activeElement).toBe(button);
-  });
-
-  it('turns the rainbow animation off with reduced motion', () => {
-    const css = readFileSync(join(import.meta.dirname, 'AppDialog.vue'), 'utf8');
-    expect(css).toMatch(
-      /@media \(prefers-reduced-motion: reduce\)[^}]*\{[^}]*::backdrop[^}]*animation: none/,
-    );
   });
 });

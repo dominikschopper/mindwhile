@@ -1,6 +1,6 @@
 import vue from '@vitejs/plugin-vue';
 import { defineConfig, loadEnv, type PluginOption } from 'vite';
-import vueDevTools, { type VitePluginVueDevToolsOptions } from 'vite-plugin-vue-devtools';
+import vueDevTools from 'vite-plugin-vue-devtools';
 import { layerOrderFirst } from './build/layer-order.ts';
 import { sfcLayer } from './build/sfc-layer.ts';
 

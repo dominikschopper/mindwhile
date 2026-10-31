@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { neighbors, type Board } from './board';
-import { levelParams } from './levels';
+import { levelParams } from '../levels/levels';
 import { applyColor, isSolved, startRegion } from './flood';
 
 function board(size: number, rows: string): Board {

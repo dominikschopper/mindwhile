@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted } from 'vue';
-import './styles/tokens.css';
-import './styles/layout.css';
+import '../common/styles/tokens.css';
+import '../common/styles/layout.css';
 import { colorForKey, type ColorKeyEvent } from './keyboard';
-import { marks } from './marks';
-import type { SpillItRound } from './round';
-import { t } from './texts';
-import { useSpillItRound } from './use-spill-it-round';
+import { marks } from '../common/board/marks';
+import type { SpillItRound } from '../round/round';
+import { t } from '../texts';
+import { useSpillItRound } from './composables/use-spill-it-round';
 
 const props = defineProps<{ round: SpillItRound }>();
 

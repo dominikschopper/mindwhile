@@ -1,4 +1,4 @@
-import type { SpillItLevel } from './manifest';
+import type { SpillItLevel } from '../../manifest';
 
 export interface LevelParams {
   size: number;

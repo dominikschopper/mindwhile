@@ -1,8 +1,8 @@
 import { createRng, nextBelow } from '@mindwhile/core';
 import { describe, expect, it } from 'vitest';
-import { levelParams } from './levels';
+import { levelParams } from '../common/levels/levels';
 import { generateBoard } from './generate';
-import type { SpillItLevel } from './manifest';
+import type { SpillItLevel } from '../manifest';
 import { greedyPar } from './par';
 
 const levels: SpillItLevel[] = ['a', 'b', 'c'];

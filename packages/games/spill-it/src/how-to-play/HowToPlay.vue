@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { HowToExample, HowToHeading, HowToMore, HowToParagraph } from '@mindwhile/game-kit';
-import './styles/tokens.css';
-import type { Board } from './board';
-import { applyColor } from './flood';
-import { marks } from './marks';
-import { t } from './texts';
+import '../common/styles/tokens.css';
+import type { Board } from '../common/board/board';
+import { applyColor } from '../common/board/flood';
+import { marks } from '../common/board/marks';
+import { t } from '../texts';
 
 // Fixed 3x3 example with three colors, rendered statically.
 const before: Board = { size: 3, cells: [0, 1, 1, 2, 0, 1, 2, 2, 0] };

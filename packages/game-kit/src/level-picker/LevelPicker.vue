@@ -9,7 +9,7 @@ import { IconCheck } from '../icons';
  */
 defineProps<{
   modelValue: string;
-  levels: { id: string; label: string; best?: string }[];
+  levels: { id: string; label: string; hiScore?: string }[];
   legend: string;
   selectedLabel: string;
 }>();
@@ -47,7 +47,7 @@ const name = useId();
           <span class="level-picker-preview">
             <slot name="step" :level="level.id" :selected="level.id === modelValue" />
           </span>
-          <span v-if="level.best" class="level-picker-best">{{ level.best }}</span>
+          <span v-if="level.hiScore" class="level-picker-hiscore">{{ level.hiScore }}</span>
         </label>
       </div>
     </div>
@@ -80,7 +80,7 @@ const name = useId();
   grid-template-areas:
     'label mark'
     'preview preview'
-    'best best';
+    'hiscore hiscore';
   align-items: center;
   gap: var(--spacing-sm);
   box-sizing: border-box;
@@ -131,8 +131,8 @@ const name = useId();
   justify-content: center;
 }
 
-.level-picker-best {
-  grid-area: best;
+.level-picker-hiscore {
+  grid-area: hiscore;
   font-size: 0.875rem;
 }
 
@@ -145,7 +145,7 @@ const name = useId();
     grid-template-columns: auto 1fr auto;
     grid-template-areas:
       'preview label mark'
-      'preview best best';
+      'preview hiscore hiscore';
     align-content: center;
     column-gap: var(--spacing-md);
   }

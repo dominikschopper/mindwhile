@@ -1,8 +1,8 @@
 import { createRng, nextBelow } from '@mindwhile/core';
-import type { Board } from './board';
-import { levelParams } from './levels';
-import type { SpillItLevel } from './manifest';
-import { greedyPar } from './par';
+import type { Board } from '../common/board/board';
+import { levelParams } from '../common/levels/levels';
+import type { SpillItLevel } from '../manifest';
+import { greedyPar } from '../generator/par';
 
 // Marks belong to the presentation, here they only make the pinned boards readable.
 const marks = 'x*o-#|';

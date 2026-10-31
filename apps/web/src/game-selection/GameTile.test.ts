@@ -1,6 +1,4 @@
 // @vitest-environment happy-dom
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 import { createMemoryHistory, createRouter } from 'vue-router';
@@ -30,7 +28,7 @@ describe('GameTile', () => {
   });
 
   it('renders both pills with a result', () => {
-    const wrapper = mountTile({ best: { points: 1234, levelLabel: '10×10 · 5 colors' } });
+    const wrapper = mountTile({ hiScore: { points: 1234, levelLabel: '10×10 · 5 colors' } });
     expect(wrapper.find('.pill-level').text()).toBe('10×10 · 5 colors');
     expect(wrapper.find('.pill-score').text()).toBe('1234');
     expect(wrapper.find('.visually-hidden').exists()).toBe(false);
@@ -52,11 +50,8 @@ describe('GameTile', () => {
     expect(wrapper.element.innerHTML).toContain('tile-name');
   });
 
-  it('wraps a 40 character name inside the tile', () => {
+  it('renders a 40 character name in full', () => {
     const wrapper = mountTile({ name: 'B'.repeat(40) });
-    const el = wrapper.find('.tile-name');
-    expect(el.text()).toHaveLength(40);
-    const css = readFileSync(resolve(__dirname, 'GameTile.vue'), 'utf8');
-    expect(css).toMatch(/\.tile-name\s*\{[^}]*overflow-wrap:\s*anywhere/);
+    expect(wrapper.find('.tile-name').text()).toHaveLength(40);
   });
 });

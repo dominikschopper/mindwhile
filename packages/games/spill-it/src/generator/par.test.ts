@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Board } from './board';
-import { applyColor, isSolved } from './flood';
+import type { Board } from '../common/board/board';
+import { applyColor, isSolved } from '../common/board/flood';
 import { greedyMoves, greedyPar } from './par';
 
 function board(size: number, rows: string): Board {

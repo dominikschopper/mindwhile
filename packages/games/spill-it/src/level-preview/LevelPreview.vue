@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import './styles/tokens.css';
-import { levelParams } from './levels';
-import type { SpillItLevel } from './manifest';
+import '../common/styles/tokens.css';
+import { levelParams } from '../common/levels/levels';
+import type { SpillItLevel } from '../manifest';
 
 const props = defineProps<{ level: string }>();
 

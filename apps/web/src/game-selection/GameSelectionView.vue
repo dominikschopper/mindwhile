@@ -20,7 +20,7 @@ const games = useGameRegistry()
       symbol: (gameSymbols as Record<string, (typeof gameSymbols)[keyof typeof gameSymbols]>)[
         game.symbol
       ],
-      best:
+      hiScore:
         best && points !== undefined
           ? { points, levelLabel: texts.levelName(best.level) ?? best.level }
           : undefined,

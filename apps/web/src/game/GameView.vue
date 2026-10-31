@@ -35,7 +35,7 @@ const options = computed(() =>
   (manifest.value?.levels ?? []).map((level) => ({
     id: level,
     label: texts.value?.levelName(level) ?? level,
-    best: bestPoints(level),
+    hiScore: bestPoints(level),
   })),
 );
 

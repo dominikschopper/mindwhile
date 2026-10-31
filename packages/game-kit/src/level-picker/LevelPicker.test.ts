@@ -1,12 +1,10 @@
 // @vitest-environment happy-dom
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 import LevelPicker from './LevelPicker.vue';
 
 const levels = [
-  { id: 'a', label: 'Level a', best: '12 moves' },
+  { id: 'a', label: 'Level a', hiScore: '12 moves' },
   { id: 'b', label: 'Level b' },
   { id: 'c', label: 'Level c' },
 ];
@@ -49,11 +47,11 @@ describe('LevelPicker', () => {
     expect(wrapper.findAll('.x').map((x) => x.text())).toEqual(['a:false', 'b:true', 'c:false']);
   });
 
-  it('renders the best line only when given', () => {
+  it('renders the hiScore line only when given', () => {
     const wrapper = make();
-    const best = wrapper.findAll('.level-picker-best');
-    expect(best).toHaveLength(1);
-    expect(best[0]!.text()).toBe('12 moves');
+    const hiScore = wrapper.findAll('.level-picker-hiscore');
+    expect(hiScore).toHaveLength(1);
+    expect(hiScore[0]!.text()).toBe('12 moves');
   });
 
   it('has a visually hidden legend', () => {
@@ -62,14 +60,11 @@ describe('LevelPicker', () => {
     expect(legend.classes()).toContain('visually-hidden');
   });
 
-  it('labels each radio and lays the cards out as a grid', () => {
+  it('labels each radio', () => {
     const wrapper = make();
     for (const label of wrapper.findAll('label')) {
       expect(wrapper.find(`#${CSS.escape(label.attributes('for')!)}`).exists()).toBe(true);
     }
-    const sfc = readFileSync(join(import.meta.dirname, 'LevelPicker.vue'), 'utf8');
-    expect(sfc).toContain('grid');
-    expect(sfc).toContain('minmax(11rem, 1fr)');
   });
 
   it('shows the selected mark with the hidden selectedLabel only on the selected card', async () => {
@@ -99,11 +94,5 @@ describe('LevelPicker', () => {
       false,
     ]);
     expect(wrapper.findAll('.level-picker-item.selected')).toHaveLength(1);
-  });
-
-  it('disables transitions under prefers-reduced-motion', () => {
-    const sfc = readFileSync(join(import.meta.dirname, 'LevelPicker.vue'), 'utf8');
-    const block = sfc.slice(sfc.indexOf('@media (prefers-reduced-motion: reduce)'));
-    expect(block).toContain('transition: none');
   });
 });

@@ -1,6 +1,6 @@
 import { computed, shallowRef } from 'vue';
-import { startRegion } from './flood';
-import type { SpillItRound } from './round';
+import { startRegion } from '../../common/board/flood';
+import type { SpillItRound } from '../../round/round';
 
 export function useSpillItRound(round: SpillItRound) {
   // The round is a plain object, this counter makes its state observable.

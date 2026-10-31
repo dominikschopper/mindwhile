@@ -1,7 +1,7 @@
 import type { GameTexts } from '@mindwhile/core';
-import { formatScore } from './format-score';
+import { formatScore } from './scoring/format-score';
 import { manifest } from './manifest';
-import { t } from './texts/translate';
+import { t } from './common/texts/translate';
 
 export { t };
 

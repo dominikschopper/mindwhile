@@ -1,8 +1,8 @@
 import { computed } from 'vue';
 import { describe, expect, it } from 'vitest';
-import { startRegion } from './flood';
-import { greedyMoves } from './par';
-import { createRound } from './round';
+import { startRegion } from '../../common/board/flood';
+import { greedyMoves } from '../../generator/par';
+import { createRound } from '../../round/round';
 import { useSpillItRound } from './use-spill-it-round';
 
 describe('useSpillItRound', () => {

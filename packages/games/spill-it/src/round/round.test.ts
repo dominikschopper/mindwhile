@@ -1,8 +1,8 @@
 import { playMoves } from '@mindwhile/core';
 import { describe, expect, it } from 'vitest';
 import { createRound } from './round';
-import { greedyMoves } from './par';
-import { levelParams } from './levels';
+import { greedyMoves } from '../generator/par';
+import { levelParams } from '../common/levels/levels';
 
 const pick = (color: number) => ({ type: 'pick', color });
 

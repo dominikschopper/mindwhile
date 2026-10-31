@@ -307,7 +307,7 @@ describe('PlayView with Spillit (smoke)', () => {
   it('reaches the result panel with On par after the greedy moves', async () => {
     // Test-only: the par solver of the game is the oracle for the "On par" assertion.
     // eslint-disable-next-line boundaries/dependencies
-    const { greedyMoves } = await import('../../../../packages/games/spill-it/src/par');
+    const { greedyMoves } = await import('../../../../packages/games/spill-it/src/generator/par');
     const { wrapper } = await mountAt('/play/spill-it/a');
     const round = wrapper.findComponent({ name: 'SpillItView' }).props('round') as {
       board: never;

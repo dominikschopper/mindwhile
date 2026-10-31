@@ -119,7 +119,7 @@ describe('GameView', () => {
     const { wrapper } = await mountView('spill-it');
     expect(wrapper.find('.best').text()).toContain('640');
     expect(wrapper.find('.best').text()).not.toContain('—');
-    expect(wrapper.find('.level-picker-best').text()).toBe('640');
+    expect(wrapper.find('.level-picker-hiscore').text()).toBe('640');
     vi.restoreAllMocks();
   });
 

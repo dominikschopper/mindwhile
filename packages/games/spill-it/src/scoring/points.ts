@@ -1,5 +1,5 @@
-import { levelParams } from './levels';
-import type { SpillItLevel } from './manifest';
+import { levelParams } from '../common/levels/levels';
+import type { SpillItLevel } from '../manifest';
 
 // points = floor(basePoints * par / moves / 10) * 10, integers only, same on every device.
 // A solved round always has at least one move (every board has par >= minPar >= 5).

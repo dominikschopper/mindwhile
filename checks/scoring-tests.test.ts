@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 // Every level in a game manifest needs a scoring test file next to the logic:
-// packages/games/<game>/src/scoring.<level>.test.ts
+// packages/games/<game>/src/scoring/scoring.<level>.test.ts
 // Games listed here have no scoring tests yet. Remove the entry when the game
 // gets its tests (the Spillit plan adds them), the check is mandatory afterwards.
 const pendingGames: string[] = [];
@@ -22,7 +22,7 @@ describe.each(gameFolders)('scoring tests of %s', (folder) => {
       return;
     }
     const missing = manifest.levels.filter(
-      (level) => !existsSync(join(gamesDir, folder, 'src', `scoring.${level}.test.ts`)),
+      (level) => !existsSync(join(gamesDir, folder, 'src', 'scoring', `scoring.${level}.test.ts`)),
     );
     expect(missing, `missing scoring tests for levels: ${missing.join(', ')}`).toEqual([]);
   });
