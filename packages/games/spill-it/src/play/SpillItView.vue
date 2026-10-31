@@ -2,6 +2,8 @@
 import { computed, onBeforeUnmount, onMounted } from 'vue';
 import '../common/styles/tokens.css';
 import '../common/styles/layout.css';
+import '../common/styles/cell-colors.css';
+import ColorBar from '../common/components/ColorBar.vue';
 import { colorForKey, type ColorKeyEvent } from './keyboard';
 import { marks } from '../common/board/marks';
 import type { SpillItRound } from '../round/round';
@@ -13,19 +15,7 @@ const props = defineProps<{ round: SpillItRound }>();
 const { cells, size, colorCount, moveCount, par, regionColor, regionSize, solved, pick } =
   useSpillItRound(props.round);
 
-type ColorKey = `color.${0 | 1 | 2 | 3 | 4 | 5}`;
-
-function colorName(color: number): string {
-  return t(`color.${color}` as ColorKey);
-}
-
-const colorIndexes = computed(() => Array.from({ length: colorCount }, (_, i) => i));
-
 const boardLabel = computed(() => t('board.summary', { size, regionCount: regionSize.value }));
-
-function buttonLabel(color: number): string {
-  return t('colorButton.label', { color: colorName(color), mark: t(marks[color]!.nameKey) });
-}
 
 function onKeydown(event: ColorKeyEvent): void {
   const color = colorForKey(event, colorCount);
@@ -45,20 +35,7 @@ onBeforeUnmount(() => globalThis.removeEventListener('keydown', onKeydown));
       <p class="spill-it-par">{{ t('counter.par', { par }) }}</p>
     </header>
 
-    <div class="color-bar">
-      <button
-        v-for="color in colorIndexes"
-        :key="color"
-        type="button"
-        :class="['color-button', `cell--${color}`]"
-        :data-color="color"
-        :aria-label="buttonLabel(color)"
-        :disabled="solved || color === regionColor"
-        @click="pick(color)"
-      >
-        <component :is="marks[color]!.icon" class="mark-icon" aria-hidden="true" />
-      </button>
-    </div>
+    <ColorBar :color-count="colorCount" :region-color="regionColor" :solved="solved" @pick="pick" />
 
     <div class="board" role="img" :aria-label="boardLabel" :style="{ '--size': size }">
       <span
@@ -136,73 +113,6 @@ onBeforeUnmount(() => globalThis.removeEventListener('keydown', onKeydown));
   width: calc(65cqi / var(--size));
   height: calc(65cqi / var(--size));
   stroke-width: 2.5;
-}
-
-.color-button .mark-icon {
-  width: 1.5rem;
-  height: 1.5rem;
-  stroke-width: 2.5;
-}
-
-.cell--0 {
-  background-color: var(--spill-it-color-0);
-  color: var(--spill-it-mark-0);
-}
-.cell--1 {
-  background-color: var(--spill-it-color-1);
-  color: var(--spill-it-mark-1);
-}
-.cell--2 {
-  background-color: var(--spill-it-color-2);
-  color: var(--spill-it-mark-2);
-}
-.cell--3 {
-  background-color: var(--spill-it-color-3);
-  color: var(--spill-it-mark-3);
-}
-.cell--4 {
-  background-color: var(--spill-it-color-4);
-  color: var(--spill-it-mark-4);
-}
-.cell--5 {
-  background-color: var(--spill-it-color-5);
-  color: var(--spill-it-mark-5);
-}
-
-.color-bar {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm);
-  background-color: var(--spill-it-bar-color);
-  border-radius: var(--radius);
-}
-
-.color-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: var(--button-min-size);
-  min-height: var(--button-min-size);
-  padding: 0;
-  text-align: center;
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius);
-  cursor: pointer;
-}
-
-.color-button:focus-visible {
-  outline: 3px solid var(--focus-ring-color);
-  outline-offset: 2px;
-}
-
-/* The current region color (or every color after solving): still clearly visible on
-   the raised bar in both themes, marked by a dashed border in the text color. */
-.color-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-  border: 2px dashed var(--text-color);
 }
 
 @media (prefers-reduced-motion: reduce) {

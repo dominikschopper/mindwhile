@@ -81,8 +81,8 @@ Two different things, only one of them is optional.
 ### How-to-play content
 
 - The game delivers a Vue component `HowToPlay` with free content: text, headings, a small example board that shows a move. The platform shows it on the game page under the heading "Game rules" (the heading text comes from the platform). There is no dialog. The texts live in the language file of the game
-- The content starts with the goal as one paragraph. The details and examples follow inside `HowToMore`, which renders a "More" button that turns into "Less" (`aria-expanded`, `aria-controls`). Collapsed on every visit, the hidden part is neither visible nor focusable. Without details there is no button. Labels are props, filled from the game's texts
-- `game-kit` offers shared building blocks (`HowToHeading`, `HowToParagraph`, `HowToExample`, `HowToMore`) that games may use but do not have to, for a similar look
+- The short goal of the game is its `summary` text, which the game page shows above the rules. The `HowToPlay` content holds the details and examples and has no collapsing of its own: the game page puts it into a "Full rules" `<details>`, closed on every visit
+- `game-kit` offers shared building blocks (`HowToHeading`, `HowToParagraph`, `HowToExample`) that games may use but do not have to, for a similar look
 
 ### Manifest
 

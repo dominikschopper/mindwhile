@@ -30,20 +30,10 @@ describe('gameModule', () => {
 });
 
 describe('HowToPlay', () => {
-  it('starts with the goal paragraph and hides the details until "More" is clicked', async () => {
+  it('shows the rules at once, without a toggle of its own', () => {
     const wrapper = mount(HowToPlay, { attachTo: document.body });
-    const paragraphs = wrapper.findAll('p');
-    expect(paragraphs[0]!.text()).toBe(t('howTo.rules.goal'));
-
-    const button = wrapper.find('button');
-    expect(button.text()).toBe(t('howTo.more'));
-    expect(button.attributes('aria-expanded')).toBe('false');
-    expect(wrapper.find('.how-to-more-content').isVisible()).toBe(false);
-
-    await button.trigger('click');
-    expect(button.text()).toBe(t('howTo.less'));
-    expect(button.attributes('aria-expanded')).toBe('true');
-    expect(wrapper.find('.how-to-more-content').isVisible()).toBe(true);
+    expect(wrapper.find('button').exists()).toBe(false);
+    expect(wrapper.findAll('p')[0]!.text()).toBe(t('howTo.rules.pick'));
 
     const headings = wrapper.findAll('h2').map((h) => h.text());
     expect(headings).toEqual([
@@ -53,7 +43,7 @@ describe('HowToPlay', () => {
       t('howTo.marks.heading'),
     ]);
     const boards = wrapper.findAll('.example-board');
-    expect(boards).toHaveLength(2);
+    expect(boards).toHaveLength(3);
     const cells = boards[0]!.findAll('.example-cell').map((c) => c.find('svg').exists());
     expect(cells).toEqual(Array(9).fill(true));
     expect(boards[0]!.attributes('aria-label')).toBe(
@@ -62,11 +52,6 @@ describe('HowToPlay', () => {
     const afterCells = boards[1]!.findAll('.example-cell').map((c) => c.find('svg').exists());
     expect(afterCells).toEqual(Array(9).fill(true));
     expect(boards[1]!.attributes('aria-label')).toContain('Row 1: alert, alert, alert');
-
-    await button.trigger('click');
-    expect(button.text()).toBe(t('howTo.more'));
-    expect(button.attributes('aria-expanded')).toBe('false');
-    expect(wrapper.find('.how-to-more-content').isVisible()).toBe(false);
     wrapper.unmount();
   });
 });

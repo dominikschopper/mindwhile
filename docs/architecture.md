@@ -37,7 +37,7 @@ Concept level: principles, contracts and rules that hold permanently. Technology
 | Time | publishes the activity signal | measures time with the clock from `core`, shows it if it wants |
 | Pause | detects interruptions, safety net | optional pause with `PauseCover`, reaction on return |
 | Updates, news | service worker, activation rules, news | nothing |
-| Help | game page with the heading "Game rules" and the "More" toggle | content (`HowToPlay`: goal first, details inside `HowToMore`) |
+| Help | game page with the short goal and the "Full rules" details | content (`HowToPlay`: details and examples, shown when "Full rules" is opened) |
 | Chrome (header, footer) | renders both bars, fills their own slots, menu, gamer tag, abort with confirmation, "Back to games" | fills its slots (time in the header center, pause in the footer center) through `ChromeSlot`, never knows the platform |
 
 Both sides share `core` (contract, types, clock, activity signal) and `game-kit` (Vue building blocks for games). A game knows nothing of the platform.
@@ -128,7 +128,7 @@ The interface between platform and game (module shape, navigation, pause, time, 
 
 **Game manifest (central description per game):** ID, game version, scoring version, interface version, levels (their IDs only, the parameters stay in the game logic), the direction of every score position. Display names are not part of the manifest but live in the texts of the game
 
-**How-to-play content:** Every game ships its rules and scoring (for example how par is calculated in Spillit and why the deviation can be negative) as a `HowToPlay` component. It is part of the game contract, its texts live in the language file of the game. The content starts with the goal as one paragraph; the details and examples sit inside `HowToMore` (collapsed by default, a "More" button that turns into "Less").
+**How-to-play content:** Every game ships its rules and scoring (for example how par is calculated in Spillit and why the deviation can be negative) as a `HowToPlay` component. It is part of the game contract, its texts live in the language file of the game. The short goal is the `summary` text of the game, shown on the game page above the rules; the `HowToPlay` content holds the details and examples and sits in the "Full rules" details of the game page (closed by default).
 
 The platform shows it on the game page under the heading "Game rules" (see Platform shell). There is no dialog around it. Round end offers "Next round" and "Back to games".
 

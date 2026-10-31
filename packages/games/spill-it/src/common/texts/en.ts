@@ -2,7 +2,7 @@ export const en = {
   'game.name': 'Spill It!',
   'game.tagline': 'Spill colors into a flooding board',
   'game.summary':
-    'Pick colors to grow the region in the top-left corner until the whole board has one color. Use as few moves as you can.',
+  'Your goal: turn the whole board into a single color! No move limit - but less moves are better!',
   'level.a': '6×6 · 4 colors',
   'level.b': '10×10 · 5 colors',
   'level.c': '14×14 · 6 colors',
@@ -33,17 +33,16 @@ export const en = {
     one: '{count} move over par',
     other: '{count} moves over par',
   },
-  'howTo.rules.goal':
-    'Your goal is to turn the whole board into a single color. There is no move limit.',
   'howTo.rules.pick':
     'Pick a color. Your region, which starts in the top left corner, takes that color.',
   'howTo.rules.swallow':
     'The region swallows every neighbor cell that already has the new color and keeps growing.',
-  'howTo.more': 'More',
-  'howTo.less': 'Less',
   'howTo.example.heading': 'Example',
-  'howTo.example.before': 'Before: the region is the single top left cell.',
-  'howTo.example.after': 'After picking {mark}: the region took three more cells.',
+  'howTo.example.before':
+    'Before: the region is the single top left cell. Pick the highlighted color.',
+  'howTo.example.after':
+    'After picking {mark}: the region took three more cells. Pick the highlighted color next.',
+  'howTo.example.third': 'Then picking {mark}: the region keeps growing.',
   'howTo.example.row': 'Row {row}: {marks}',
   'howTo.counter.heading': 'Moves and par',
   'howTo.counter.moves': 'The move counter shows how many colors you have picked.',

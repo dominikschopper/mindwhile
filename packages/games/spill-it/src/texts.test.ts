@@ -8,7 +8,7 @@ describe('gameTexts', () => {
 
   it('has tagline and summary', () => {
     expect(gameTexts.tagline).toBe('Spill colors into a flooding board');
-    expect(gameTexts.summary).toContain('as few moves as you can');
+    expect(gameTexts.summary).toContain('single color');
   });
 
   it('names the three levels', () => {

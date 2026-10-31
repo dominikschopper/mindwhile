@@ -24,7 +24,7 @@ Status: design direction. Parts marked "to try" are decided to be tried during d
 
 ## Buttons
 
-**Built:** `AppButton` in `packages/game-kit/src/buttons` is the shared button for the platform and the games. It has the variants `primary`, `secondary` and `danger`, an optional icon slot and a link form (`as` a router link or `a`). It renders a native `<button>` by default. The footer buttons, the main menu, the notice bar, the abort dialog, the `HowToMore` button, the start button of the game page and the next button of the result use it.
+**Built:** `AppButton` in `packages/game-kit/src/buttons` is the shared button for the platform and the games. It has the variants `primary`, `secondary` and `danger`, an optional icon slot and a link form (`as` a router link or `a`). It renders a native `<button>` by default. The footer buttons, the main menu, the notice bar, the abort dialog, the start button of the game page and the next button of the result use it.
 
 The button is 3D: a bottom edge of `--button-edge-height` in a darker tone of the variant color (mixed with `--button-edge-mix-color`). On press it moves down by that height, so the edge disappears. With `prefers-reduced-motion` the press has no transition.
 

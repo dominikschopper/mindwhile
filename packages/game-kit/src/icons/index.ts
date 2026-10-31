@@ -4,6 +4,7 @@ import {
   Activity as IconActivity,
   Apple as IconApple,
   ArrowLeft as IconBack,
+  ArrowRight as IconArrowRight,
   Check as IconCheck,
   ChevronDown as IconChevronDown,
   CircleAlert as IconCircleAlert,
@@ -27,6 +28,7 @@ import {
 export {
   IconActivity,
   IconApple,
+  IconArrowRight,
   IconBack,
   IconCheck,
   IconChevronDown,
