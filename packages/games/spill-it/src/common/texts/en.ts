@@ -2,7 +2,7 @@ export const en = {
   'game.name': 'Spill It!',
   'game.tagline': 'Spill colors into a flooding board',
   'game.summary':
-  'Your goal: turn the whole board into a single color! No move limit - but less moves are better!',
+    'Your goal: turn the whole board into a single color! No move limit - but less moves are better!',
   'level.a': '6×6 · 4 colors',
   'level.b': '10×10 · 5 colors',
   'level.c': '14×14 · 6 colors',
