@@ -83,4 +83,48 @@ describe('useSpillItRound', () => {
       }
     }
   });
+
+  it('exposes lastPick as null before a move', () => {
+    const r = useSpillItRound(createRound({ level: 'a', seed: 5 }));
+    expect(r.lastPick.value).toBeNull();
+  });
+
+  it('sets lastPick after a valid pick', () => {
+    const r = useSpillItRound(createRound({ level: 'a', seed: 5 }));
+    const color = (r.regionColor.value + 1) % r.colorCount;
+    r.pick(color);
+    expect(r.lastPick.value).toEqual({ color, tick: r.moveCount.value });
+    expect(r.lastPick.value).toEqual({ color, tick: 1 });
+  });
+
+  it('updates lastPick on a second valid pick', () => {
+    const r = useSpillItRound(createRound({ level: 'a', seed: 5 }));
+    const first = (r.regionColor.value + 1) % r.colorCount;
+    r.pick(first);
+    const second = (r.regionColor.value + 1) % r.colorCount;
+    r.pick(second);
+    expect(r.lastPick.value).toEqual({ color: second, tick: 2 });
+    expect(r.lastPick.value).toEqual({ color: second, tick: r.moveCount.value });
+  });
+
+  it('leaves lastPick unchanged when the region color is picked', () => {
+    const r = useSpillItRound(createRound({ level: 'a', seed: 5 }));
+    const color = (r.regionColor.value + 1) % r.colorCount;
+    r.pick(color);
+    const before = r.lastPick.value;
+    r.pick(r.regionColor.value);
+    expect(r.lastPick.value).toEqual(before);
+    expect(r.moveCount.value).toBe(1);
+  });
+
+  it('leaves lastPick unchanged after the round is solved', () => {
+    const round = createRound({ level: 'a', seed: 5 });
+    const r = useSpillItRound(round);
+    for (const color of greedyMoves(round.startBoard, r.colorCount)) r.pick(color);
+    expect(r.solved.value).toBe(true);
+    const before = r.lastPick.value;
+    expect(before).not.toBeNull();
+    r.pick((r.regionColor.value + 1) % r.colorCount);
+    expect(r.lastPick.value).toEqual(before);
+  });
 });

@@ -13,6 +13,7 @@
     --spill-it-mark-3: light-dark(#000000, #000000);
     --spill-it-mark-4: light-dark(#ffffff, #ffffff);
     --spill-it-mark-5: light-dark(#ffffff, #000000);
+    --spill-it-mark-opacity: 0.7;
 
     --spill-it-bar-color: var(--surface-raised-color);
   }

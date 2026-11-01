@@ -1,26 +1,32 @@
 @layer components {
   .cell--0 {
     background-color: var(--spill-it-color-0);
+    --glow-color: var(--spill-it-color-0);
     color: var(--spill-it-mark-0);
   }
   .cell--1 {
     background-color: var(--spill-it-color-1);
+    --glow-color: var(--spill-it-color-1);
     color: var(--spill-it-mark-1);
   }
   .cell--2 {
     background-color: var(--spill-it-color-2);
+    --glow-color: var(--spill-it-color-2);
     color: var(--spill-it-mark-2);
   }
   .cell--3 {
     background-color: var(--spill-it-color-3);
+    --glow-color: var(--spill-it-color-3);
     color: var(--spill-it-mark-3);
   }
   .cell--4 {
     background-color: var(--spill-it-color-4);
+    --glow-color: var(--spill-it-color-4);
     color: var(--spill-it-mark-4);
   }
   .cell--5 {
     background-color: var(--spill-it-color-5);
+    --glow-color: var(--spill-it-color-5);
     color: var(--spill-it-mark-5);
   }
 }

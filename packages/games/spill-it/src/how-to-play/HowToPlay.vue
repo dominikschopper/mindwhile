@@ -159,8 +159,9 @@ function boardLabel(board: Board): string {
 }
 
 .example-cell .mark-icon {
-  width: 1.5rem;
-  height: 1.5rem;
-  stroke-width: 2.5;
+  width: 1.15rem;
+  height: 1.15rem;
+  stroke-width: 2;
+  opacity: var(--spill-it-mark-opacity);
 }
 </style>

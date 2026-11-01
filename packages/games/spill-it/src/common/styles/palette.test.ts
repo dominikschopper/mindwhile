@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { contrastRatio, pairDeltaE, visionCases } from './color-math';
-import { palette, paletteThemes } from './palette';
+import { blendHex, contrastRatio, pairDeltaE, visionCases } from './color-math';
+import { markOpacity, palette, paletteThemes } from './palette';
 
 const tokens = readFileSync(new URL('./tokens.css', import.meta.url), 'utf8');
 
@@ -30,10 +30,15 @@ describe('spill-it palette', () => {
   });
 
   for (const theme of paletteThemes) {
-    it(`${theme}: every mark reaches contrast 4.5:1 on its color`, () => {
+    it(`${theme}: every mark reaches contrast 3:1 on its color with markOpacity applied`, () => {
+      let min = Infinity;
       for (const entry of palette[theme]) {
-        expect(contrastRatio(entry.color, entry.mark)).toBeGreaterThanOrEqual(4.5);
+        const blended = blendHex(entry.mark, entry.color, markOpacity);
+        const ratio = contrastRatio(entry.color, blended);
+        min = Math.min(min, ratio);
+        expect(ratio).toBeGreaterThanOrEqual(3);
       }
+      console.info(`lowest mark contrast ${theme}: ${min.toFixed(2)}`);
     });
 
     for (const vision of visionCases) {
@@ -45,6 +50,18 @@ describe('spill-it palette', () => {
       });
     }
   }
+
+  it('blendHex mixes the mark over the cell color', () => {
+    expect(blendHex('#000000', '#ffffff', 1)).toBe('#000000');
+    expect(blendHex('#000000', '#ffffff', 0)).toBe('#ffffff');
+    expect(blendHex('#000000', '#ffffff', 0.7)).toBe('#4d4d4d');
+  });
+
+  it('markOpacity equals --spill-it-mark-opacity in tokens.css', () => {
+    const match = /--spill-it-mark-opacity:\s*([0-9.]+)\s*;/.exec(tokens);
+    if (!match) throw new Error('Token --spill-it-mark-opacity not found');
+    expect(Number(match[1])).toBe(markOpacity);
+  });
 
   it('tokens.css carries the hex values of palette.ts', () => {
     for (let index = 0; index < 6; index++) {

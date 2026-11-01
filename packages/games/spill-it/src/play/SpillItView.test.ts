@@ -45,15 +45,6 @@ describe('SpillItView', () => {
     wrapper.unmount();
   });
 
-  it('marks only the top left cell as the origin of every move', () => {
-    const wrapper = mount(SpillItView, {
-      props: { round: createRound({ level: 'a', seed: 5 }) },
-    });
-    const cells = wrapper.findAll('.cell');
-    expect(cells[0]!.classes()).toContain('cell--origin');
-    expect(wrapper.findAll('.cell--origin')).toHaveLength(1);
-  });
-
   it('renders one labeled button per color', () => {
     const { wrapper } = setup();
     const buttons = wrapper.findAll('button');
@@ -146,5 +137,107 @@ describe('SpillItView', () => {
     expect(round.moves).toHaveLength(0);
     add.mockRestore();
     remove.mockRestore();
+  });
+
+  describe('move feedback', () => {
+    const glow = (w: ReturnType<typeof setup>['wrapper']) =>
+      w
+        .findAll('.cell')[0]!
+        .classes()
+        .filter((c) => c.startsWith('cell--glow'));
+
+    it('has no glow class at 0 moves', () => {
+      const { wrapper } = setup();
+      expect(wrapper.findAll('[class*="cell--glow"]')).toHaveLength(0);
+      wrapper.unmount();
+    });
+
+    it('glows the origin after a valid pick and alternates the variant', async () => {
+      const { round, wrapper } = setup();
+      const first = otherColor(round);
+      await wrapper.findAll('button')[first]!.trigger('click');
+      const origin = wrapper.findAll('.cell')[0]!;
+      expect(glow(wrapper)).toHaveLength(1);
+      expect(origin.classes()).toContain(`cell--${first}`);
+      expect(wrapper.findAll('[class*="cell--glow"]')).toHaveLength(1);
+      const variant = glow(wrapper)[0];
+
+      const second = [0, 1, 2, 3].find((c) => c !== first)!;
+      await wrapper.findAll('button')[second]!.trigger('click');
+      expect(glow(wrapper)).toHaveLength(1);
+      expect(glow(wrapper)[0]).not.toBe(variant);
+      expect(wrapper.findAll('.cell')[0]!.classes()).toContain(`cell--${second}`);
+      wrapper.unmount();
+    });
+
+    it('keeps the glow class when picking the region color', async () => {
+      const { round, wrapper } = setup();
+      const first = otherColor(round);
+      await wrapper.findAll('button')[first]!.trigger('click');
+      const before = glow(wrapper);
+      key(String(first + 1));
+      await wrapper.vm.$nextTick();
+      expect(glow(wrapper)).toEqual(before);
+      expect(round.moves).toHaveLength(1);
+      wrapper.unmount();
+    });
+
+    it('keeps the glow class when picking after solved', async () => {
+      const { round, wrapper } = setup();
+      for (const color of greedyMoves(round.startBoard, levelParams.a.colors)) {
+        await wrapper.findAll('button')[color]!.trigger('click');
+      }
+      const before = glow(wrapper);
+      const count = round.moves.length;
+      for (let c = 1; c <= levelParams.a.colors; c++) key(String(c));
+      await wrapper.vm.$nextTick();
+      expect(glow(wrapper)).toEqual(before);
+      expect(round.moves).toHaveLength(count);
+      wrapper.unmount();
+    });
+
+    describe('color button glow', () => {
+      const glowing = (w: ReturnType<typeof setup>['wrapper']) =>
+        w
+          .findAll('button')
+          .filter((b) => b.classes().some((c) => c.startsWith('color-button--glow')));
+
+      it('glows the picked button on click', async () => {
+        const { round, wrapper } = setup();
+        const color = otherColor(round);
+        expect(glowing(wrapper)).toHaveLength(0);
+        await wrapper.findAll('button')[color]!.trigger('click');
+        expect(glowing(wrapper)).toHaveLength(1);
+        expect(glowing(wrapper)[0]!.attributes('data-color')).toBe(String(color));
+        wrapper.unmount();
+      });
+
+      it('glows the picked button on keys 1 to 6', async () => {
+        const { round, wrapper } = setup();
+        const color = otherColor(round);
+        key(String(color + 1));
+        await wrapper.vm.$nextTick();
+        expect(glowing(wrapper)).toHaveLength(1);
+        expect(glowing(wrapper)[0]!.attributes('data-color')).toBe(String(color));
+        wrapper.unmount();
+      });
+
+      it('does not glow for a pick of the region color', async () => {
+        const { round, wrapper } = setup();
+        key(String(round.board.cells[0]! + 1));
+        await wrapper.vm.$nextTick();
+        expect(glowing(wrapper)).toHaveLength(0);
+        wrapper.unmount();
+      });
+    });
+
+    it('gives every cell an inline wave delay', () => {
+      const { wrapper } = setup();
+      const cells = wrapper.findAll('.cell');
+      cells.forEach((cell) => expect(cell.attributes('style')).toContain('--wave-delay'));
+      expect(cells[0]!.attributes('style')).toContain('--wave-delay: 0ms');
+      expect(cells[2 * 6 + 3]!.attributes('style')).toContain('--wave-delay: 150ms');
+      wrapper.unmount();
+    });
   });
 });

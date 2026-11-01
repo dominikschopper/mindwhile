@@ -15,6 +15,10 @@ export interface PaletteEntry {
 export const markBlack = '#000000';
 export const markWhite = '#ffffff';
 
+// Opacity of the mark icons. tokens.css carries the same number
+// (--spill-it-mark-opacity, palette.test.ts checks that).
+export const markOpacity = 0.7;
+
 export const palette: Record<PaletteTheme, readonly PaletteEntry[]> = {
   light: [
     { color: '#cf8f00', mark: markBlack },

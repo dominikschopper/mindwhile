@@ -9,11 +9,22 @@ import { marks } from '../common/board/marks';
 import type { SpillItRound } from '../round/round';
 import { t } from '../texts';
 import { useSpillItRound } from './composables/use-spill-it-round';
+import { waveDelayMs } from './wave-delay';
 
 const props = defineProps<{ round: SpillItRound }>();
 
-const { cells, size, colorCount, moveCount, par, regionColor, regionSize, solved, pick } =
+const { cells, size, colorCount, moveCount, par, regionColor, regionSize, solved, pick, lastPick } =
   useSpillItRound(props.round);
+
+const glowClass = computed(() => {
+  const pickInfo = lastPick.value;
+  if (pickInfo === null) return null;
+  return pickInfo.tick % 2 === 0 ? 'cell--glow-a' : 'cell--glow-b';
+});
+
+function cellClasses(color: number, index: number) {
+  return ['cell', `cell--${color}`, index === 0 ? glowClass.value : null];
+}
 
 const boardLabel = computed(() => t('board.summary', { size, regionCount: regionSize.value }));
 
@@ -35,13 +46,20 @@ onBeforeUnmount(() => globalThis.removeEventListener('keydown', onKeydown));
       <p class="spill-it-par">{{ t('counter.par', { par }) }}</p>
     </header>
 
-    <ColorBar :color-count="colorCount" :region-color="regionColor" :solved="solved" @pick="pick" />
+    <ColorBar
+      :color-count="colorCount"
+      :region-color="regionColor"
+      :solved="solved"
+      :pulse="lastPick ?? undefined"
+      @pick="pick"
+    />
 
     <div class="board" role="img" :aria-label="boardLabel" :style="{ '--size': size }">
       <span
         v-for="(color, index) in cells"
         :key="index"
-        :class="['cell', `cell--${color}`, { 'cell--origin': index === 0 }]"
+        :class="cellClasses(color, index)"
+        :style="{ '--wave-delay': `${waveDelayMs(index, size)}ms` }"
         :data-color="color"
         aria-hidden="true"
       >
@@ -99,20 +117,44 @@ onBeforeUnmount(() => globalThis.removeEventListener('keydown', onKeydown));
   justify-content: center;
   min-width: 0;
   min-height: 0;
-  transition: background-color 150ms ease;
+  transition: background-color 360ms ease var(--wave-delay, 0ms);
 }
 
-/* The top left cell is where every move starts: a semi-transparent frame in the mark color
-   (always readable on this cell's color) shows which cell it is. */
-.cell--origin {
-  box-shadow: inset 0 0 0 3px color-mix(in srgb, currentColor 60%, transparent);
+/* The top left cell is where every move starts and glows once after each move. Two identical
+   animations under different names: toggling between them restarts the glow on every move.
+   Inset, because the board clips overflow. */
+.cell--glow-a {
+  animation: origin-glow-a 3000ms ease-out 1;
+}
+
+.cell--glow-b {
+  animation: origin-glow-b 3000ms ease-out 1;
+}
+
+@keyframes origin-glow-a {
+  from {
+    box-shadow: inset 0 0 0 6px color-mix(in srgb, var(--glow-color) 55%, white);
+  }
+  to {
+    box-shadow: inset 0 0 0 0 transparent;
+  }
+}
+
+@keyframes origin-glow-b {
+  from {
+    box-shadow: inset 0 0 0 6px color-mix(in srgb, var(--glow-color) 55%, white);
+  }
+  to {
+    box-shadow: inset 0 0 0 0 transparent;
+  }
 }
 
 /* Icons follow the mark color and scale with the cell, like the text marks did. */
 .cell .mark-icon {
-  width: calc(65cqi / var(--size));
-  height: calc(65cqi / var(--size));
-  stroke-width: 2.5;
+  width: calc(50cqi / var(--size));
+  height: calc(50cqi / var(--size));
+  stroke-width: 2;
+  opacity: var(--spill-it-mark-opacity);
 }
 
 @media (prefers-reduced-motion: reduce) {

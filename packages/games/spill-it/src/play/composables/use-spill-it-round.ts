@@ -28,9 +28,20 @@ export function useSpillItRound(round: SpillItRound) {
     return startRegion(round.board).length;
   });
 
+  // The last move the round accepted: its color and the move count after it.
+  const lastPickState = shallowRef<{ color: number; tick: number } | null>(null);
+  const lastPick = computed(() => {
+    void version.value;
+    return lastPickState.value;
+  });
+
   // The round ignores moves with the region color and moves after the solution.
   function pick(color: number): void {
+    const before = round.moves.length;
     round.apply({ type: 'pick', color });
+    if (round.moves.length !== before) {
+      lastPickState.value = { color, tick: round.moves.length };
+    }
     version.value++;
   }
 
@@ -44,6 +55,7 @@ export function useSpillItRound(round: SpillItRound) {
     regionSize,
     result,
     solved,
+    lastPick,
     pick,
   };
 }

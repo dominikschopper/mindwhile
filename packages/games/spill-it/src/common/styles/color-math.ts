@@ -39,6 +39,18 @@ const toLinear = (channel: number): number => {
   return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
 };
 
+// Mixes the mark over the cell color (sRGB alpha compositing) and returns hex.
+// Opacity 1 gives the mark, 0 gives the cell color.
+export const blendHex = (mark: string, cell: string, opacity: number): string => {
+  const m = hexToRgb(mark);
+  const c = hexToRgb(cell);
+  const channel = (i: number): string =>
+    Math.round(m[i]! * opacity + c[i]! * (1 - opacity))
+      .toString(16)
+      .padStart(2, '0');
+  return `#${channel(0)}${channel(1)}${channel(2)}`;
+};
+
 const clamp01 = (value: number): number => Math.min(1, Math.max(0, value));
 
 export const toLinearRgb = (rgb: Rgb): Rgb => [

@@ -18,6 +18,8 @@ const props = defineProps<{
   /** Seconds to wait before the hint starts pulsing. */
   hintDelay?: number;
   decorative?: boolean;
+  /** The last valid pick. The button of that color glows once; the parity of `tick` picks one of two identical animations so that every pick restarts it. */
+  pulse?: { color: number; tick: number };
 }>();
 
 const emit = defineEmits<{ pick: [color: number] }>();
@@ -31,6 +33,11 @@ function buttonLabel(color: number): string {
     color: t(`color.${color}` as ColorKey),
     mark: t(marks[color]!.nameKey),
   });
+}
+
+function glowClass(color: number): string | null {
+  if (props.decorative || props.pulse === undefined || props.pulse.color !== color) return null;
+  return props.pulse.tick % 2 === 0 ? 'color-button--glow-a' : 'color-button--glow-b';
 }
 
 function onClick(color: number): void {
@@ -52,6 +59,7 @@ function onClick(color: number): void {
         'color-button',
         `cell--${color}`,
         { 'color-button--hint': color === hint, 'color-button--current': color === regionColor },
+        glowClass(color),
       ]"
       :data-color="color"
       :aria-label="decorative ? undefined : buttonLabel(color)"
@@ -89,9 +97,10 @@ function onClick(color: number): void {
 }
 
 .color-button .mark-icon {
-  width: 1.5rem;
-  height: 1.5rem;
-  stroke-width: 2.5;
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke-width: 2;
+  opacity: var(--spill-it-mark-opacity);
 }
 
 .color-button:focus-visible {
@@ -118,6 +127,8 @@ function onClick(color: number): void {
 .color-bar--decorative .mark-icon {
   width: 1.25rem;
   height: 1.25rem;
+  stroke-width: 2;
+  opacity: var(--spill-it-mark-opacity);
 }
 
 /* The ring appears and disappears three times, then stays as a steady hint. Before a delayed
@@ -140,6 +151,51 @@ function onClick(color: number): void {
     box-shadow:
       0 0 0 3px var(--surface-color),
       0 0 0 6px var(--accent-color);
+  }
+}
+
+/* Two identical animations under different names: toggling between them restarts the glow.
+   The picked button is disabled at once (opacity 0.55), so the animation sets its own opacity:
+   full at the start, easing down to the resting value. */
+.color-button--glow-a {
+  animation: pick-glow-a 3000ms ease-out 1;
+}
+
+.color-button--glow-b {
+  animation: pick-glow-b 3000ms ease-out 1;
+}
+
+@keyframes pick-glow-a {
+  0% {
+    opacity: 1;
+    box-shadow:
+      0 0 0 3px var(--surface-color),
+      0 0 0 6px var(--glow-color),
+      0 0 14px 8px var(--glow-color);
+  }
+  100% {
+    opacity: 0.55;
+    box-shadow:
+      0 0 0 0 transparent,
+      0 0 0 0 transparent,
+      0 0 0 0 transparent;
+  }
+}
+
+@keyframes pick-glow-b {
+  0% {
+    opacity: 1;
+    box-shadow:
+      0 0 0 3px var(--surface-color),
+      0 0 0 6px var(--glow-color),
+      0 0 14px 8px var(--glow-color);
+  }
+  100% {
+    opacity: 0.55;
+    box-shadow:
+      0 0 0 0 transparent,
+      0 0 0 0 transparent,
+      0 0 0 0 transparent;
   }
 }
 
