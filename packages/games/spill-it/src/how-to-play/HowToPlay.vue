@@ -126,7 +126,7 @@ function boardLabel(board: Board): string {
 @container (max-width: 32rem) {
   .example-steps {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
   }
 
   .example-arrow {
