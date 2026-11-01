@@ -312,7 +312,6 @@ function go(): void {
     /* the app footer is sticky at the bottom too: sit on top of it, not behind it */
     bottom: calc(var(--button-min-size) + var(--spacing-xs) * 2 + 1px);
     z-index: 1;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   }
 }
 </style>
