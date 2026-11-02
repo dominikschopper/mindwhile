@@ -14,6 +14,8 @@ export type {
 export { highestLevelWithResult } from './levels';
 export { createRng, nextBelow } from './rng';
 export { newSeed } from './seed';
+export { compareScores, isBetterScore } from './score';
+export { encodePlayerId, isPlayerId, newPlayerId } from './player-id';
 export type { Rng } from './rng';
 export { playMoves } from './scoring-test';
 export { createT } from './translate';
