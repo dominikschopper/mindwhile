@@ -56,3 +56,10 @@ export const gameSymbols = {
 } as const;
 
 export type GameSymbol = keyof typeof gameSymbols;
+
+export {
+  profileSymbols,
+  profileSymbolNames,
+  IconSymbolPlaceholder,
+  type ProfileSymbolName,
+} from './profile-symbols';

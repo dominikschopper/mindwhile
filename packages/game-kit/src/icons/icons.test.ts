@@ -3,12 +3,13 @@ import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 import * as icons from './index';
 
-const { gameSymbols, ...iconComponents } = icons;
+const { gameSymbols } = icons;
+const iconComponents = icons;
 const entries = Object.entries(iconComponents).filter(([name]) => name.startsWith('Icon'));
 
 describe('icons', () => {
   it('exports the expected number of icons', () => {
-    expect(entries).toHaveLength(22);
+    expect(entries).toHaveLength(23);
   });
 
   it.each(entries)('%s renders a decorative svg', (_name, component) => {
