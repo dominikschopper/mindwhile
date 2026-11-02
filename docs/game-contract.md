@@ -33,7 +33,7 @@ interface GameModule<TView = unknown> {
 ### Package entries
 
 - `.` (`src/manifest.ts`): the manifest, pure data. The platform reads it for the game list without loading any view
-- `./texts` (`src/texts.ts`): `GameTexts` with `name`, `tagline` (short subtitle), `summary` (one or two sentences, the "TL;DR" of the game page), `levelName(level)` and `formatScore(score)`. Loaded with the game list, so the start page and the result panel need no view
+- `./texts` (`src/texts.ts`): `GameTexts` with `name`, `tagline` (short subtitle), `summary` (one or two sentences, the "TL;DR" of the game page), `levelName(level)`, `formatScore(score)` and optionally `formatScoreShort(score)`. Loaded with the game list, so the start page and the result panel need no view
 - `./module` (`src/module.ts`): `GameModule` with `createRound`, `View`, `HowToPlay` and optionally `LevelPreview`, loaded on demand when a game is opened
 - The platform builds one registry from these entries (`apps/web/src/common/composables/game-registry.ts`). It has one entry per game folder, and the folder name must equal `manifest.id`. A missing entry or a wrong folder name throws when the registry is built. A module that declares another ID throws when it is loaded. Tests inject a fake registry instead of the real games
 - The registry reads the files by path (`src/manifest.ts`, `src/texts.ts`, `src/module.ts`), the package `exports` declare the same entries for other packages
@@ -100,8 +100,8 @@ Two different things, only one of them is optional.
 
 - **Order is generic, display is the game's.** The platform compares score values position by position with the `better` direction from the manifest (no game code needed, so import, merge and old scoring versions need none either). How a score looks is up to the game
 - The `key` of each score position is also the text key of its label, taken from the language file of the game
-- For the value itself the game provides `formatScore(score)` as part of `GameTexts` (for example "2 under par" instead of `-2`), in the `./texts` entry and separate from the view. The platform only calls it, for the result panel. Decided: a function, not text templates with parameters
-- The start page tile still shows the first score value unformatted (see `architecture.md`, Open questions)
+- For the value itself the game provides `formatScore(score)` as part of `GameTexts` (for example "2 moves faster" instead of `-2`), in the `./texts` entry and separate from the view. The platform only calls it, for the result panel, the level cards and the start bar of the game page. Decided: a function, not text templates with parameters
+- A game may also provide `formatScoreShort(score)` (optional, for example "720 points" without the par detail) for tight places. The start page tile uses it and falls back to `formatScore` when a game has none. Additive, so no interface version change
 
 ### Reporting moves and round end
 

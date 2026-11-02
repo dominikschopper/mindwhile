@@ -23,11 +23,9 @@ const games = computed(() =>
       symbol: (gameSymbols as Record<string, (typeof gameSymbols)[keyof typeof gameSymbols]>)[
         game.symbol
       ],
+      // The tile has little room: the short form if the game has one.
       hiScore: best
-        ? {
-            text: texts.formatScore(best.result),
-            levelLabel: texts.levelName(best.level) ?? best.level,
-          }
+        ? (texts.formatScoreShort?.(best.result) ?? texts.formatScore(best.result))
         : undefined,
     };
   }),

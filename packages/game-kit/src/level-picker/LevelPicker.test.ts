@@ -54,6 +54,26 @@ describe('LevelPicker', () => {
     expect(hiScore[0]!.text()).toBe('12 moves');
   });
 
+  it('shows the optional label above the result, only on cards with a result', () => {
+    const wrapper = mount(LevelPicker, {
+      props: {
+        modelValue: 'b',
+        levels,
+        legend: 'Choose level',
+        selectedLabel: 'Selected',
+        hiScoreLabel: 'Top result',
+      },
+    });
+    const labels = wrapper.findAll('.level-picker-hiscore-label');
+    expect(labels).toHaveLength(1);
+    expect(labels[0]!.text()).toBe('Top result');
+    expect(wrapper.find('.level-picker-hiscore').text()).toBe('12 moves');
+  });
+
+  it('shows no label without the prop', () => {
+    expect(make().find('.level-picker-hiscore-label').exists()).toBe(false);
+  });
+
   it('has a visually hidden legend', () => {
     const legend = make().find('legend');
     expect(legend.text()).toBe('Choose level');

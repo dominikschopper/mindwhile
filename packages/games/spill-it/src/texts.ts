@@ -1,5 +1,5 @@
 import type { GameTexts } from '@mindwhile/core';
-import { formatScore } from './scoring/format-score';
+import { formatScore, formatScoreShort } from './scoring/format-score';
 import { manifest } from './manifest';
 import { t } from './common/texts/translate';
 
@@ -16,4 +16,5 @@ export const gameTexts: GameTexts = {
     return t(`level.${level as (typeof manifest.levels)[number]}`);
   },
   formatScore,
+  formatScoreShort,
 };

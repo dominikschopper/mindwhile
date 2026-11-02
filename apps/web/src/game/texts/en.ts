@@ -4,7 +4,7 @@ export const en = {
   'level.heading': 'Choose a level',
   'start.ready': 'Ready to start',
   'start.button': 'Start {level}',
-  'best.label': 'Best result',
+  'best.label': 'Top result',
   'best.none': 'No result yet',
   'rules.summary': 'Full rules',
   'rules.loading': 'Loading…',

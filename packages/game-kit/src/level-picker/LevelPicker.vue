@@ -12,6 +12,8 @@ defineProps<{
   levels: { id: string; label: string; hiScore?: string }[];
   legend: string;
   selectedLabel: string;
+  /** Small label above the result of a card, for example "Top result". */
+  hiScoreLabel?: string;
 }>();
 
 const emit = defineEmits<{ 'update:modelValue': [level: string] }>();
@@ -47,7 +49,10 @@ const name = useId();
           <span class="level-picker-preview">
             <slot name="step" :level="level.id" :selected="level.id === modelValue" />
           </span>
-          <span v-if="level.hiScore" class="level-picker-hiscore">{{ level.hiScore }}</span>
+          <span v-if="level.hiScore" class="level-picker-result">
+            <span v-if="hiScoreLabel" class="level-picker-hiscore-label">{{ hiScoreLabel }}</span>
+            <span class="level-picker-hiscore">{{ level.hiScore }}</span>
+          </span>
         </label>
       </div>
     </div>
@@ -131,8 +136,19 @@ const name = useId();
   justify-content: center;
 }
 
-.level-picker-hiscore {
+.level-picker-result {
   grid-area: hiscore;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.level-picker-hiscore-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.level-picker-hiscore {
   font-size: 0.875rem;
 }
 

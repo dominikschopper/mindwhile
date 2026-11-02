@@ -57,4 +57,7 @@ export interface GameTexts {
   levelName(level: string): string;
   // Score is the game's own score vector, returned as one display line.
   formatScore(score: readonly number[]): string;
+  // Optional short form for tight places (the start page tile). Without it the platform
+  // falls back to `formatScore`.
+  formatScoreShort?(score: readonly number[]): string;
 }

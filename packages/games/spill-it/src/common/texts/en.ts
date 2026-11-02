@@ -24,14 +24,15 @@ export const en = {
   'colorButton.label': '{color}, {mark}',
   'round.solved': 'Solved!',
   'score.summary': '{points} points · {detail}',
+  'score.points': '{points} points',
   'score.onPar': 'On par',
-  'score.underPar': {
-    one: '{count} move under par',
-    other: '{count} moves under par',
+  'score.faster': {
+    one: '{count} move faster',
+    other: '{count} moves faster',
   },
-  'score.overPar': {
-    one: '{count} move over par',
-    other: '{count} moves over par',
+  'score.slower': {
+    one: '{count} move slower',
+    other: '{count} moves slower',
   },
   'howTo.rules.pick':
     'Pick a color. Your region, which starts in the top left corner, takes that color.',

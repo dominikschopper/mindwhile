@@ -112,6 +112,7 @@ function go(): void {
       :levels="options"
       :legend="t('level.label')"
       :selected-label="t('level.selected')"
+      :hi-score-label="t('best.label')"
     >
       <template #step="{ level }">
         <component :is="LevelPreview" v-if="LevelPreview" :level="level" />

@@ -9,7 +9,7 @@ defineProps<{
   name: string;
   symbol?: Component;
   color: GameColor;
-  hiScore?: { text: string; levelLabel: string };
+  hiScore?: string;
 }>();
 </script>
 
@@ -24,10 +24,7 @@ defineProps<{
     </span>
 
     <span class="tile-body">
-      <span v-if="hiScore" class="tile-pills">
-        <span class="pill pill-level">{{ hiScore.levelLabel }}</span>
-        <span class="pill pill-score">{{ hiScore.text }}</span>
-      </span>
+      <span v-if="hiScore" class="tile-score">{{ t('tile.topResult', { score: hiScore }) }}</span>
 
       <span v-else class="visually-hidden">{{ t('tile.noResult') }}</span>
     </span>
@@ -103,31 +100,10 @@ defineProps<{
   color: var(--game-color);
 }
 
-.tile-pills {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-sm);
-  width: 100%;
+.tile-score {
   margin-top: auto;
-}
-
-.pill {
-  padding: 0.125rem 0.625rem;
-  border-radius: var(--radius-pill);
-  font-size: 0.75rem;
+  font-size: 1rem;
   font-weight: 600;
-  line-height: 1.5;
-}
-
-.pill-level {
-  background: var(--success-color);
-  color: var(--on-success-color);
-}
-
-.pill-score {
-  background: var(--danger-color);
-  color: var(--on-danger-color);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -19,8 +19,8 @@ describe('gameTexts', () => {
 
   it('formats a score with points and deviation from par', () => {
     expect(gameTexts.formatScore([500, 0])).toBe('500 points · On par');
-    expect(gameTexts.formatScore([570, -1])).toBe('570 points · 1 move under par');
-    expect(gameTexts.formatScore([470, 2])).toBe('470 points · 2 moves over par');
+    expect(gameTexts.formatScore([570, -1])).toBe('570 points · 1 move faster');
+    expect(gameTexts.formatScore([470, 2])).toBe('470 points · 2 moves slower');
   });
 
   it('throws for an unknown level', () => {
