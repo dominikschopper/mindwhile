@@ -16,3 +16,6 @@ export { provideActivity, useActivity } from './runtime/activity';
 export { createLayerRegistry, provideLayers, type LayerRegistry } from './runtime/layers';
 export { useLayer } from './runtime/use-layer';
 export { usePause, type UsePauseOptions } from './pause/use-pause';
+export { useElapsed } from './pause/use-elapsed';
+export { default as PauseCover } from './pause/PauseCover.vue';
+export { default as PauseButton } from './pause/PauseButton.vue';
