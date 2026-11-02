@@ -1,3 +1,7 @@
+export { createActivitySignal } from './activity';
+export type { ActivitySignal } from './activity';
+export { createActiveClock } from './active-clock';
+export type { ActiveClock, ActiveClockOptions, Clock } from './active-clock';
 export { gameColors } from './game-colors';
 export type { GameColor } from './game-colors';
 export { roundEnds } from './contract';
