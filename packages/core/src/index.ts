@@ -15,6 +15,7 @@ export { highestLevelWithResult } from './levels';
 export { createRng, nextBelow } from './rng';
 export { newSeed } from './seed';
 export { compareScores, isBetterScore } from './score';
+export { findBest, recordResult } from './best-results';
 export { migrate, migrationSteps } from './migrations';
 export type { MigrationStep } from './migrations';
 export { encodePlayerId, isPlayerId, newPlayerId } from './player-id';
