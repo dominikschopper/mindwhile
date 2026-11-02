@@ -1,12 +1,29 @@
 <script setup lang="ts">
-import { AppButton, AppFooter, AppHeader, IconClose, IconUserStar } from '@mindwhile/game-kit';
+import {
+  AppButton,
+  AppFooter,
+  AppHeader,
+  IconClose,
+  IconSymbolPlaceholder,
+  profileSymbols,
+} from '@mindwhile/game-kit';
+import { computed } from 'vue';
 import { RouterLink, RouterView, useRoute } from 'vue-router';
 import MainMenu from './common/components/MainMenu.vue';
 import NoticeBar from './common/components/NoticeBar.vue';
 import { requestAbort, roundState } from './common/composables/use-chrome';
+import { useProfile } from './common/profile/use-profile';
 import { t } from './common/texts';
 
 const route = useRoute();
+const { profile } = useProfile();
+
+// Own keys only: a stored name like "constructor" must not reach the prototype.
+const gamerSymbol = computed(() =>
+  Object.hasOwn(profileSymbols, profile.value.gamerSymbol)
+    ? profileSymbols[profile.value.gamerSymbol as keyof typeof profileSymbols]
+    : IconSymbolPlaceholder,
+);
 </script>
 
 <template>
@@ -25,9 +42,10 @@ const route = useRoute();
   <AppFooter>
     <template #left>
       <span class="gamer-tag" :title="t('footer.gamerTagLabel')">
-        <IconUserStar aria-hidden="true" />{{ t('footer.gamerTag') }}
+        <component :is="gamerSymbol" aria-hidden="true" />{{ profile.gamerTag }}
       </span>
     </template>
+
     <template #right>
       <AppButton
         v-if="roundState === 'running'"
@@ -38,10 +56,12 @@ const route = useRoute();
         <template #icon><IconClose /></template>
         {{ t('footer.abort') }}
       </AppButton>
+      
       <AppButton v-else-if="route.path !== '/'" :as="RouterLink" to="/" class="chrome-button">
         {{ t('footer.backToGames') }}
       </AppButton>
     </template>
+
   </AppFooter>
 </template>
 

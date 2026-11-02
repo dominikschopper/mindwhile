@@ -1,12 +1,30 @@
 // @vitest-environment happy-dom
-import { ChromeSlot } from '@mindwhile/game-kit';
+import { ChromeSlot, IconSymbolPlaceholder, profileSymbols } from '@mindwhile/game-kit';
 import { mount } from '@vue/test-utils';
+import { serializeProfile } from '@mindwhile/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent, h } from 'vue';
 import { createMemoryHistory, createRouter } from 'vue-router';
 import App from './App.vue';
 import { registerAbortHandler, setRoundState } from './common/composables/use-chrome';
 import { dismissNotice, showNotice } from './common/composables/use-notice';
+import { PROFILE_KEY, resetProfileForTests } from './common/profile/use-profile';
+import { createStorage } from './common/storage';
+
+/** Puts a profile with the given tag and symbol into an in-memory storage (no localStorage). */
+function seedProfile(gamerTag: string, gamerSymbol: string): void {
+  const storage = createStorage(null);
+  storage.set(
+    PROFILE_KEY,
+    JSON.stringify(
+      serializeProfile({
+        profile: { playerId: 'AAAAAAAAAAA', gamerTag, gamerSymbol, gamerTagChangedAt: 0 },
+        best: [],
+      }),
+    ),
+  );
+  resetProfileForTests(storage);
+}
 
 const SlotChild = defineComponent({
   render: () => h(ChromeSlot, { name: 'footer-center' }, () => h('span', { id: 'probe' }, 'probe')),
@@ -28,6 +46,7 @@ async function setup(path = '/') {
 
 describe('App', () => {
   beforeEach(() => {
+    seedProfile('Swift Fox', 'star');
     setRoundState('idle');
     registerAbortHandler(null);
   });
@@ -56,10 +75,32 @@ describe('App', () => {
     wrapper.unmount();
   });
 
-  it('shows the gamer tag placeholder in the footer', async () => {
+  it('shows the stored gamer tag and the svg of the stored symbol in the footer', async () => {
     const wrapper = await setup();
-    expect(wrapper.get('footer').text()).toContain('Swift Fox');
-    expect(wrapper.get('footer .gamer-tag svg').attributes('aria-hidden')).toBe('true');
+    const tag = wrapper.get('footer .gamer-tag');
+    expect(tag.text()).toBe('Swift Fox');
+    expect(tag.attributes('title')).toBe('Gamer tag');
+    const svg = tag.get('svg');
+    expect(svg.attributes('aria-hidden')).toBe('true');
+    expect(svg.element.innerHTML).toBe(mount(profileSymbols.star).get('svg').element.innerHTML);
+    wrapper.unmount();
+  });
+
+  it('shows the placeholder svg for an unknown symbol name', async () => {
+    seedProfile('Swift Fox', 'future-shape');
+    const wrapper = await setup();
+    const tag = wrapper.get('footer .gamer-tag');
+    expect(tag.text()).toBe('Swift Fox');
+    expect(tag.get('svg').element.innerHTML).toBe(
+      mount(IconSymbolPlaceholder).get('svg').element.innerHTML,
+    );
+    wrapper.unmount();
+  });
+
+  it('shows a stored tag as plain text', async () => {
+    seedProfile('Swift-Fox 1', 'heart');
+    const wrapper = await setup();
+    expect(wrapper.get('footer .gamer-tag').text()).toBe('Swift-Fox 1');
     wrapper.unmount();
   });
 

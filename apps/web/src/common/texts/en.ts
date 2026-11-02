@@ -4,7 +4,6 @@ export const en = {
   'menu.settings': 'Settings',
   'menu.language': 'Language: English',
   'menu.languageHint': 'More languages will follow',
-  'footer.gamerTag': 'Swift Fox',
   'footer.gamerTagLabel': 'Gamer tag',
   'footer.backToGames': 'Back to games',
   'footer.abort': 'Abort',
