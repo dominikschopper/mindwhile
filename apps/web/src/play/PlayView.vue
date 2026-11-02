@@ -1,14 +1,24 @@
 <script setup lang="ts">
-import { AppButton } from '@mindwhile/game-kit';
+import {
+  AppButton,
+  createLayerRegistry,
+  provideActivity,
+  provideLayers,
+} from '@mindwhile/game-kit';
 import { onErrorCaptured, ref, toRef } from 'vue';
 import { RouterLink, onBeforeRouteLeave, useRouter } from 'vue-router';
 import { roundState, setRoundState } from '../common/composables/use-chrome';
 import AbortDialog from './AbortDialog.vue';
+import { usePageActivity } from './use-page-activity';
 import { usePlaySession } from './use-play-session';
 import { t } from './texts';
 
 const props = defineProps<{ gameId: string; level: string }>();
 const router = useRouter();
+const activity = usePageActivity();
+provideActivity(activity);
+const layers = createLayerRegistry();
+provideLayers(layers);
 const abortDialog = ref<InstanceType<typeof AbortDialog> | null>(null);
 
 const { module, error, framed, roundKey, result, scoreText, startRound, discardRound, failRound } =
@@ -50,9 +60,11 @@ function settle(confirmed: boolean): void {
   resolve?.(confirmed);
 }
 
-// Leave guard: only a running round asks. Confirm discards the round and goes to the game page
+// Leave guard: an open game layer closes first. Then only a running round asks. Confirm discards the round and goes to the game page
 // (also for links and the back button). The state is idle before the redirect, so it passes.
 onBeforeRouteLeave(async (to) => {
+  // A game layer (the pause) closes first and cancels this navigation.
+  if (layers.closeTopmost()) return false;
   if (roundState.value !== 'running') return true;
   if (!(await askAbort())) return false;
   discardRound();

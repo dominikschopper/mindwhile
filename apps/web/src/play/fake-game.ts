@@ -1,7 +1,16 @@
 // Test-only: a tiny fake game so platform flow tests do not depend on a real game.
 import type { GameManifest, GameModule, GameTexts, Round, RoundResult } from '@mindwhile/core';
-import { h } from 'vue';
-import type { Component } from 'vue';
+import { createActiveClock } from '@mindwhile/core';
+import {
+  ChromeSlot,
+  PauseButton,
+  PauseCover,
+  useActivity,
+  useElapsed,
+  usePause,
+} from '@mindwhile/game-kit';
+import { defineComponent, h, onScopeDispose, ref } from 'vue';
+import type { Component, PropType } from 'vue';
 import type { GameEntry, GameRegistry } from '../common/composables/game-registry';
 
 export const fakeManifest: GameManifest = {
@@ -41,6 +50,12 @@ export function createFakeGame(
     failFirstRounds?: number;
     failLoad?: boolean;
     throwInView?: boolean;
+    /** The view creates its own clock and pause and fills the header and footer slots. */
+    withPause?: boolean;
+    /** Passed to `usePause`. */
+    pauseOnReturn?: boolean;
+    /** Time source of the clock, so tests control the time. */
+    now?: () => number;
   } = {},
 ): FakeGame {
   const rounds: FakeRound[] = [];
@@ -66,7 +81,54 @@ export function createFakeGame(
     return round;
   }
 
-  const View: Component = (props: { round: Round }) => {
+  const PauseView = defineComponent({
+    props: { round: { type: Object as PropType<Round>, required: true } },
+    setup(props) {
+      const activity = useActivity();
+      const clock = createActiveClock({ activity, now: options.now ?? (() => performance.now()) });
+      const { paused, pause, resume } = usePause({
+        clock,
+        activity,
+        pauseOnReturn: options.pauseOnReturn,
+      });
+      const elapsed = useElapsed(clock);
+      const finished = ref(false);
+      onScopeDispose(() => clock.stop());
+      return () => {
+        const done = finished.value || props.round.result() !== null;
+        return [
+          h(
+            'button',
+            {
+              type: 'button',
+              class: 'fake-win',
+              onClick: () => {
+                props.round.apply({ type: 'win' });
+                finished.value = true;
+              },
+            },
+            'win',
+          ),
+          h(ChromeSlot, { name: 'header-center' }, () =>
+            h('span', { 'data-testid': 'fake-time' }, String(elapsed.value)),
+          ),
+          done
+            ? null
+            : h(ChromeSlot, { name: 'footer-center' }, () =>
+                h(PauseButton, { label: 'Pause', 'data-testid': 'fake-pause', onClick: pause }),
+              ),
+          h(PauseCover, {
+            open: paused.value,
+            heading: 'Paused',
+            resumeLabel: 'Resume',
+            onResume: resume,
+          }),
+        ];
+      };
+    },
+  });
+
+  const PlainView: Component = (props: { round: Round }) => {
     if (options.throwInView) throw new Error('view failed');
     return h(
       'button',
@@ -74,7 +136,8 @@ export function createFakeGame(
       'win',
     );
   };
-  View.props = ['round'];
+  PlainView.props = ['round'];
+  const View: Component = options.withPause ? PauseView : PlainView;
   const HowToPlay: Component = () => h('p', 'How to play fake');
 
   const gameModule: GameModule<Component> = {
