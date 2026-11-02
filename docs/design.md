@@ -64,8 +64,9 @@ The button is 3D: a bottom edge of `--button-edge-height` in a darker tone of th
 - With `prefers-reduced-motion` the backdrop is dark and semi-transparent or opaque
 - **Built:** `AppDialog` in `packages/game-kit/src/dialog` is the shared `<dialog>`: heading, content and actions slots, prop `backdrop` with `'rainbow'` (default) or `'opaque'`. `AbortDialog` is built on it
 - **Built:** the rainbow is a `linear-gradient` on the backdrop with a hue shift (`filter: hue-rotate`). It runs about 8 seconds (two rounds of 4 seconds) and then stops, so it does not drain the battery. With `prefers-reduced-motion` it is off and the backdrop is dark and semi-transparent
+- **Built:** the opaque variant (`backdrop="opaque"`) is the same rainbow without transparency (`hsl` colors without alpha, the same 8 second hue shift, then it stops). With `prefers-reduced-motion` it is plain black
 - **To try:** the look and the speed of the rainbow. The first version is built, but it is not yet confirmed in the browser
-- The opaque variant is always opaque. The pause screen (`PauseCover`, not built yet) works the same way, with one exception: it has to hide the board so nobody can plan during the pause, so its backdrop is always opaque
+- The opaque variant is always opaque. The pause screen (`PauseCover`, built) works the same way, with one exception: it has to hide the board so nobody can plan during the pause, so its backdrop is always opaque
 - The content of a dialog has its own opaque surface, so its text stays readable on the rainbow in light and dark
 
 ## Games

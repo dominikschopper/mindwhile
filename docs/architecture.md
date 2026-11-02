@@ -104,12 +104,12 @@ The exact keys, types, envelope, limits and transport are fixed in `data-formats
 - Leaving a running round asks first (leave guard, see Platform shell). A round is only left after the round end (won, lost or ended) or after a confirmed abort ("Abort round? Progress will be lost"). A confirmed abort opens the game page of that game, "Back to games" the start page
 - An error in the game (creating the round, rendering the view) discards the round, creates no result and shows a notice on the start page (see `game-contract.md`, Errors)
 - An abort discards the state, neither a result nor a best result is created
-- The device's back gesture and back key trigger the same abort confirmation as the back button
+- The device's back gesture and back key trigger the same abort confirmation as the back button, but a game layer open inside the round (for example the pause) closes first: the first back resumes the game, only the next back asks (see `game-contract.md`, Navigation)
 - Daily and group boards may be played any number of times for now, the better value counts (merge rule)
-- A pause by the player is optional and decided by the game (a game without pause is allowed, for example a real-time game). Games with a pause cover the board while paused
-- An interruption by the system (app in the background, phone call, device locked) cannot be refused. The platform saves the state when the app goes to the background and resumes the round on the next open. What happens on return (continue, pause, end with a move) is decided by the game
+- A pause by the player is optional and decided by the game (a game without pause is allowed, for example a real-time game). Games with a pause cover the board while paused. The pause is a layer, so back closes it first
+- An interruption by the system (app in the background, phone call, device locked) cannot be refused. The platform saves the state when the app goes to the background and resumes the round on the next open (**not yet implemented**). What happens on return (continue, pause, end with a move) is decided by the game
 - For this the platform stores the state of the running round (at most one per device) with the game version and data format version
-- Time scores count only active play time. The game measures it itself with a clock from `core` that stops during pause and while the app is in the background. The platform only publishes the activity signal (see `game-contract.md` and `data-formats.md`)
+- Time scores count only active play time. The game measures it itself with a clock from `core` that stops during pause and while the app is in the background. The platform only publishes the activity signal, fed from the page visibility: visible means active, hidden (tab switch, locked screen) means background (see `game-contract.md` and `data-formats.md`)
 - Every game reports the round end to the platform (won, lost, ended). This is part of the game contract
 - Open-ended games (for example Merge) end when no move is possible any more, or via "End and score"
 

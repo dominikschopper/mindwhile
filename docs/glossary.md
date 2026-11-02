@@ -62,10 +62,11 @@ Spelling in code: identifiers in `camelCase`, types in `PascalCase`, folders and
 | game registry (`GameRegistry`, `createGameRegistry`) | Platform map from game ID to manifest, texts and lazy module loader, built from the game package entries. Checks that the folder name equals the manifest ID. See `tech-stack.md` |
 | notice (`notice`, `showNotice`) | One-time message under the header, for example after an error in a game. Only one at a time, a newer one replaces it |
 | leave guard | Confirmation before a running round is left by back key, link or abort button. See `architecture.md` |
+| layer (`useLayer`, `LayerRegistry`) | Something open inside a round that back closes first, for example the pause or a dialog of the game. Reported by the game with `useLayer`, closed in the reverse order of opening, before the leave guard asks. See `game-contract.md`, Navigation |
 | round object (`Round`) | Pure logic of a running round (`apply`, `serialize`, `result`), wrapped by the platform |
 | active time (`elapsedMs`) | Play time without pause and background, measured by the game with the active clock |
 | active clock (`ActiveClock`, `createActiveClock`) | Framework-free clock in `core` that stops during pause and in the background |
-| activity signal (`activity`) | Published by the platform: app in the foreground or background. The clock and games listen to it |
+| activity signal (`ActivitySignal`, `createActivitySignal`, option `activity`, `useActivity` in games) | Published by the platform: app in the foreground or background, fed from the page visibility. The clock and games listen to it |
 | game kit (`game-kit`) | Package with Vue building blocks for games: `usePause`, `PauseCover`, `useElapsed`, how-to-play building blocks |
 | envelope (`app`, `fmtv`, `kind`) | Outer layer of every export, QR and link that tells the reader what it holds |
 | game selection (`game-selection`) | Start page with one tile per game (symbol, name, best result of the highest level). Tiles lead to the game page |

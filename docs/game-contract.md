@@ -43,7 +43,10 @@ interface GameModule<TView = unknown> {
 - Games have no routes of their own and do not use the History API. This includes memory and hash routers inside a game: a second router would have to be coordinated with the one of the platform for back key and back gesture, and the hash is already used by the platform for import links. The platform is the only place that handles back key and back gesture (abort confirmation as guard)
 - Screens inside a running round are state of the view
 - Choosing before the round (level, for fixed boards the number of the board), round end and the rules page belong to the platform. The level selection is the shared `LevelPicker` of `game-kit` with a slot per level card in which the platform renders the optional `LevelPreview` of the game (see `design.md`). A game may later bring its own level selection if it needs one, nothing is defined for that yet
-- If a game opens a layer of its own inside a round (for example a dialog), it reports this to the platform through a small service, so that back closes this layer first
+- If a game opens a layer of its own inside a round (for example a dialog or the pause), it reports this to the platform through a small service, so that back closes this layer first
+  - `game-kit` provides `useLayer(isOpen, close)`: while the ref `isOpen` is true the layer is registered, it is removed when `isOpen` becomes false or the component unmounts. Without a platform registry `useLayer` does nothing
+  - The platform creates the registry with `createLayerRegistry()` and provides it with `provideLayers(registry)`. Its `closeTopmost(): boolean` closes the layer that was opened last and returns whether a layer was open
+  - Order on back: the platform first closes the topmost layer and cancels the navigation. Only when no layer is open the leave guard applies and "Abort round?" appears. A second back asks. In a pause, back resumes the game
 - Leaving a running round (back key, links, abort) is confirmed by the platform through the leave guard. A game does not handle it
 - Keys pressed inside a platform dialog or the open menu do not reach the game, the platform stops `keydown` there. A game's own window key handler should ignore form fields, modifier keys, repeated keys and events that are already `defaultPrevented` (Spillit does this in `keyboard.ts`)
 - If a later game needs more, the rule is extended for that case. Taking freedoms away again would be more expensive
@@ -63,18 +66,28 @@ Two different things, only one of them is optional.
 - `game-kit` provides `usePause()` and a `PauseCover` component. Convention: every game with a pause uses the cover, so the board cannot be studied while the time stands still. This is about fairness, not about enforcing anything (cheating protection stays out of scope), it is checked in review and not by the platform
 - **Interruptions by the system cannot be refused** (app in the background, phone call, device locked, app killed). The platform only provides facts and a safety net:
   - it publishes the activity signal (foreground or background, framework-free in `core`)
-  - it calls `serialize()` and saves the state when the app goes to the background
-  - it restores the round on the next start through `saved`
+  - it calls `serialize()` and saves the state when the app goes to the background (**not yet implemented**)
+  - it restores the round on the next start through `saved` (**not yet implemented**)
 - **What happens on return is the decision of the game:** continue (the default, the clock did not run in the meantime), pause itself, or end the round with a move (for example a real-time game that cannot continue)
+- **Activity signal** (`core`, `createActivitySignal(initial = true)`, type `ActivitySignal`): `isActive(): boolean`, `set(active: boolean): void`, `subscribe(listener: (active: boolean) => void): () => void` (returns the unsubscribe function). Listeners are called only when the value changes. The platform calls `set`, a game only reads and subscribes
+- **How a game gets the signal:** `useActivity()` from `game-kit` returns the signal of the platform. The play page provides it with `provideActivity`. A game without a provider (for example in a test) gets a signal that is always active
+- **`usePause({ clock, activity, pauseOnReturn })`** (`game-kit`, all options optional): `clock` is anything with `pause()` and `resume()` (the active clock), `activity` defaults to `useActivity()`, `pauseOnReturn` defaults to `false`. It returns `paused` (a read-only ref), `pause()`, `resume()` and `toggle()`. Pausing and resuming the clock happens once per real change. While paused the pause is a layer (see Navigation), so back resumes the game
+- **`pauseOnReturn: true`:** the game pauses itself when the signal goes from inactive to active. With `false` (the default) returning continues the round. In both cases the pause stays until the player resumes, the game never resumes by itself
+- **`PauseCover`** (`game-kit`): props `open: boolean`, `heading: string`, `resumeLabel: string`, default slot for the content, emits `resume` when the resume button is pressed or Escape is pressed. It is an `AppDialog` with the opaque backdrop and is always opaque. Focus starts on the resume button and goes back to the element that had it before (the pause button). Its texts come as props, `game-kit` has no language file
+- **`PauseButton`** (`game-kit`): a button with the pause icon, prop `label: string`, a plain `click` event. Every game with a pause looks the same
 - The round object does not learn about pause or activity, only the clock and the view do. This keeps the interface small
 - The rules are not shown during a round. They are on the game page (see Platform chrome and How-to-play content). Whether a game may offer its rules from its own pause is not decided
 
 ### Time
 
 - **The game measures time itself,** when it needs time at all. A game without a time score uses nothing of this
-- `core` brings the active clock (framework-free): `createActiveClock(saved?)` with `elapsedMs()` and `serialize()`. It runs only while the game is active: it stops during pause and while the app is in the background (through the activity signal of the platform), so no game implements these cases itself
-- The game puts the state of the clock into its own `serialize()` and hands it back to `createActiveClock` on resume, so a resumed round continues with the time played so far. The platform stores nothing about time
-- Showing the time is the decision of the game. `game-kit` brings `useElapsed(clock)`, a composable that ticks reactively, for views that want to show it
+- `core` brings the active clock (framework-free): `createActiveClock({ activity, now?, saved? })` returns an `ActiveClock` with `elapsedMs(): number`, `serialize(): { elapsedMs: number }`, `pause()`, `resume()`, `isRunning(): boolean`, `subscribe(listener: (running: boolean) => void): () => void` and `stop()`
+  - `activity` is the activity signal. `now` returns milliseconds and defaults to `performance.now()` (monotonic). `saved` is a value from an earlier `serialize()`, invalid values count as 0
+  - The clock counts only while the signal is active and the clock is not paused (`usePause` calls `pause()` and `resume()`). It stops during pause and while the app is in the background, so no game implements these cases itself
+  - `elapsedMs()` also works while the clock is stopped and returns the time so far. `stop()` ends the clock: it stops counting and removes its listener from the signal
+  - The type `Clock` (`{ elapsedMs(): number }`) is what the game logic gets; `ActiveClock` extends it
+- The game puts the state of the clock into its own `serialize()` and passes it as `saved` when the round is restored, so a resumed round continues with the time played so far. The platform stores nothing about time
+- Showing the time is the decision of the game. `game-kit` brings `useElapsed(clock)`, which returns a read-only ref with `elapsedMs()`. It updates every 250 ms, and only while the clock runs; the timer stops when the clock stops and when the view unmounts
 - The logic gets the clock as a parameter (`{ elapsedMs(): number }`) and stays free of real time. `result()` has no time parameter. Scoring tests pass a fake clock (for example 93000 ms)
 - A game may use the time during the round as well (for example a time limit), the clock is available at any moment
 
@@ -132,4 +145,4 @@ Two different things, only one of them is optional.
 
 ## Open
 
-Nothing is open for the contract at the concept level. Details (exact type definitions of the clock, the activity signal and `usePause`, the service for layers of a game) are fixed when `packages/core` and `packages/game-kit` are written.
+Nothing is open for the contract at the concept level. Still open in the details: whether a game may offer its rules from its own pause (see Pause and system interruptions).
