@@ -97,6 +97,11 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    // Tests build several small host components to get a real `setup` context.
+    files: ['**/*.test.ts'],
+    rules: { 'vue/one-component-per-file': 'off' },
+  },
   prettier,
   // after `prettier`, which would otherwise switch this formatting rule off
   { rules: { semi: ['error', 'always'] } },

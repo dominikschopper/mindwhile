@@ -11,3 +11,8 @@ export { default as AppFooter } from './chrome/AppFooter.vue';
 export { default as AppHeader } from './chrome/AppHeader.vue';
 export { default as ChromeSlot } from './chrome/ChromeSlot.vue';
 export { chromeSlotNames, type ChromeSlotName } from './chrome/types';
+
+export { provideActivity, useActivity } from './runtime/activity';
+export { createLayerRegistry, provideLayers, type LayerRegistry } from './runtime/layers';
+export { useLayer } from './runtime/use-layer';
+export { usePause, type UsePauseOptions } from './pause/use-pause';

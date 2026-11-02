@@ -1,5 +1,4 @@
 // @vitest-environment happy-dom
-/* eslint-disable vue/one-component-per-file -- small host components for test setup */
 import { mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent, h, nextTick, ref } from 'vue';
