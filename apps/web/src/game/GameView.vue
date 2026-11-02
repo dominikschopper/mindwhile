@@ -10,14 +10,14 @@ import { computed, ref, shallowRef, watch } from 'vue';
 import type { Component } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 import { useGameRegistry } from '../common/composables/game-registry';
-import { pointsOf, useBestResults } from '../common/composables/use-best-results';
+import { useBestResults } from '../common/composables/use-best-results';
 import { useSelectedLevel } from './use-selected-level';
 import { t } from './texts';
 
 const props = defineProps<{ id: string }>();
 const router = useRouter();
 const registry = useGameRegistry();
-const bestResults = useBestResults();
+const { bestScore } = useBestResults();
 
 const game = computed(() => registry.getGame(props.id));
 const manifest = computed(() => game.value?.manifest);
@@ -26,16 +26,16 @@ const symbol = computed(() =>
   manifest.value ? (gameSymbols as Record<string, Component>)[manifest.value.symbol] : undefined,
 );
 
-function bestPoints(level: string): string | undefined {
-  const points = pointsOf(bestResults[props.id]?.[level]);
-  return points === undefined ? undefined : String(points);
+function bestText(level: string): string | undefined {
+  const score = bestScore(props.id, level);
+  return score === undefined ? undefined : texts.value?.formatScore(score);
 }
 
 const options = computed(() =>
   (manifest.value?.levels ?? []).map((level) => ({
     id: level,
     label: texts.value?.levelName(level) ?? level,
-    hiScore: bestPoints(level),
+    hiScore: bestText(level),
   })),
 );
 
@@ -46,7 +46,7 @@ const selected = computed({
   },
 });
 const selectedName = computed(() => texts.value?.levelName(selected.value) ?? selected.value);
-const best = computed(() => pointsOf(bestResults[props.id]?.[selected.value]));
+const best = computed(() => bestText(selected.value));
 
 const HowToPlay = shallowRef<Component | null>(null);
 const LevelPreview = shallowRef<Component | null>(null);

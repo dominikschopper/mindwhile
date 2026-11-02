@@ -1,13 +1,14 @@
 // @vitest-environment happy-dom
 import { flushPromises, mount } from '@vue/test-utils';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { h } from 'vue';
 import { createMemoryHistory, createRouter } from 'vue-router';
 import type { GameManifest, GameModule, GameTexts } from '@mindwhile/core';
 import type { Component } from 'vue';
 import { defaultGameRegistry, gameRegistryKey } from '../common/composables/game-registry';
 import type { GameEntry, GameRegistry } from '../common/composables/game-registry';
-import * as bestResults from '../common/composables/use-best-results';
+import { useProfile } from '../common/profile/use-profile';
+import { seedBestForTests, storedResult } from '../common/profile/seed-best-for-tests';
 import GameView from './GameView.vue';
 
 function otherEntry(): GameEntry {
@@ -84,7 +85,14 @@ function makeRouter() {
   });
 }
 
+const spillTexts = () => defaultGameRegistry.getGame('spill-it')!.texts;
+const spillVersion = () => defaultGameRegistry.getGame('spill-it')!.manifest.scoringVersion;
+
 describe('GameView', () => {
+  beforeEach(() => {
+    seedBestForTests([]);
+  });
+
   it('shows symbol, name, one radio per level and the first one selected', async () => {
     const { wrapper } = await mountView('spill-it');
     expect(wrapper.find('svg').exists()).toBe(true);
@@ -114,24 +122,59 @@ describe('GameView', () => {
     expect(wrapper.find('.game-page').classes()).toContain('game-color-orange');
   });
 
-  it('shows the points of the best score list of the selected level', async () => {
-    vi.spyOn(bestResults, 'useBestResults').mockReturnValue({ 'spill-it': { a: [640, 3] } });
+  it('shows the formatted best score of the selected level', async () => {
+    seedBestForTests([storedResult('spill-it', 'a', [640, 3], spillVersion())]);
     const { wrapper } = await mountView('spill-it');
-    expect(wrapper.find('.best').text()).toContain('640');
+    const text = spillTexts().formatScore([640, 3]);
+    expect(wrapper.find('.best').text()).toContain(text);
     expect(wrapper.find('.best').text()).not.toContain('—');
-    expect(wrapper.find('.level-picker-hiscore').text()).toBe('640');
-    vi.restoreAllMocks();
+    expect(wrapper.find('.level-picker-hiscore').text()).toBe(text);
   });
 
   it('updates the best result line when another level is chosen', async () => {
-    vi.spyOn(bestResults, 'useBestResults').mockReturnValue({ 'spill-it': { a: [640, 3] } });
+    seedBestForTests([storedResult('spill-it', 'a', [640, 3], spillVersion())]);
     const { wrapper } = await mountView('spill-it');
     await wrapper.findAll('input[type="radio"]')[2]!.setValue(true);
     expect(wrapper.find('.best').text()).toContain('—');
     expect(wrapper.find('.best .visually-hidden').text()).toBe('No result yet');
     await wrapper.findAll('input[type="radio"]')[0]!.setValue(true);
-    expect(wrapper.find('.best').text()).toContain('640');
-    vi.restoreAllMocks();
+    expect(wrapper.find('.best').text()).toContain(spillTexts().formatScore([640, 3]));
+  });
+
+  it('uses formatScore of the game for another game', async () => {
+    seedBestForTests([storedResult('other', 'x', [7], 1)]);
+    const registry = previewRegistry(false);
+    const router = makeRouter();
+    await router.push('/games/other');
+    await router.isReady();
+    const wrapper = mount(
+      { template: '<RouterView />' },
+      { global: { plugins: [router], provide: { [gameRegistryKey]: registry } } },
+    );
+    await flushPromises();
+    expect(wrapper.find('.best').text()).toContain('7 other points');
+  });
+
+  it('ignores results of another scoring version, unknown levels and unknown games', async () => {
+    seedBestForTests([
+      storedResult('spill-it', 'a', [640, 3], spillVersion() + 1),
+      storedResult('spill-it', 'zz', [640, 3], spillVersion()),
+      storedResult('nope', 'a', [640, 3], 1),
+    ]);
+    const { wrapper } = await mountView('spill-it');
+    expect(wrapper.find('.best').text()).toContain('—');
+    expect(wrapper.find('.level-picker-hiscore').exists()).toBe(false);
+  });
+
+  it('updates the display when a result is recorded while the page is open', async () => {
+    const { wrapper } = await mountView('spill-it');
+    expect(wrapper.find('.best').text()).toContain('—');
+    useProfile().recordRoundResult(defaultGameRegistry.getGame('spill-it')!.manifest, 'a', 1, {
+      roundEnd: 'won',
+      score: [640, 3],
+    });
+    await flushPromises();
+    expect(wrapper.find('.best').text()).toContain(spillTexts().formatScore([640, 3]));
   });
 
   it('keeps the selection across navigation and Go uses it', async () => {

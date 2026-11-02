@@ -9,7 +9,7 @@ defineProps<{
   name: string;
   symbol?: Component;
   color: GameColor;
-  hiScore?: { points: number; levelLabel: string };
+  hiScore?: { text: string; levelLabel: string };
 }>();
 </script>
 
@@ -26,7 +26,7 @@ defineProps<{
     <span class="tile-body">
       <span v-if="hiScore" class="tile-pills">
         <span class="pill pill-level">{{ hiScore.levelLabel }}</span>
-        <span class="pill pill-score">{{ hiScore.points }}</span>
+        <span class="pill pill-score">{{ hiScore.text }}</span>
       </span>
 
       <span v-else class="visually-hidden">{{ t('tile.noResult') }}</span>

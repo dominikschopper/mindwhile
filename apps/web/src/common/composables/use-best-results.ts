@@ -1,12 +1,27 @@
-// Provisional: there is no storage yet. Replaced by the profile plan, which returns
-// the best score list per level from the profile.
-export type BestResults = Record<string, Record<string, readonly number[] | undefined>>;
+import { computed } from 'vue';
+import { useProfile } from '../profile/use-profile';
+import { useGameRegistry } from './game-registry';
 
-export function useBestResults(): BestResults {
-  return {};
-}
+/**
+ * Best score lists from the profile. Only entries of the current scoring version of a
+ * known game are returned, others stay stored but are not shown. Call inside setup.
+ */
+export function useBestResults() {
+  const { best } = useProfile();
+  const registry = useGameRegistry();
+  const index = computed(() => {
+    const map = new Map<string, readonly number[]>();
+    for (const entry of best.value) {
+      const manifest = registry.getGame(entry.gameId)?.manifest;
+      if (!manifest || manifest.scoringVersion !== entry.scoringVersion) continue;
+      map.set(`${entry.gameId}\u0000${entry.level}`, entry.scoreValues);
+    }
+    return map;
+  });
 
-// The first value of a score list is the points. Returns undefined when there is none.
-export function pointsOf(result: readonly number[] | undefined): number | undefined {
-  return result?.[0];
+  function bestScore(gameId: string, level: string): readonly number[] | undefined {
+    return index.value.get(`${gameId}\u0000${level}`);
+  }
+
+  return { bestScore };
 }

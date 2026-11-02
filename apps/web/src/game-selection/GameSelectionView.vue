@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import { highestLevelWithResult } from '@mindwhile/core';
+import { computed } from 'vue';
 import { IconPuzzle, gameSymbols } from '@mindwhile/game-kit';
 import { useGameRegistry } from '../common/composables/game-registry';
-import { pointsOf, useBestResults } from '../common/composables/use-best-results';
+import { useBestResults } from '../common/composables/use-best-results';
 import GameTile from './GameTile.vue';
 import { t } from './texts';
 
-const bestResults = useBestResults();
+const { bestScore } = useBestResults();
 
-const games = useGameRegistry()
-  .listGames()
-  .map(({ manifest: game, texts }) => {
-    const best = highestLevelWithResult(game.levels, bestResults[game.id] ?? {});
-    const points = best ? pointsOf(best.result) : undefined;
+const registry = useGameRegistry();
+
+const games = computed(() =>
+  registry.listGames().map(({ manifest: game, texts }) => {
+    const scores: Record<string, readonly number[] | undefined> = {};
+    for (const level of game.levels) scores[level] = bestScore(game.id, level);
+    const best = highestLevelWithResult(game.levels, scores);
     return {
       id: game.id,
       name: texts.name,
@@ -20,12 +23,15 @@ const games = useGameRegistry()
       symbol: (gameSymbols as Record<string, (typeof gameSymbols)[keyof typeof gameSymbols]>)[
         game.symbol
       ],
-      hiScore:
-        best && points !== undefined
-          ? { points, levelLabel: texts.levelName(best.level) ?? best.level }
-          : undefined,
+      hiScore: best
+        ? {
+            text: texts.formatScore(best.result),
+            levelLabel: texts.levelName(best.level) ?? best.level,
+          }
+        : undefined,
     };
-  });
+  }),
+);
 </script>
 
 <template>

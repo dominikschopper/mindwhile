@@ -28,9 +28,11 @@ describe('GameTile', () => {
   });
 
   it('renders both pills with a result', () => {
-    const wrapper = mountTile({ hiScore: { points: 1234, levelLabel: '10×10 · 5 colors' } });
+    const wrapper = mountTile({
+      hiScore: { text: '1234 fake points', levelLabel: '10×10 · 5 colors' },
+    });
     expect(wrapper.find('.pill-level').text()).toBe('10×10 · 5 colors');
-    expect(wrapper.find('.pill-score').text()).toBe('1234');
+    expect(wrapper.find('.pill-score').text()).toBe('1234 fake points');
     expect(wrapper.find('.visually-hidden').exists()).toBe(false);
   });
 
