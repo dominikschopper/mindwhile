@@ -76,6 +76,7 @@ defineExpose({ open, close });
   background: rgb(0 0 0 / 0.6);
 }
 
+/* Opaque (the pause hides the board): plain black, also with reduced motion */
 .app-dialog.app-dialog-opaque::backdrop {
   background: rgb(0 0 0);
   animation: none;
@@ -91,6 +92,19 @@ defineExpose({ open, close });
       hsl(120 85% 45% / 0.55),
       hsl(200 85% 55% / 0.55),
       hsl(280 85% 55% / 0.55)
+    );
+    animation: app-dialog-rainbow 4s linear 2;
+  }
+
+  /* The same rainbow without transparency, so nothing shines through */
+  .app-dialog.app-dialog-opaque::backdrop {
+    background: linear-gradient(
+      135deg,
+      hsl(0 85% 55%),
+      hsl(60 85% 55%),
+      hsl(120 85% 45%),
+      hsl(200 85% 55%),
+      hsl(280 85% 55%)
     );
     animation: app-dialog-rainbow 4s linear 2;
   }
