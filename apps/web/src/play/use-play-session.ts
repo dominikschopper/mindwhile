@@ -5,6 +5,7 @@ import type { Component, Ref } from 'vue';
 import { useGameRegistry } from '../common/composables/game-registry';
 import { registerAbortHandler, setRoundState } from '../common/composables/use-chrome';
 import { showNotice } from '../common/composables/use-notice';
+import { useProfile } from '../common/profile/use-profile';
 import { t as commonT } from '../common/texts';
 import { useRoundFrame } from './use-round-frame';
 import { t } from './texts';
@@ -24,6 +25,15 @@ export function usePlaySession(
   const roundKey = ref(0);
 
   const result = computed(() => framed.value?.result.value ?? null);
+  const { recordRoundResult } = useProfile();
+  // Seed of the current round, needed to store its result.
+  let roundSeed = 0;
+
+  // Record the result once when it appears; aborted or discarded rounds never get here.
+  watch(result, (value) => {
+    const loaded = module.value;
+    if (value && loaded) recordRoundResult(loaded.manifest, level.value, roundSeed, value);
+  });
 
   // Error guard: an error in the game discards the round (no result), resets the shell,
   // shows a one-time notice and leaves the play page.
@@ -41,7 +51,9 @@ export function usePlaySession(
     const loaded = module.value;
     if (!loaded) return;
     try {
-      framed.value = useRoundFrame(loaded.createRound({ level: level.value, seed: newSeed() }));
+      const seed = newSeed();
+      framed.value = useRoundFrame(loaded.createRound({ level: level.value, seed }));
+      roundSeed = seed;
     } catch (cause) {
       failRound(cause);
       return;

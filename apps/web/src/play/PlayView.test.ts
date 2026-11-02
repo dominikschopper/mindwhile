@@ -4,6 +4,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createMemoryHistory, createRouter } from 'vue-router';
 import App from '../App.vue';
 import { dismissNotice } from '../common/composables/use-notice';
+import { PROFILE_KEY, resetProfileForTests, useProfile } from '../common/profile/use-profile';
+import { createStorage } from '../common/storage';
+import type { KeyValueStorage } from '../common/storage';
 import { gameRegistryKey } from '../common/composables/game-registry';
 import type { GameRegistry } from '../common/composables/game-registry';
 import { createFakeGame } from './fake-game';
@@ -65,7 +68,13 @@ afterEach(() => {
   document.body.innerHTML = '';
 });
 
+let store: KeyValueStorage;
+
 beforeEach(() => {
+  store = createStorage(null);
+  resetProfileForTests(store);
+  // Creating the default profile draws a seed, do it before the test seeds are queued.
+  useProfile();
   seeds.next = [11, 22, 33, 44, 55];
   vi.mocked(newSeed).mockClear();
   HTMLDialogElement.prototype.showModal = function () {
@@ -95,6 +104,32 @@ describe('PlayView with a fake game', () => {
     expect(footer(wrapper).find('button').exists()).toBe(false);
     expect(footer(wrapper).get('a').text()).toBe('Back to games');
     expect(footer(wrapper).get('a').attributes('href')).toBe('/');
+  });
+
+  it('records the result with the round seed once, and the next round on its own', async () => {
+    const { wrapper } = await mountFake();
+    await wrapper.get('.fake-win').trigger('click');
+    const { best } = useProfile();
+    expect(best.value).toHaveLength(1);
+    expect(best.value[0]).toMatchObject({
+      gameId: 'fake',
+      level: 'a',
+      seed: 11,
+      scoringVersion: 1,
+    });
+    const stored = store.get(PROFILE_KEY);
+    await wrapper.vm.$forceUpdate();
+    expect(store.get(PROFILE_KEY)).toBe(stored);
+    const next = wrapper.findAll('.result button').find((b) => b.text() === 'Next round')!;
+    await next.trigger('click');
+    expect(best.value).toHaveLength(1);
+    expect(store.get(PROFILE_KEY)).toBe(stored);
+  });
+
+  it('stores nothing when the round is aborted', async () => {
+    const { wrapper } = await mountFake();
+    await openAbortDialog(wrapper);
+    expect(useProfile().best.value).toHaveLength(0);
   });
 
   it('starts a new round with a new seed on Next round', async () => {

@@ -55,8 +55,9 @@ export function createFakeGame(
     const round: FakeRound = {
       seed: p.seed,
       apply(move) {
-        if ((move as { type?: string }).type === 'win')
-          result = { roundEnd: 'won', score: [100, 0] };
+        const m = move as { type?: string; score?: number[] };
+        if (m.type === 'win') result = { roundEnd: 'won', score: m.score ?? [100, 0] };
+        else if (m.type === 'lose') result = { roundEnd: 'lost', score: [0, 0] };
       },
       serialize: () => ({ seed: p.seed }),
       result: () => result,
