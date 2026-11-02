@@ -56,12 +56,11 @@ const gamerSymbol = computed(() =>
         <template #icon><IconClose /></template>
         {{ t('footer.abort') }}
       </AppButton>
-      
+
       <AppButton v-else-if="route.path !== '/'" :as="RouterLink" to="/" class="chrome-button">
         {{ t('footer.backToGames') }}
       </AppButton>
     </template>
-
   </AppFooter>
 </template>
 

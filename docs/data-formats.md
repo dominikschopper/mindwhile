@@ -53,7 +53,32 @@ Status: draft, filled decision by decision. Rules and reasons live in `architect
 - Stored as a fixed name of the shape (for example `"star"`), not as a number, so extending or reordering the set of shapes never changes old profiles
 - Shape names are permanent and never reassigned (same rule as level IDs)
 - An unknown shape (from a newer version) is shown as a neutral placeholder symbol, the profile is not rejected because of it
-- The list of shapes itself is defined elsewhere
+- The list of symbol shapes (names), final for the first release, in this order (24 names, the same as `profileSymbolNames` in `packages/game-kit/src/icons/profile-symbols.ts`): 
+   - `star`
+   - `heart`
+   - `circle`
+   - `square`
+   - `triangle`
+   - `diamond`
+   - `hexagon`
+   - `pentagon`
+   - `octagon`
+   - `moon`
+   - `sun`
+   - `cloud`
+   - `zap`
+   - `leaf`
+   - `flame`
+   - `droplet`
+   - `anchor`
+   - `key`
+   - `bell`
+   - `flag`
+   - `crown`
+   - `gem`
+   - `shield`
+   - `plus`
+- New shapes will be added at the end of the list - never rename, remove
 
 ### Player ID
 
@@ -104,6 +129,17 @@ Status: draft, filled decision by decision. Rules and reasons live in `architect
 - `profile: { player, tag, symbol, tagat }`, built from the keys decided above
 - `best`: a list of results (fields as in Result, without `player`)
 
+### Local storage
+
+- The profile and the best results are kept in `localStorage` under one key, `mindwhile.profile`. The value is the envelope as JSON (`app`, `fmtv`, `kind`, `profile` and `best`), the same content as an export. The whole envelope is written after every change
+- On load the value is fully validated, like an import: the profile strictly, each entry of `best` tolerantly (an invalid entry is skipped and dropped with the next write)
+- Unreadable JSON, a foreign `app`, an unknown `kind`, a newer `fmtv` or an invalid profile: the value is discarded, a new default profile is created and stored, and a short notice tells the user
+- More than 2000 entries in `best` reject the whole value, which is then discarded in the same way
+- A second entry with the same game, level and scoring version is skipped on load. Entries for games or levels this version does not know are kept untouched and not shown
+- Only the rounds that end `won` or `ended` create a result. A round that ends `lost`, and an aborted round, create nothing
+- The tag is 1 to 16 characters of `A-Z`, `a-z`, `0-9`, space and hyphen. Emoji, umlauts and all other characters are not allowed
+- If `localStorage` is missing, blocked or a write fails (for example a quota error), the data is kept in memory for the rest of the session. This happens silently, with no notice. The results then vanish when the session ends
+
 ### Import validation
 
 - An import is input from outside (file, QR, link) and is validated completely before it changes the profile
@@ -140,4 +176,3 @@ Status: draft, filled decision by decision. Rules and reasons live in `architect
 ## Open
 
 - Limit for QR codes (size of a profile in a QR code), after the beta
-- The list of symbol shapes (names), to be defined with the profile feature

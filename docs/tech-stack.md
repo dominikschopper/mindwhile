@@ -51,7 +51,7 @@ Status: draft. Functional rules live in `architecture.md`, terms and English nam
 
 ### Storage and offline
 
-- **Storage: localStorage behind a small interface** (`get`, `set`, `remove` with version number and migration), no wrapper package. The `storage` event helps with several open windows. A later switch to IndexedDB stays confined to the interface
+- **Storage: localStorage behind a small interface** in `apps/web/src/common/storage` (`get`, `set`, `remove`, string values, JSON is handled by the callers). The version number and the migration belong to the stored envelope (`fmtv`, see `data-formats.md`), not to the interface. If `localStorage` is missing, blocked or a call fails, the affected key falls back to memory for the rest of the session, silently: no notice, no log. No wrapper package. The `storage` event helps with several open windows. A later switch to IndexedDB stays confined to the interface
 - **Service worker: our own small one instead of Workbox.** Precache of all files on install, cache-first on fetch, delete old caches on activation. The build generates the precache manifest from the hashed files. Activation only after a message from the app (no automatic `skipWaiting`), so that the update rules from `architecture.md` apply
 
 ### Hosting and repository
