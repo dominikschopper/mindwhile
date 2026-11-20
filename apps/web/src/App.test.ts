@@ -35,7 +35,7 @@ async function setup(path = '/') {
     history: createMemoryHistory(),
     routes: [
       { path: '/', component: SlotChild },
-      { path: '/settings', component: { template: '<div />' } },
+      { path: '/games/:id', component: { template: '<div />' } },
     ],
   });
   await router.push(path);
@@ -105,7 +105,7 @@ describe('App', () => {
   });
 
   it('shows "Back to games" when idle or ended', async () => {
-    const wrapper = await setup('/settings');
+    const wrapper = await setup('/games/spill-it');
     for (const state of ['idle', 'ended'] as const) {
       setRoundState(state);
       await wrapper.vm.$nextTick();

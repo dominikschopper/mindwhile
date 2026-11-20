@@ -31,7 +31,6 @@ async function mountAt(path: string, registry?: GameRegistry) {
     routes: [
       { path: '/', name: 'game-selection', component: { template: '<p>selection</p>' } },
       { path: '/games/:id', name: 'game', component: { template: '<p>game page</p>' } },
-      { path: '/settings', name: 'settings', component: { template: '<p>settings</p>' } },
       { path: '/play/:gameId/:level', name: 'play', component: PlayView, props: true },
     ],
   });
@@ -199,7 +198,7 @@ describe('leave guard', () => {
 
   it('asks on a link navigation and keeps playing on cancel', async () => {
     const { wrapper, router } = await mountFake();
-    void router.push('/settings');
+    void router.push('/');
     await flushPromises();
     expect(dialogOf(wrapper).attributes('open')).toBeDefined();
     await choose(wrapper, 'Keep playing');
@@ -212,7 +211,7 @@ describe('leave guard', () => {
   it('redirects to the game page on confirm without asking again', async () => {
     const { wrapper, router } = await mountFake();
     const open = vi.spyOn(HTMLDialogElement.prototype, 'showModal');
-    void router.push('/settings');
+    void router.push('/');
     await flushPromises();
     await choose(wrapper, 'Abort round');
     await flushPromises();
@@ -258,23 +257,23 @@ describe('leave guard', () => {
     const { wrapper, router } = await mountFake();
     await wrapper.get('.fake-win').trigger('click');
     const open = vi.spyOn(HTMLDialogElement.prototype, 'showModal');
-    await router.push('/settings');
+    await router.push('/');
     await flushPromises();
-    expect(router.currentRoute.value.path).toBe('/settings');
+    expect(router.currentRoute.value.path).toBe('/');
     expect(open).not.toHaveBeenCalled();
   });
 
   it('does not guard without a round', async () => {
     const { router } = await mountFake('/play/fake/zzz');
-    await router.push('/settings');
-    expect(router.currentRoute.value.path).toBe('/settings');
+    await router.push('/');
+    expect(router.currentRoute.value.path).toBe('/');
   });
 
   it('opens one dialog for two quick navigations', async () => {
     const { wrapper, router } = await mountFake();
     const open = vi.spyOn(HTMLDialogElement.prototype, 'showModal');
-    void router.push('/settings');
     void router.push('/');
+    void router.push('/games/fake');
     await flushPromises();
     expect(open).toHaveBeenCalledTimes(1);
     expect(wrapper.findAll('dialog')).toHaveLength(1);

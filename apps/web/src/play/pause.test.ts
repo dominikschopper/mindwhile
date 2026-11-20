@@ -25,7 +25,6 @@ async function mountPlay(options: { pauseOnReturn?: boolean } = {}) {
     routes: [
       { path: '/', component: { template: '<p>selection</p>' } },
       { path: '/games/:id', component: { template: '<p>game page</p>' } },
-      { path: '/settings', component: { template: '<p>settings</p>' } },
       { path: '/play/:gameId/:level', component: PlayView, props: true },
     ],
   });
@@ -157,7 +156,7 @@ describe('pause end to end', () => {
     const { wrapper, router } = await mountPlay();
     await pauseButton(wrapper).trigger('click');
     await flushPromises();
-    void router.push('/settings');
+    void router.push('/');
     await flushPromises();
     expect(coverOpen(wrapper)).toBe(false);
     expect(abortOpen(wrapper)).toBe(false);

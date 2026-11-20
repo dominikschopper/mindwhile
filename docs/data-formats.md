@@ -46,6 +46,7 @@ Status: draft, filled decision by decision. Rules and reasons live in `architect
 
 - Stored as an integer, milliseconds since 1970 in UTC (for example `1760558400000`), also for `tagat`
 - With the same player ID the more recent `tagat` wins, on an exact tie the tag from the imported file wins, so the import stays unambiguous
+- The symbol follows the tag: on a merge the side that supplies the tag (the rule above) also supplies the `symbol`, the two are never mixed
 - Device clocks may be off, this is accepted
 
 ### Symbol

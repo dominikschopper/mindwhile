@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { type ThemeChoice, useTheme } from '../common/composables/use-theme';
-import { t } from './texts';
+import { IconSunMoon } from '@mindwhile/game-kit';
+import { computed, useId } from 'vue';
+import { type ThemeChoice, useTheme } from '../composables/use-theme';
+import { t } from '../texts';
 
 const { choice, setTheme } = useTheme();
+const legendId = useId();
 
 const options: { value: ThemeChoice; label: string }[] = [
   { value: 'system', label: t('colorScheme.system') },
@@ -18,24 +20,37 @@ const selected = computed({
 </script>
 
 <template>
-  <h1>{{ t('page.title') }}</h1>
-  <fieldset class="color-scheme">
-    <legend>{{ t('colorScheme.legend') }}</legend>
+  <div class="color-scheme-choice" role="radiogroup" :aria-labelledby="legendId">
+    <span :id="legendId" class="color-scheme-legend">
+      <IconSunMoon aria-hidden="true" />
+      {{ t('colorScheme.legend') }}
+    </span>
     <label v-for="option in options" :key="option.value" class="color-scheme-option">
       <input v-model="selected" type="radio" name="color-scheme" :value="option.value" />
       {{ option.label }}
     </label>
-  </fieldset>
+  </div>
 </template>
 
 <style scoped>
-.color-scheme {
+.color-scheme-choice {
   display: flex;
-  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
   gap: var(--spacing-sm);
   margin: 0;
-  padding: var(--spacing-md);
-  border: 1px solid var(--border-color);
+}
+
+.color-scheme-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 0;
+}
+
+.color-scheme-legend svg {
+  inline-size: 1.25em;
+  block-size: 1.25em;
 }
 
 .color-scheme-option {

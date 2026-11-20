@@ -1,11 +1,12 @@
 import { readonly, shallowRef } from 'vue';
 import type { Ref } from 'vue';
-import { parseProfile, recordResult, serializeProfile } from '@mindwhile/core';
+import { mergeProfiles, parseProfile, recordResult, serializeProfile } from '@mindwhile/core';
 import type {
   GameManifest,
   Profile,
   ProfileData,
   RoundResult,
+  ScoringOf,
   StoredResult,
 } from '@mindwhile/core';
 import { showNotice } from '../composables/use-notice';
@@ -87,12 +88,22 @@ function recordRoundResult(
   store.set(PROFILE_KEY, JSON.stringify(serializeProfile({ profile: profile.value, best: next })));
 }
 
+/** Merges `incoming` into the current profile and best list and stores the result. */
+function applyImport(incoming: ProfileData, scoringOf: ScoringOf): void {
+  ensureLoaded();
+  const merged = mergeProfiles({ profile: profile.value, best: best.value }, incoming, scoringOf);
+  profile.value = merged.profile;
+  best.value = merged.best;
+  store.set(PROFILE_KEY, JSON.stringify(serializeProfile(merged)));
+}
+
 export function useProfile() {
   ensureLoaded();
   return {
     profile: readonly(profile) as Readonly<Ref<Readonly<Profile>>>,
     best: readonly(best) as Readonly<Ref<readonly StoredResult[]>>,
     recordRoundResult,
+    applyImport,
   };
 }
 

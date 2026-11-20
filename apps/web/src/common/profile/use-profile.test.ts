@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { GameManifest } from '@mindwhile/core';
+import type { GameManifest, ProfileData, ScoringOf } from '@mindwhile/core';
 import { dismissNotice, notice } from '../composables/use-notice';
 import { createStorage } from '../storage';
 import type { KeyValueStorage } from '../storage';
@@ -166,6 +166,58 @@ describe('throwing backend', () => {
     const p = useProfile();
     expect(p.profile.value.gamerTag).not.toBe('');
     p.recordRoundResult(manifest, 'a', 1, { roundEnd: 'won', score: [10] });
+    expect(p.best.value).toHaveLength(1);
+    expect(notice.value).toBeNull();
+  });
+});
+
+describe('applyImport', () => {
+  const scoringOf: ScoringOf = () => manifest.scoring;
+  const incoming = (): ProfileData => ({
+    profile: {
+      playerId: 'AAAAAAAAAAA',
+      gamerTag: 'OtherTag',
+      gamerSymbol: 'x',
+      gamerTagChangedAt: 5,
+    },
+    best: [
+      {
+        gameId: 'spill-it',
+        gameVersion: 1,
+        level: 'b',
+        seed: 9,
+        scoreValues: [4],
+        scoringVersion: 1,
+      },
+    ],
+  });
+
+  it('merges into refs, stores the envelope and survives a reload', () => {
+    const { store } = spied();
+    resetProfileForTests(store);
+    const p = useProfile();
+    p.recordRoundResult(manifest, 'a', 1, { roundEnd: 'won', score: [10] });
+    p.applyImport(incoming(), scoringOf);
+    expect(p.best.value).toHaveLength(2);
+    const env = stored(store);
+    expect(env.best).toHaveLength(2);
+    const { profile, best } = p;
+    const expectedProfile = { ...profile.value };
+    const expectedBest = [...best.value];
+    resetProfileForTests(store);
+    const again = useProfile();
+    expect(again.profile.value).toEqual(expectedProfile);
+    expect(again.best.value).toEqual(expectedBest);
+  });
+
+  it('does not throw with a failing store and keeps the data in memory', () => {
+    const boom = () => {
+      throw new Error('boom');
+    };
+    const store = createStorage({ getItem: boom, setItem: boom, removeItem: boom });
+    resetProfileForTests(store);
+    const p = useProfile();
+    expect(() => p.applyImport(incoming(), scoringOf)).not.toThrow();
     expect(p.best.value).toHaveLength(1);
     expect(notice.value).toBeNull();
   });

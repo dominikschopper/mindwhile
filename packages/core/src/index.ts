@@ -20,6 +20,8 @@ export { createRng, nextBelow } from './rng';
 export { newSeed } from './seed';
 export { compareScores, isBetterScore } from './score';
 export { findBest, recordResult } from './best-results';
+export { mergeProfiles } from './profile-merge';
+export type { ScoringOf } from './profile-merge';
 export { migrate, migrationSteps } from './migrations';
 export type { MigrationStep } from './migrations';
 export { encodePlayerId, isPlayerId, newPlayerId } from './player-id';
@@ -45,5 +47,5 @@ export type {
   WireProfile,
   WireStoredResult,
 } from './profile-format';
-export { parseProfile } from './profile-parse';
+export { parseProfile, parseFailures } from './profile-parse';
 export type { ParseFailure, ParseResult } from './profile-parse';

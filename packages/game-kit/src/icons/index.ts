@@ -8,6 +8,7 @@ import {
   Check as IconCheck,
   ChevronDown as IconChevronDown,
   CircleAlert as IconCircleAlert,
+  Download as IconDownload,
   Film as IconFilm,
   Grid2x2 as IconGrid2x2,
   Infinity as IconInfinity,
@@ -21,6 +22,7 @@ import {
   Settings as IconSettings,
   SquareX as IconSquareX,
   SunMoon as IconSunMoon,
+  Upload as IconUpload,
   UserStar as IconUserStar,
   X as IconClose,
 } from '@lucide/vue';
@@ -34,6 +36,7 @@ export {
   IconChevronDown,
   IconCircleAlert,
   IconClose,
+  IconDownload,
   IconFilm,
   IconGrid2x2,
   IconInfinity,
@@ -47,6 +50,7 @@ export {
   IconSettings,
   IconSquareX,
   IconSunMoon,
+  IconUpload,
   IconUserStar,
 };
 
