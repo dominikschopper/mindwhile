@@ -7,7 +7,7 @@ import { defineComponent, h } from 'vue';
 import { createMemoryHistory, createRouter } from 'vue-router';
 import App from './App.vue';
 import { registerAbortHandler, setRoundState } from './common/composables/use-chrome';
-import { dismissNotice, showNotice } from './common/composables/use-notice';
+import { resetToastsForTests, showToast } from './common/composables/use-toasts';
 import { PROFILE_KEY, resetProfileForTests } from './common/profile/use-profile';
 import { createStorage } from './common/storage';
 
@@ -51,17 +51,32 @@ describe('App', () => {
     registerAbortHandler(null);
   });
   afterEach(() => {
-    dismissNotice();
+    resetToastsForTests();
     document.body.innerHTML = '';
   });
 
-  it('shows a notice in the shell', async () => {
+  it('shows a danger toast directly after the header', async () => {
     const wrapper = await setup();
-    showNotice('Something went wrong, the round was discarded');
+    showToast('danger', 'Something went wrong, the round was discarded');
     await wrapper.vm.$nextTick();
     const alert = wrapper.get('[role="alert"]');
     expect(alert.text()).toContain('Something went wrong, the round was discarded');
-    expect(wrapper.get('header').element.nextElementSibling?.getAttribute('role')).toBe('alert');
+    expect(alert.classes()).toContain('toast-danger');
+    expect(wrapper.get('header').element.nextElementSibling?.classList.contains('toast-host')).toBe(
+      true,
+    );
+    wrapper.unmount();
+  });
+
+  it('shows a toast with a labelled close button', async () => {
+    const wrapper = await setup();
+    const handle = showToast('info', 'Saved a thing');
+    await wrapper.vm.$nextTick();
+    expect(wrapper.text()).toContain('Saved a thing');
+    const close = wrapper.get('button[aria-label="Dismiss"]');
+    await close.trigger('click');
+    expect(wrapper.text()).not.toContain('Saved a thing');
+    handle.dismiss();
     wrapper.unmount();
   });
 

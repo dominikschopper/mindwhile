@@ -19,7 +19,7 @@ export const en = {
   },
   'dialog.mergeButton': 'Merge',
   'dialog.cancelButton': 'Cancel',
-  'notice.merged': 'Profile merged',
+  'toast.merged': 'Profile merged',
   'failure.not-an-object': 'This file does not look like a Mindwhile profile.',
   'failure.foreign-app': 'This file was not made by Mindwhile.',
   'failure.unknown-kind': 'This file is not a profile file.',

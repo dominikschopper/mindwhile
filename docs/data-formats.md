@@ -134,7 +134,7 @@ Status: draft, filled decision by decision. Rules and reasons live in `architect
 
 - The profile and the best results are kept in `localStorage` under one key, `mindwhile.profile`. The value is the envelope as JSON (`app`, `fmtv`, `kind`, `profile` and `best`), the same content as an export. The whole envelope is written after every change
 - On load the value is fully validated, like an import: the profile strictly, each entry of `best` tolerantly (an invalid entry is skipped and dropped with the next write)
-- Unreadable JSON, a foreign `app`, an unknown `kind`, a newer `fmtv` or an invalid profile: the value is discarded, a new default profile is created and stored, and a short notice tells the user
+- Unreadable JSON, a foreign `app`, an unknown `kind`, a newer `fmtv` or an invalid profile: the value is discarded, a new default profile is created and stored, and a short toast tells the user
 - More than 2000 entries in `best` reject the whole value, which is then discarded in the same way
 - A second entry with the same game, level and scoring version is skipped on load. Entries for games or levels this version does not know are kept untouched and not shown
 - Only the rounds that end `won` or `ended` create a result. A round that ends `lost`, and an aborted round, create nothing

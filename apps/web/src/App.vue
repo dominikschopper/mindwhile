@@ -5,15 +5,19 @@ import {
   AppHeader,
   IconClose,
   IconSymbolPlaceholder,
+  ToastHost,
   profileSymbols,
+  provideToasts,
 } from '@mindwhile/game-kit';
 import { computed } from 'vue';
 import { RouterLink, RouterView, useRoute } from 'vue-router';
 import MainMenu from './common/components/MainMenu.vue';
-import NoticeBar from './common/components/NoticeBar.vue';
 import { requestAbort, roundState } from './common/composables/use-chrome';
+import { toastQueue } from './common/composables/use-toasts';
 import { useProfile } from './common/profile/use-profile';
 import { t } from './common/texts';
+
+provideToasts(toastQueue);
 
 const route = useRoute();
 const { profile } = useProfile();
@@ -35,7 +39,7 @@ const gamerSymbol = computed(() =>
       <MainMenu />
     </template>
   </AppHeader>
-  <NoticeBar />
+  <ToastHost :dismiss-label="t('toast.dismiss')" />
   <main class="content-column">
     <RouterView />
   </main>

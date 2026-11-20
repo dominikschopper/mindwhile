@@ -133,10 +133,17 @@ Two different things, only one of them is optional.
 ### Errors
 
 - The platform catches errors: `createRound` runs in a try/catch, the view runs inside an error guard (`onErrorCaptured` on the play page). A failing module load takes the same path
-- On an error the round is discarded, no result is created, the app shows a notice ("Something went wrong, the round was discarded", see `architecture.md`) and goes to the start page. Nothing is sent anywhere
+- On an error the round is discarded, no result is created, the app shows a `danger` toast ("Something went wrong, the round was discarded", see `architecture.md`) and goes to the start page. Nothing is sent anywhere
 - Saved states: the platform does not store rounds yet, so there is nothing to delete. When resuming a saved round is built, the same error path deletes its saved state. **Not yet implemented:** resuming and saving
-- An unknown game or level in the URL is not an error of the game: the play page keeps its inline error with a link back and shows no notice
+- An unknown game or level in the URL is not an error of the game: the play page keeps its inline error with a link back and shows no toast
 - A broken state can therefore never trap the app in a loop. The console helps during development, the scoring tests cover the logic
+
+### Toasts
+
+- A game shows short feedback with `useToast()` from `game-kit`. It returns `showToast(type, message, title?, hideAfterMs?)` and a handle `{ id, dismiss() }` to close the toast early
+- The platform creates the one queue of the app and provides it (`provideToasts`). Without a platform provider `showToast` does nothing, so a game runs unchanged in tests and outside the platform
+- Convention: only non-blocking feedback, never in the middle of a move
+- No game uses toasts yet
 
 ### Deferred until needed
 

@@ -6,7 +6,7 @@ import type { GameManifest, ProfileData } from '@mindwhile/core';
 import { gameRegistryKey } from '../composables/game-registry';
 import type { GameEntry, GameRegistry } from '../composables/game-registry';
 import { roundState } from '../composables/use-chrome';
-import { dismissNotice, notice } from '../composables/use-notice';
+import { resetToastsForTests, toastQueue } from '../composables/use-toasts';
 import { PROFILE_KEY, resetProfileForTests, useProfile } from '../profile/use-profile';
 import { createStorage } from '../storage';
 import BackupSection from './BackupSection.vue';
@@ -81,7 +81,7 @@ beforeEach(() => {
   HTMLDialogElement.prototype.showModal = vi.fn() as () => void;
   HTMLDialogElement.prototype.close = vi.fn() as () => void;
   document.body.innerHTML = '';
-  dismissNotice();
+  resetToastsForTests();
   vi.mocked(codec.isBackupSupported).mockReturnValue(true);
   vi.mocked(fileIo.saveProfileFile).mockReset();
   vi.mocked(fileIo.pickFile).mockReset();
@@ -123,11 +123,13 @@ describe('BackupSection', () => {
     expect(name).toBe(codec.profileFileName(new Date()));
   });
 
-  it('shows a notice when export fails', async () => {
+  it('shows a danger toast when export fails', async () => {
     vi.mocked(fileIo.saveProfileFile).mockRejectedValue(new Error('no'));
     const wrapper = make();
     await wrapper.get('.backup-export').trigger('click');
-    await vi.waitFor(() => expect(notice.value).toBe(t('export.failed')));
+    await vi.waitFor(() =>
+      expect(toastQueue.list()).toMatchObject([{ type: 'danger', message: t('export.failed') }]),
+    );
   });
 
   it('does nothing when the file dialog is cancelled', async () => {
@@ -136,21 +138,26 @@ describe('BackupSection', () => {
     await wrapper.get('.backup-import').trigger('click');
     await flushPromises();
     expect(codec.decodeProfileFile).not.toHaveBeenCalled();
-    expect(notice.value).toBeNull();
+    expect(toastQueue.list()).toHaveLength(0);
     expect(document.body.querySelector('dialog') !== null).toBe(false);
   });
 
-  it.each(parseFailures)('shows the notice for failure %s and opens no dialog', async (reason) => {
-    const wrapper = make();
-    await pickWith(wrapper, { ok: false, reason });
-    expect(notice.value).toBe(t(`failure.${reason}`));
-    expect(document.body.querySelector('dialog') !== null).toBe(false);
-  });
+  it.each(parseFailures)(
+    'shows a danger toast for failure %s and opens no dialog',
+    async (reason) => {
+      const wrapper = make();
+      await pickWith(wrapper, { ok: false, reason });
+      expect(toastQueue.list()).toMatchObject([
+        { type: 'danger', message: t(`failure.${reason}`) },
+      ]);
+      expect(document.body.querySelector('dialog') !== null).toBe(false);
+    },
+  );
 
-  it.each(['too-large', 'unreadable'] as const)('shows the notice for %s', async (reason) => {
+  it.each(['too-large', 'unreadable'] as const)('shows a danger toast for %s', async (reason) => {
     const wrapper = make();
     await pickWith(wrapper, { ok: false, reason });
-    expect(notice.value).toBe(t(`failure.${reason}`));
+    expect(toastQueue.list()).toMatchObject([{ type: 'danger', message: t(`failure.${reason}`) }]);
     expect(document.body.querySelector('dialog') !== null).toBe(false);
   });
 
@@ -163,7 +170,7 @@ describe('BackupSection', () => {
     await page('.import-merge').trigger('click');
     await flushPromises();
     expect(useProfile().best.value).toHaveLength(1);
-    expect(notice.value).toBe(t('notice.merged'));
+    expect(toastQueue.list()).toMatchObject([{ type: 'success', message: t('toast.merged') }]);
     expect(document.body.querySelector('dialog') !== null).toBe(false);
   });
 
@@ -177,7 +184,7 @@ describe('BackupSection', () => {
     expect(store.get(PROFILE_KEY)).toBe(before);
     expect(JSON.stringify(useProfile().profile.value)).toBe(profileBefore);
     expect(useProfile().best.value).toHaveLength(0);
-    expect(notice.value).toBeNull();
+    expect(toastQueue.list()).toHaveLength(0);
     expect(document.body.querySelector('dialog') !== null).toBe(false);
   });
 

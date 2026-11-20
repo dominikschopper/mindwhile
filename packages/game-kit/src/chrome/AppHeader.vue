@@ -5,11 +5,25 @@
  * and `chrome-header-right`, so `ChromeSlot` can teleport content into them.
  * The inner row uses the layout class `content-column` (width rule: max 960px
  * centered, 98% on narrow screens).
+ * The header height is published as `--app-header-height` on the root element
+ * (used by `ToastHost` to sit directly under the header).
  */
+import { onMounted, onBeforeUnmount, ref } from 'vue';
+import { trackHeight, type HeaderElement } from './header-height';
+
+const header = ref<HeaderElement | null>(null);
+let stopTracking: (() => void) | undefined;
+
+onMounted(() => {
+  if (header.value) {
+    stopTracking = trackHeight(header.value, '--app-header-height');
+  }
+});
+onBeforeUnmount(() => stopTracking?.());
 </script>
 
 <template>
-  <header class="app-header">
+  <header ref="header" class="app-header">
     <div class="content-column app-header-row">
       <div id="chrome-header-left" class="app-header-slot app-header-left">
         <slot name="left" />

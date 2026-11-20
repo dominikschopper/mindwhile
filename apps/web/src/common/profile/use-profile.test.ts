@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { GameManifest, ProfileData, ScoringOf } from '@mindwhile/core';
-import { dismissNotice, notice } from '../composables/use-notice';
+import { resetToastsForTests, toastQueue } from '../composables/use-toasts';
 import { createStorage } from '../storage';
 import type { KeyValueStorage } from '../storage';
 import { t } from '../texts';
@@ -37,7 +37,7 @@ function stored(store: KeyValueStorage) {
 }
 
 beforeEach(() => {
-  dismissNotice();
+  resetToastsForTests();
 });
 
 describe('loading', () => {
@@ -50,7 +50,7 @@ describe('loading', () => {
     expect(env.fmtv).toBe(1);
     expect(env.kind).toBe('profile');
     expect(env.profile.player).toHaveLength(11);
-    expect(notice.value).toBeNull();
+    expect(toastQueue.list()).toHaveLength(0);
     expect(useProfile().profile.value).toEqual(first.profile.value);
   });
 
@@ -63,7 +63,7 @@ describe('loading', () => {
     expect(profile.value).toEqual(created.profile);
     expect(best.value).toEqual([]);
     expect(set).not.toHaveBeenCalled();
-    expect(notice.value).toBeNull();
+    expect(toastQueue.list()).toHaveLength(0);
   });
 
   const valid = () => {
@@ -90,7 +90,9 @@ describe('loading', () => {
     useProfile();
     expect(store.get(PROFILE_KEY)).not.toBe(bad);
     expect(stored(store).kind).toBe('profile');
-    expect(notice.value).toBe(t('notice.profileDiscarded'));
+    expect(toastQueue.list()).toMatchObject([
+      { type: 'warning', message: t('toast.profileDiscarded') },
+    ]);
   });
 });
 
@@ -157,7 +159,7 @@ describe('recordRoundResult', () => {
 });
 
 describe('throwing backend', () => {
-  it('works in memory without a notice', () => {
+  it('works in memory without a toast', () => {
     const boom = () => {
       throw new Error('boom');
     };
@@ -167,7 +169,7 @@ describe('throwing backend', () => {
     expect(p.profile.value.gamerTag).not.toBe('');
     p.recordRoundResult(manifest, 'a', 1, { roundEnd: 'won', score: [10] });
     expect(p.best.value).toHaveLength(1);
-    expect(notice.value).toBeNull();
+    expect(toastQueue.list()).toHaveLength(0);
   });
 });
 
@@ -219,6 +221,6 @@ describe('applyImport', () => {
     const p = useProfile();
     expect(() => p.applyImport(incoming(), scoringOf)).not.toThrow();
     expect(p.best.value).toHaveLength(1);
-    expect(notice.value).toBeNull();
+    expect(toastQueue.list()).toHaveLength(0);
   });
 });

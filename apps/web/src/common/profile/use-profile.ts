@@ -9,7 +9,7 @@ import type {
   ScoringOf,
   StoredResult,
 } from '@mindwhile/core';
-import { showNotice } from '../composables/use-notice';
+import { showToast } from '../composables/use-toasts';
 import { storage } from '../storage';
 import type { KeyValueStorage } from '../storage';
 import { t } from '../texts';
@@ -63,7 +63,7 @@ function ensureLoaded(): void {
   const { data, discarded } = loadOrCreateProfile(store);
   profile.value = data.profile;
   best.value = data.best;
-  if (discarded) showNotice(t('notice.profileDiscarded'));
+  if (discarded) showToast('warning', t('toast.profileDiscarded'));
 }
 
 function recordRoundResult(

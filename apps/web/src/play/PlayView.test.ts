@@ -3,7 +3,7 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createMemoryHistory, createRouter } from 'vue-router';
 import App from '../App.vue';
-import { dismissNotice } from '../common/composables/use-notice';
+import { resetToastsForTests } from '../common/composables/use-toasts';
 import { PROFILE_KEY, resetProfileForTests, useProfile } from '../common/profile/use-profile';
 import { createStorage } from '../common/storage';
 import type { KeyValueStorage } from '../common/storage';
@@ -290,31 +290,32 @@ describe('error guard', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
   });
   afterEach(() => {
-    dismissNotice();
+    resetToastsForTests();
     vi.restoreAllMocks();
   });
 
   it.each([
     ['createRound throws', { failCreateRound: true }],
     ['the view throws while rendering', { throwInView: true }],
-  ])('goes to the start page with a notice when %s', async (_name, options) => {
+  ])('goes to the start page with a danger toast when %s', async (_name, options) => {
     const { wrapper, router } = await mountFake('/play/fake/a', options);
     await vi.waitFor(() => expect(router.currentRoute.value.path).toBe('/'));
     await flushPromises();
     expect(wrapper.text()).toContain(message);
+    expect(wrapper.get('.toast').classes()).toContain('toast-danger');
     expect(wrapper.find('.result').exists()).toBe(false);
     expect(footer(wrapper).find('button').exists()).toBe(false);
     expect(console.error).toHaveBeenCalled();
-    await wrapper.get('button[aria-label="Dismiss notice"]').trigger('click');
+    await wrapper.get('button[aria-label="Dismiss"]').trigger('click');
     expect(wrapper.text()).not.toContain(message);
   });
 
-  it('shows the notice only once and a later round works', async () => {
+  it('shows the toast only once and a later round works', async () => {
     const { wrapper, router } = await mountFake('/play/fake/a', { failFirstRounds: 1 });
     await vi.waitFor(() => expect(router.currentRoute.value.path).toBe('/'));
     await flushPromises();
     expect(wrapper.text()).toContain(message);
-    await wrapper.get('button[aria-label="Dismiss notice"]').trigger('click');
+    await wrapper.get('button[aria-label="Dismiss"]').trigger('click');
 
     await router.push('/play/fake/a');
     await vi.waitFor(() => expect(wrapper.find('.fake-win').exists()).toBe(true));
@@ -330,7 +331,7 @@ describe('error guard', () => {
     expect(footer(wrapper).find('button').exists()).toBe(false);
   });
 
-  it('keeps the inline error without a notice for an unknown level', async () => {
+  it('keeps the inline error without a toast for an unknown level', async () => {
     const { wrapper } = await mountFake('/play/fake/zzz');
     expect(wrapper.find('[role="alert"]').exists()).toBe(true);
     expect(wrapper.text()).not.toContain(message);

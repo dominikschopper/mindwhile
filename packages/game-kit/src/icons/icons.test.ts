@@ -9,7 +9,7 @@ const entries = Object.entries(iconComponents).filter(([name]) => name.startsWit
 
 describe('icons', () => {
   it('exports the expected number of icons', () => {
-    expect(entries).toHaveLength(25);
+    expect(entries).toHaveLength(29);
   });
 
   it.each(entries)('%s renders a decorative svg', (_name, component) => {

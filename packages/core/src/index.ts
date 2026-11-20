@@ -1,5 +1,13 @@
 export { createActivitySignal } from './activity';
 export type { ActivitySignal } from './activity';
+export {
+  createToastQueue,
+  defaultHideAfterMs,
+  toastForever,
+  toastTimeouts,
+  toastTypes,
+} from './toast-queue';
+export type { Toast, ToastInput, ToastQueue, ToastType } from './toast-queue';
 export { createActiveClock } from './active-clock';
 export type { ActiveClock, ActiveClockOptions, Clock } from './active-clock';
 export { gameColors } from './game-colors';

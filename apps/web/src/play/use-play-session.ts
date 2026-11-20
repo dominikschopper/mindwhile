@@ -4,7 +4,7 @@ import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue';
 import type { Component, Ref } from 'vue';
 import { useGameRegistry } from '../common/composables/game-registry';
 import { registerAbortHandler, setRoundState } from '../common/composables/use-chrome';
-import { showNotice } from '../common/composables/use-notice';
+import { showToast } from '../common/composables/use-toasts';
 import { useProfile } from '../common/profile/use-profile';
 import { t as commonT } from '../common/texts';
 import { useRoundFrame } from './use-round-frame';
@@ -43,7 +43,7 @@ export function usePlaySession(
     module.value = null;
     setRoundState('idle');
     registerAbortHandler(null);
-    showNotice(commonT('notice.roundDiscarded'));
+    showToast('danger', commonT('toast.roundDiscarded'));
     onRoundFailed();
   }
 

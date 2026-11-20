@@ -3,7 +3,7 @@ import { ref, useId, useTemplateRef } from 'vue';
 import type { ProfileData } from '@mindwhile/core';
 import { AppButton, IconDownload, IconUpload } from '@mindwhile/game-kit';
 import { roundState } from '../composables/use-chrome';
-import { showNotice } from '../composables/use-notice';
+import { showToast } from '../composables/use-toasts';
 import { useScoringOf } from '../composables/scoring-of';
 import { useProfile } from '../profile/use-profile';
 import ImportDialog from './ImportDialog.vue';
@@ -33,7 +33,7 @@ async function exportProfile(): Promise<void> {
     });
     await saveProfileFile(blob, profileFileName(new Date()));
   } catch {
-    showNotice(t('export.failed'));
+    showToast('danger', t('export.failed'));
   }
 }
 
@@ -43,7 +43,7 @@ async function importProfile(): Promise<void> {
   if (file === null) return;
   const result = await decodeProfileFile(file);
   if (!result.ok) {
-    showNotice(t(`failure.${result.reason}`));
+    showToast('danger', t(`failure.${result.reason}`));
     return;
   }
   incoming.value = { data: result.data, skipped: result.skipped };
@@ -56,7 +56,7 @@ function merge(): void {
   if (incoming.value) applyImport(incoming.value.data, scoringOf);
   dialog.value?.close();
   incoming.value = null;
-  showNotice(t('notice.merged'));
+  showToast('success', t('toast.merged'));
 }
 
 function cancel(): void {
