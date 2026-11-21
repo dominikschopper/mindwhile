@@ -13,7 +13,9 @@ export function useBestResults() {
     const map = new Map<string, readonly number[]>();
     for (const entry of best.value) {
       const manifest = registry.getGame(entry.gameId)?.manifest;
-      if (!manifest || manifest.scoringVersion !== entry.scoringVersion) continue;
+      if (!manifest || manifest.scoringVersion !== entry.scoringVersion) {
+        continue;
+      }
       map.set(`${entry.gameId}\u0000${entry.level}`, entry.scoreValues);
     }
     return map;

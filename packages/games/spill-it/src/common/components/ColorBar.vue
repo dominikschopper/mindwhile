@@ -36,12 +36,16 @@ function buttonLabel(color: number): string {
 }
 
 function glowClass(color: number): string | null {
-  if (props.decorative || props.pulse === undefined || props.pulse.color !== color) return null;
+  if (props.decorative || props.pulse === undefined || props.pulse.color !== color) {
+    return null;
+  }
   return props.pulse.tick % 2 === 0 ? 'color-button--glow-a' : 'color-button--glow-b';
 }
 
 function onClick(color: number): void {
-  if (!props.decorative) emit('pick', color);
+  if (!props.decorative) {
+    emit('pick', color);
+  }
 }
 </script>
 

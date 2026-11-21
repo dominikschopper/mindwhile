@@ -46,15 +46,27 @@ function fail(reason: ParseFailure): ParseResult {
 }
 
 function readEntry(raw: unknown): StoredResult | null {
-  if (!isPlainObject(raw)) return null;
+  if (!isPlainObject(raw)) {
+    return null;
+  }
   const { game, gamev, lvl, seed, score, scorev } = raw;
-  if (!isText(game) || !isText(lvl)) return null;
-  if (!isNonNegativeSafeInteger(gamev) || !isNonNegativeSafeInteger(scorev)) return null;
-  if (!isNonNegativeSafeInteger(seed) || seed > maxSeed) return null;
-  if (!Array.isArray(score) || score.length < 1 || score.length > maxScoreValues) return null;
+  if (!isText(game) || !isText(lvl)) {
+    return null;
+  }
+  if (!isNonNegativeSafeInteger(gamev) || !isNonNegativeSafeInteger(scorev)) {
+    return null;
+  }
+  if (!isNonNegativeSafeInteger(seed) || seed > maxSeed) {
+    return null;
+  }
+  if (!Array.isArray(score) || score.length < 1 || score.length > maxScoreValues) {
+    return null;
+  }
   const values: number[] = [];
   for (const value of score as unknown[]) {
-    if (typeof value !== 'number' || !Number.isSafeInteger(value)) return null;
+    if (typeof value !== 'number' || !Number.isSafeInteger(value)) {
+      return null;
+    }
     values.push(value);
   }
   return storedResultFromWire({ game, gamev, lvl, seed, score: values, scorev });
@@ -65,15 +77,23 @@ function readEntry(raw: unknown): StoredResult | null {
  * `steps.length + 1`.
  */
 export function parseProfileWith(input: unknown, steps: readonly MigrationStep[]): ParseResult {
-  if (!isPlainObject(input)) return fail('not-an-object');
-  if (input.app !== APP_ID) return fail('foreign-app');
-  if (input.kind !== profileKind) return fail('unknown-kind');
+  if (!isPlainObject(input)) {
+    return fail('not-an-object');
+  }
+  if (input.app !== APP_ID) {
+    return fail('foreign-app');
+  }
+  if (input.kind !== profileKind) {
+    return fail('unknown-kind');
+  }
 
   const version = input.fmtv;
   if (typeof version !== 'number' || !Number.isInteger(version) || version < 1) {
     return fail('invalid-version');
   }
-  if (version > steps.length + 1) return fail('newer-version');
+  if (version > steps.length + 1) {
+    return fail('newer-version');
+  }
 
   let envelope: unknown = input;
   if (version < steps.length + 1) {
@@ -83,19 +103,33 @@ export function parseProfileWith(input: unknown, steps: readonly MigrationStep[]
       return fail('invalid-profile');
     }
   }
-  if (!isPlainObject(envelope)) return fail('invalid-profile');
+  if (!isPlainObject(envelope)) {
+    return fail('invalid-profile');
+  }
 
   const { profile, best } = envelope;
-  if (!isPlainObject(profile)) return fail('invalid-profile');
+  if (!isPlainObject(profile)) {
+    return fail('invalid-profile');
+  }
   const { player, tag, symbol, tagat } = profile;
-  if (typeof player !== 'string' || !isPlayerId(player)) return fail('invalid-profile');
+  if (typeof player !== 'string' || !isPlayerId(player)) {
+    return fail('invalid-profile');
+  }
   if (typeof tag !== 'string' || tag.length > maxTagLength || !tagPattern.test(tag)) {
     return fail('invalid-profile');
   }
-  if (!isText(symbol)) return fail('invalid-profile');
-  if (!isNonNegativeSafeInteger(tagat)) return fail('invalid-profile');
-  if (!Array.isArray(best)) return fail('invalid-profile');
-  if (best.length > maxBestEntries) return fail('too-many-results');
+  if (!isText(symbol)) {
+    return fail('invalid-profile');
+  }
+  if (!isNonNegativeSafeInteger(tagat)) {
+    return fail('invalid-profile');
+  }
+  if (!Array.isArray(best)) {
+    return fail('invalid-profile');
+  }
+  if (best.length > maxBestEntries) {
+    return fail('too-many-results');
+  }
 
   const results: StoredResult[] = [];
   const seen = new Set<string>();

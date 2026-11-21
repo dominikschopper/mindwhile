@@ -41,7 +41,9 @@ describe('generateBoard', () => {
     // level c with minPar 20 rejects some first draws, find one
     let seed = 0;
     const params = levelParams.c;
-    while (greedyPar(drawFirstBoard('c', seed), params.colors) >= params.minPar) seed++;
+    while (greedyPar(drawFirstBoard('c', seed), params.colors) >= params.minPar) {
+      seed++;
+    }
     const first = drawFirstBoard('c', seed);
     const { board } = generateBoard('c', seed);
     expect(board.cells).not.toEqual(first.cells);
@@ -49,7 +51,9 @@ describe('generateBoard', () => {
     const rng = createRng(seed);
     let manual = first;
     let draws = 1;
-    for (let i = 0; i < first.cells.length; i++) nextBelow(rng, params.colors);
+    for (let i = 0; i < first.cells.length; i++) {
+      nextBelow(rng, params.colors);
+    }
     while (greedyPar(manual, params.colors) < params.minPar) {
       manual = {
         size: params.size,
@@ -64,7 +68,9 @@ describe('generateBoard', () => {
   it('throws when no board is accepted within the limit', () => {
     let seed = 0;
     const params = levelParams.c;
-    while (greedyPar(drawFirstBoard('c', seed), params.colors) >= params.minPar) seed++;
+    while (greedyPar(drawFirstBoard('c', seed), params.colors) >= params.minPar) {
+      seed++;
+    }
     expect(() => generateBoard('c', seed, 1)).toThrow(/after 1 draws/);
   });
 

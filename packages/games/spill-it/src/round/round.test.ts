@@ -44,7 +44,9 @@ describe('createRound', () => {
     const restored = createRound({ level: 'a', seed: 3, saved: round.serialize() });
     expect(restored.board).toEqual(round.board);
     expect(restored.moves).toEqual(round.moves);
-    for (const color of moves.slice(2)) restored.apply(pick(color));
+    for (const color of moves.slice(2)) {
+      restored.apply(pick(color));
+    }
     expect(restored.result()).toEqual({ roundEnd: 'won', score: [500, 0] });
   });
 });
@@ -60,7 +62,9 @@ describe('apply', () => {
 
   it('records the moves in order', () => {
     const round = createRound({ level: 'a', seed: 0 });
-    for (const color of shorterThanPar.slice(0, 3)) round.apply(pick(color));
+    for (const color of shorterThanPar.slice(0, 3)) {
+      round.apply(pick(color));
+    }
     expect(round.moves).toEqual(shorterThanPar.slice(0, 3));
   });
 

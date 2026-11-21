@@ -23,7 +23,9 @@ function onImportStarted(): void {
 function onMenuKeydown(event: Parameters<typeof onKeydown>[0]): void {
   const wasOpen = open.value;
   onKeydown(event);
-  if (wasOpen) event.stopPropagation();
+  if (wasOpen) {
+    event.stopPropagation();
+  }
 }
 </script>
 

@@ -22,7 +22,9 @@ export interface GameGlobs {
 
 function folderOf(path: string): string {
   const folder = /\/games\/([^/]+)\/src\//.exec(path)?.[1];
-  if (!folder) throw new Error(`Cannot read game folder from ${path}`);
+  if (!folder) {
+    throw new Error(`Cannot read game folder from ${path}`);
+  }
   return folder;
 }
 
@@ -42,8 +44,12 @@ export function createGameRegistry(globs: GameGlobs): GameRegistry {
     }
     const gameTexts = texts.get(folder);
     const loader = modules.get(folder);
-    if (!gameTexts) throw new Error(`Game "${folder}" has no texts.ts`);
-    if (!loader) throw new Error(`Game "${folder}" has no module.ts`);
+    if (!gameTexts) {
+      throw new Error(`Game "${folder}" has no texts.ts`);
+    }
+    if (!loader) {
+      throw new Error(`Game "${folder}" has no module.ts`);
+    }
     games.set(folder, {
       id: folder,
       manifest,
@@ -58,7 +64,9 @@ export function createGameRegistry(globs: GameGlobs): GameRegistry {
     });
   }
   for (const folder of [...texts.keys(), ...modules.keys()]) {
-    if (!manifests.has(folder)) throw new Error(`Game "${folder}" has no manifest.ts`);
+    if (!manifests.has(folder)) {
+      throw new Error(`Game "${folder}" has no manifest.ts`);
+    }
   }
 
   const sorted = [...games.values()].sort((a, b) => a.id.localeCompare(b.id));

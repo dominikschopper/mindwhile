@@ -12,15 +12,21 @@ function createFakeBackend(options: FakeBackendOptions = {}) {
   const data = new Map<string, string>();
   const backend = {
     getItem(key: string): string | null {
-      if (options.getThrows) throw new Error('getItem blocked');
+      if (options.getThrows) {
+        throw new Error('getItem blocked');
+      }
       return data.get(key) ?? null;
     },
     setItem(key: string, value: string): void {
-      if (options.setThrows) throw new DOMException('quota', 'QuotaExceededError');
+      if (options.setThrows) {
+        throw new DOMException('quota', 'QuotaExceededError');
+      }
       data.set(key, value);
     },
     removeItem(key: string): void {
-      if (options.removeThrows) throw new Error('removeItem blocked');
+      if (options.removeThrows) {
+        throw new Error('removeItem blocked');
+      }
       data.delete(key);
     },
   };

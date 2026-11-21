@@ -12,7 +12,9 @@ function radio(wrapper: ReturnType<typeof mountChoice>, label: string) {
   const input = wrapper.findAll('input[type="radio"]').find((item) => {
     return item.element.parentElement?.textContent?.trim() === label;
   });
-  if (!input) throw new Error(`no radio "${label}"`);
+  if (!input) {
+    throw new Error(`no radio "${label}"`);
+  }
   return input;
 }
 

@@ -64,9 +64,15 @@ function settle(confirmed: boolean): void {
 // (also for links and the back button). The state is idle before the redirect, so it passes.
 onBeforeRouteLeave(async (to) => {
   // A game layer (the pause) closes first and cancels this navigation.
-  if (layers.closeTopmost()) return false;
-  if (roundState.value !== 'running') return true;
-  if (!(await askAbort())) return false;
+  if (layers.closeTopmost()) {
+    return false;
+  }
+  if (roundState.value !== 'running') {
+    return true;
+  }
+  if (!(await askAbort())) {
+    return false;
+  }
   discardRound();
   setRoundState('idle');
   return to.path === gamePage() ? true : gamePage();

@@ -48,9 +48,13 @@ export function createT<const T extends Texts>(texts: T, locale = 'en'): Transla
   const rules = new Intl.PluralRules(locale);
   return (key, ...args) => {
     const value: TextValue | undefined = texts[key];
-    if (value === undefined) return key;
+    if (value === undefined) {
+      return key;
+    }
     const params = (args[0] ?? {}) as Readonly<Record<string, string | number>>;
-    if (typeof value === 'string') return fill(value, params);
+    if (typeof value === 'string') {
+      return fill(value, params);
+    }
     const count = Number(params['count']);
     const template =
       count === 0 && value.zero !== undefined

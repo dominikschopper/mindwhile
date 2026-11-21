@@ -57,13 +57,17 @@ export function createRound(p: { level: string; seed: number; saved?: unknown })
   function pick(color: number): void {
     // A move with the color the region already has changes nothing and is not counted.
     // The same holds for moves after the board is solved.
-    if (isSolved(board) || color === board.cells[0]) return;
+    if (isSolved(board) || color === board.cells[0]) {
+      return;
+    }
     board = applyColor(board, color);
     moves.push(color);
   }
 
   if (p.saved !== undefined) {
-    for (const color of parseSaved(p.saved, colors)) pick(color);
+    for (const color of parseSaved(p.saved, colors)) {
+      pick(color);
+    }
   }
 
   return {

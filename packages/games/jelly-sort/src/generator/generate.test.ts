@@ -25,7 +25,9 @@ describe('generateBoard', () => {
       const counts = Array<number>(colors).fill(0);
       for (const tray of board.trays) {
         expect(tray.length).toBeLessThanOrEqual(capacity);
-        for (const color of tray) counts[color]! += 1;
+        for (const color of tray) {
+          counts[color]! += 1;
+        }
       }
       expect(counts.every((n) => n === capacity)).toBe(true);
       let current = board;

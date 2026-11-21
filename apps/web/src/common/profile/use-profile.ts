@@ -33,7 +33,9 @@ export function loadOrCreateProfile(
   now: number = Date.now(),
 ): { data: ProfileData; discarded: boolean } {
   const raw = store.get(PROFILE_KEY);
-  if (raw === null) return { data: createAndStore(store, now), discarded: false };
+  if (raw === null) {
+    return { data: createAndStore(store, now), discarded: false };
+  }
   let input: unknown;
   try {
     input = JSON.parse(raw);
@@ -41,7 +43,9 @@ export function loadOrCreateProfile(
     return { data: createAndStore(store, now), discarded: true };
   }
   const parsed = parseProfile(input);
-  if (!parsed.ok) return { data: createAndStore(store, now), discarded: true };
+  if (!parsed.ok) {
+    return { data: createAndStore(store, now), discarded: true };
+  }
   // Skipped entries are dropped with the next write.
   return { data: parsed.data, discarded: false };
 }
@@ -58,12 +62,16 @@ const profile = shallowRef<Profile>({
 const best = shallowRef<StoredResult[]>([]);
 
 function ensureLoaded(): void {
-  if (loaded) return;
+  if (loaded) {
+    return;
+  }
   loaded = true;
   const { data, discarded } = loadOrCreateProfile(store);
   profile.value = data.profile;
   best.value = data.best;
-  if (discarded) showToast('warning', t('toast.profileDiscarded'));
+  if (discarded) {
+    showToast('warning', t('toast.profileDiscarded'));
+  }
 }
 
 function recordRoundResult(
@@ -73,7 +81,9 @@ function recordRoundResult(
   result: RoundResult,
 ): void {
   ensureLoaded();
-  if (result.roundEnd === 'lost') return;
+  if (result.roundEnd === 'lost') {
+    return;
+  }
   const entry: StoredResult = {
     gameId: manifest.id,
     gameVersion: manifest.gameVersion,
@@ -83,7 +93,9 @@ function recordRoundResult(
     scoringVersion: manifest.scoringVersion,
   };
   const next = recordResult(best.value, entry, manifest.scoring);
-  if (!next.includes(entry)) return;
+  if (!next.includes(entry)) {
+    return;
+  }
   best.value = next;
   store.set(PROFILE_KEY, JSON.stringify(serializeProfile({ profile: profile.value, best: next })));
 }

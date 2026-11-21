@@ -23,14 +23,20 @@ export const layerOrderFirst = (): Plugin => {
       serving = config.command === 'serve';
     },
     transformIndexHtml() {
-      if (!serving) return;
+      if (!serving) {
+        return;
+      }
       return [{ tag: 'style', children: layerOrder, injectTo: 'head-prepend' }];
     },
     generateBundle(_options, bundle) {
       for (const file of Object.values(bundle)) {
-        if (file.type !== 'asset' || !file.fileName.endsWith('.css')) continue;
+        if (file.type !== 'asset' || !file.fileName.endsWith('.css')) {
+          continue;
+        }
         const css = String(file.source);
-        if (css.includes(layerOrder)) continue;
+        if (css.includes(layerOrder)) {
+          continue;
+        }
         file.source = layerOrder + css;
       }
     },

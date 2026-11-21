@@ -18,7 +18,9 @@ const surfaces = (theme: 0 | 1) => [
 
 it('has a class for every game color', () => {
   const names = classBlocks.map((b) => b.name);
-  for (const name of gameColors) expect(names, `missing .game-color-${name}`).toContain(name);
+  for (const name of gameColors) {
+    expect(names, `missing .game-color-${name}`).toContain(name);
+  }
 });
 
 it('has no class for a name outside the list', () => {
@@ -80,6 +82,8 @@ it('defines the three helpers using only the game variables', () => {
     expect(m![1]).toMatch(pattern);
     expect(m![1]).not.toMatch(/#[0-9a-f]{3,8}\b/i);
     const vars = [...m![1]!.matchAll(/var\((--[a-z0-9-]+)\)/g)].map((v) => v[1]);
-    for (const v of vars) expect(['--game-color', '--on-game-color']).toContain(v);
+    for (const v of vars) {
+      expect(['--game-color', '--on-game-color']).toContain(v);
+    }
   }
 });

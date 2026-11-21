@@ -27,22 +27,34 @@ function candidates(board: Board, previous: ReverseStep | null): ReverseStep[] {
   const tops = trays.map(topBlock);
   for (let source = 0; source < trays.length; source += 1) {
     const block = tops[source];
-    if (block == null) continue;
+    if (block == null) {
+      continue;
+    }
     const sourceLength = trays[source]!.length;
     const onlyBlock = block.length === sourceLength;
     for (let dest = 0; dest < trays.length; dest += 1) {
-      if (dest === source) continue;
-      if (previous !== null && previous.source === dest && previous.dest === source) continue;
+      if (dest === source) {
+        continue;
+      }
+      if (previous !== null && previous.source === dest && previous.dest === source) {
+        continue;
+      }
       const targetTop = tops[dest];
-      if (targetTop != null && targetTop.color === block.color) continue;
+      if (targetTop != null && targetTop.color === block.color) {
+        continue;
+      }
       const targetLength = trays[dest]!.length;
       const most = Math.min(block.length, capacity - targetLength);
       for (let count = 1; count <= most; count += 1) {
         // Taking the whole top block is only legal if nothing else lies below it
         // (the forward target was empty then).
-        if (count === block.length && !onlyBlock) continue;
+        if (count === block.length && !onlyBlock) {
+          continue;
+        }
         // A forward pour from a single-color tray into an empty tray is pointless.
-        if (targetLength === 0 && count === sourceLength) continue;
+        if (targetLength === 0 && count === sourceLength) {
+          continue;
+        }
         found.push({ source, dest, count });
       }
     }
@@ -53,8 +65,12 @@ function candidates(board: Board, previous: ReverseStep | null): ReverseStep[] {
 function applyReverse(board: Board, step: ReverseStep): Board {
   const color = topBlock(board.trays[step.source]!)!.color;
   const trays: Tray[] = board.trays.map((tray, index) => {
-    if (index === step.source) return tray.slice(0, tray.length - step.count);
-    if (index === step.dest) return [...tray, ...Array<number>(step.count).fill(color)];
+    if (index === step.source) {
+      return tray.slice(0, tray.length - step.count);
+    }
+    if (index === step.dest) {
+      return [...tray, ...Array<number>(step.count).fill(color)];
+    }
     return tray;
   });
   return { capacity: board.capacity, trays };
@@ -76,7 +92,9 @@ export function generateBoard(
     let previous: ReverseStep | null = null;
     while (steps.length < minPar) {
       const options = candidates(board, previous);
-      if (options.length === 0) break;
+      if (options.length === 0) {
+        break;
+      }
       const step = options[nextBelow(rng, options.length)]!;
       const next = applyReverse(board, step);
       board = next;

@@ -10,7 +10,9 @@ const tokenPair = (name: string): [string, string] => {
     `${name}:\\s*light-dark\\((#[0-9a-f]{6}),\\s*(#[0-9a-f]{6})\\)`,
     'i',
   ).exec(tokens);
-  if (!match) throw new Error(`Token ${name} not found`);
+  if (!match) {
+    throw new Error(`Token ${name} not found`);
+  }
   return [match[1]!.toLowerCase(), match[2]!.toLowerCase()];
 };
 
@@ -26,7 +28,9 @@ const minDeltaE = (colors: readonly string[], vision: (typeof visionCases)[numbe
 
 describe('spill-it palette', () => {
   it('has six colors per theme', () => {
-    for (const theme of paletteThemes) expect(palette[theme]).toHaveLength(6);
+    for (const theme of paletteThemes) {
+      expect(palette[theme]).toHaveLength(6);
+    }
   });
 
   for (const theme of paletteThemes) {
@@ -59,7 +63,9 @@ describe('spill-it palette', () => {
 
   it('markOpacity equals --spill-it-mark-opacity in tokens.css', () => {
     const match = /--spill-it-mark-opacity:\s*([0-9.]+)\s*;/.exec(tokens);
-    if (!match) throw new Error('Token --spill-it-mark-opacity not found');
+    if (!match) {
+      throw new Error('Token --spill-it-mark-opacity not found');
+    }
     expect(Number(match[1])).toBe(markOpacity);
   });
 

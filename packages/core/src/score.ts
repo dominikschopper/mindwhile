@@ -17,7 +17,9 @@ export function compareScores(
     // Lengths are checked above, the fallback only satisfies the index types.
     const x = a[i] ?? 0;
     const y = b[i] ?? 0;
-    if (x === y) continue;
+    if (x === y) {
+      continue;
+    }
     const aIsBetter = position.better === 'higher' ? x > y : x < y;
     return aIsBetter ? 1 : -1;
   }

@@ -40,7 +40,9 @@ async function exportProfile(): Promise<void> {
 async function importProfile(): Promise<void> {
   emit('importStarted');
   const file = await pickFile();
-  if (file === null) return;
+  if (file === null) {
+    return;
+  }
   const result = await decodeProfileFile(file);
   if (!result.ok) {
     showToast('danger', t(`failure.${result.reason}`));
@@ -53,7 +55,9 @@ async function importProfile(): Promise<void> {
 }
 
 function merge(): void {
-  if (incoming.value) applyImport(incoming.value.data, scoringOf);
+  if (incoming.value) {
+    applyImport(incoming.value.data, scoringOf);
+  }
   dialog.value?.close();
   incoming.value = null;
   showToast('success', t('toast.merged'));

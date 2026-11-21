@@ -14,7 +14,9 @@ function ev(key: string, extra: Partial<ColorKeyEvent> = {}): ColorKeyEvent {
 
 describe('colorForKey', () => {
   it('maps digits 1 to N to indexes 0 to N-1', () => {
-    for (let n = 1; n <= 4; n++) expect(colorForKey(ev(String(n)), 4)).toBe(n - 1);
+    for (let n = 1; n <= 4; n++) {
+      expect(colorForKey(ev(String(n)), 4)).toBe(n - 1);
+    }
   });
 
   it('ignores 0, N+1 and letters', () => {

@@ -25,7 +25,9 @@ export async function saveProfileFile(blob: Blob, name: string): Promise<void> {
       await navigator.share({ files: [file] });
       return;
     } catch (error) {
-      if (isAbortError(error)) return;
+      if (isAbortError(error)) {
+        return;
+      }
     }
   }
   download(file);

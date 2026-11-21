@@ -29,7 +29,9 @@ const whitePoint: Rgb = [0.95047, 1, 1.08883];
 
 export const hexToRgb = (hex: string): Rgb => {
   const match = /^#([0-9a-f]{6})$/i.exec(hex);
-  if (!match) throw new Error(`Invalid hex color: ${hex}`);
+  if (!match) {
+    throw new Error(`Invalid hex color: ${hex}`);
+  }
   const value = parseInt(match[1]!, 16);
   return [(value >> 16) & 255, (value >> 8) & 255, value & 255];
 };
@@ -73,7 +75,9 @@ export const contrastRatio = (a: string, b: string): number => {
 // Returns linear RGB as seen with the given vision case.
 export const simulateLinear = (hex: string, vision: VisionCase): Rgb => {
   const linear = toLinearRgb(hexToRgb(hex));
-  if (vision === 'normal') return linear;
+  if (vision === 'normal') {
+    return linear;
+  }
   const m = machado[vision];
   const row = (r: Rgb): number => clamp01(r[0] * linear[0] + r[1] * linear[1] + r[2] * linear[2]);
   return [row(m[0]), row(m[1]), row(m[2])];

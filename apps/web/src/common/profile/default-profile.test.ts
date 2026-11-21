@@ -34,7 +34,9 @@ describe('createDefaultProfile', () => {
       const data = { profile: createDefaultProfile(seed, 1_700_000_000_000), best: [] };
       const result = parseProfile(serializeProfile(data));
       expect(result.ok).toBe(true);
-      if (result.ok) expect(result.data.profile).toEqual(data.profile);
+      if (result.ok) {
+        expect(result.data.profile).toEqual(data.profile);
+      }
     }
   });
 });

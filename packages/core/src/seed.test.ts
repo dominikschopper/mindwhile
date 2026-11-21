@@ -27,7 +27,9 @@ describe('newSeed', () => {
 
   it('does not return the same value in 100 real calls', () => {
     const seeds = new Set<number>();
-    for (let i = 0; i < 100; i++) seeds.add(newSeed());
+    for (let i = 0; i < 100; i++) {
+      seeds.add(newSeed());
+    }
     expect(seeds.size).toBeGreaterThan(1);
   });
 });

@@ -39,7 +39,9 @@ async function gunzip(file: Blob): Promise<Gunzipped> {
   try {
     for (;;) {
       const { done, value } = await reader.read();
-      if (done) break;
+      if (done) {
+        break;
+      }
       total += value.byteLength;
       if (total > MAX_DECOMPRESSED_BYTES) {
         await reader.cancel().catch(() => undefined);
@@ -60,9 +62,13 @@ async function gunzip(file: Blob): Promise<Gunzipped> {
 }
 
 export async function decodeProfileFile(file: Blob): Promise<DecodeResult> {
-  if (file.size > MAX_FILE_BYTES) return { ok: false, reason: 'too-large' };
+  if (file.size > MAX_FILE_BYTES) {
+    return { ok: false, reason: 'too-large' };
+  }
   const unzipped = await gunzip(file);
-  if (!unzipped.ok) return unzipped;
+  if (!unzipped.ok) {
+    return unzipped;
+  }
   let input: unknown;
   try {
     input = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(unzipped.bytes));

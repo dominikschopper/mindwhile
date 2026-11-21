@@ -48,7 +48,9 @@ describe('newPlayerId', () => {
 
   it('gives unique IDs in 2000 draws', () => {
     const ids = new Set<string>();
-    for (let i = 0; i < 2000; i++) ids.add(newPlayerId());
+    for (let i = 0; i < 2000; i++) {
+      ids.add(newPlayerId());
+    }
     expect(ids.size).toBe(2000);
   });
 });

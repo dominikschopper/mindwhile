@@ -22,9 +22,13 @@ export const resolveLightDark = (
   const m = new RegExp(
     `${name}:\\s*light-dark\\(\\s*var\\((--[a-z0-9-]+)\\),\\s*var\\((--[a-z0-9-]+)\\)\\s*\\)`,
   ).exec(source);
-  if (!m) throw new Error(`Token missing or not light-dark(var(), var()): ${name}`);
+  if (!m) {
+    throw new Error(`Token missing or not light-dark(var(), var()): ${name}`);
+  }
   const hex = palette.get(m[theme + 1]!);
-  if (!hex) throw new Error(`Unknown palette token: ${m[theme + 1]}`);
+  if (!hex) {
+    throw new Error(`Unknown palette token: ${m[theme + 1]}`);
+  }
   return hex;
 };
 

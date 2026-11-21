@@ -32,7 +32,9 @@ export function usePlaySession(
   // Record the result once when it appears; aborted or discarded rounds never get here.
   watch(result, (value) => {
     const loaded = module.value;
-    if (value && loaded) recordRoundResult(loaded.manifest, level.value, roundSeed, value);
+    if (value && loaded) {
+      recordRoundResult(loaded.manifest, level.value, roundSeed, value);
+    }
   });
 
   // Error guard: an error in the game discards the round (no result), resets the shell,
@@ -49,7 +51,9 @@ export function usePlaySession(
 
   function startRound(): void {
     const loaded = module.value;
-    if (!loaded) return;
+    if (!loaded) {
+      return;
+    }
     try {
       const seed = newSeed();
       framed.value = useRoundFrame(loaded.createRound({ level: level.value, seed }));
@@ -116,7 +120,9 @@ export function usePlaySession(
 
   const scoreText = computed(() => {
     const score = result.value?.score;
-    if (!score) return '';
+    if (!score) {
+      return '';
+    }
     return registry.getGame(gameId.value)?.texts.formatScore(score) ?? score.join(' ');
   });
 

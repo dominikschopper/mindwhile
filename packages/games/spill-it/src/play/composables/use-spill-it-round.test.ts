@@ -49,7 +49,9 @@ describe('useSpillItRound', () => {
   it('is solved after the greedy moves and ignores later picks', () => {
     const round = createRound({ level: 'a', seed: 5 });
     const r = useSpillItRound(round);
-    for (const color of greedyMoves(round.startBoard, r.colorCount)) r.pick(color);
+    for (const color of greedyMoves(round.startBoard, r.colorCount)) {
+      r.pick(color);
+    }
     expect(r.solved.value).toBe(true);
     expect(r.result.value).toEqual({ roundEnd: 'won', score: [500, 0] });
     expect(r.regionSize.value).toBe(36);
@@ -61,7 +63,9 @@ describe('useSpillItRound', () => {
   it('shows the same state for a restored round', () => {
     const round = createRound({ level: 'a', seed: 3 });
     const r = useSpillItRound(round);
-    for (const color of greedyMoves(round.startBoard, 4).slice(0, 3)) r.pick(color);
+    for (const color of greedyMoves(round.startBoard, 4).slice(0, 3)) {
+      r.pick(color);
+    }
     const restored = useSpillItRound(
       createRound({ level: 'a', seed: 3, saved: round.serialize() }),
     );
@@ -120,7 +124,9 @@ describe('useSpillItRound', () => {
   it('leaves lastPick unchanged after the round is solved', () => {
     const round = createRound({ level: 'a', seed: 5 });
     const r = useSpillItRound(round);
-    for (const color of greedyMoves(round.startBoard, r.colorCount)) r.pick(color);
+    for (const color of greedyMoves(round.startBoard, r.colorCount)) {
+      r.pick(color);
+    }
     expect(r.solved.value).toBe(true);
     const before = r.lastPick.value;
     expect(before).not.toBeNull();

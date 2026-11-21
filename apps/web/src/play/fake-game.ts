@@ -71,8 +71,11 @@ export function createFakeGame(
       seed: p.seed,
       apply(move) {
         const m = move as { type?: string; score?: number[] };
-        if (m.type === 'win') result = { roundEnd: 'won', score: m.score ?? [100, 0] };
-        else if (m.type === 'lose') result = { roundEnd: 'lost', score: [0, 0] };
+        if (m.type === 'win') {
+          result = { roundEnd: 'won', score: m.score ?? [100, 0] };
+        } else if (m.type === 'lose') {
+          result = { roundEnd: 'lost', score: [0, 0] };
+        }
       },
       serialize: () => ({ seed: p.seed }),
       result: () => result,
@@ -129,7 +132,9 @@ export function createFakeGame(
   });
 
   const PlainView: Component = (props: { round: Round }) => {
-    if (options.throwInView) throw new Error('view failed');
+    if (options.throwInView) {
+      throw new Error('view failed');
+    }
     return h(
       'button',
       { type: 'button', class: 'fake-win', onClick: () => props.round.apply({ type: 'win' }) },
@@ -151,7 +156,9 @@ export function createFakeGame(
     manifest: fakeManifest,
     texts: fakeTexts,
     loadModule: async () => {
-      if (options.failLoad) throw new Error('module load failed');
+      if (options.failLoad) {
+        throw new Error('module load failed');
+      }
       return gameModule;
     },
   };

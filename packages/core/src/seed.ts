@@ -4,6 +4,8 @@
  */
 export function newSeed(): number {
   const [seed] = crypto.getRandomValues(new Uint32Array(1));
-  if (seed === undefined) throw new Error('crypto.getRandomValues returned no value');
+  if (seed === undefined) {
+    throw new Error('crypto.getRandomValues returned no value');
+  }
   return seed;
 }

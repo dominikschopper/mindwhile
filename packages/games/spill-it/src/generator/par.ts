@@ -10,7 +10,9 @@ export function greedyMoves(board: Board, colors: number): number[] {
     const regionColor = current.cells[0];
     let best: { color: number; board: Board; size: number } | null = null;
     for (let color = 0; color < colors; color++) {
-      if (color === regionColor) continue;
+      if (color === regionColor) {
+        continue;
+      }
       const next = applyColor(current, color);
       const size = startRegion(next).length;
       if (best === null || size > best.size) {

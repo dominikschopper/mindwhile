@@ -10,7 +10,9 @@ describe('word lists', () => {
     it(`${name} has 100 unique well-formed entries`, () => {
       expect(list).toHaveLength(100);
       expect(new Set(list).size).toBe(100);
-      for (const word of list) expect(word).toMatch(/^[A-Z][a-z]{2,6}$/);
+      for (const word of list) {
+        expect(word).toMatch(/^[A-Z][a-z]{2,6}$/);
+      }
     });
   }
 
@@ -32,7 +34,9 @@ describe('createDefaultTag', () => {
 
   it('varies across seeds', () => {
     const tags = new Set<string>();
-    for (let seed = 0; seed < 200; seed++) tags.add(createDefaultTag(createRng(seed)));
+    for (let seed = 0; seed < 200; seed++) {
+      tags.add(createDefaultTag(createRng(seed)));
+    }
     expect(tags.size).toBeGreaterThan(50);
   });
 });

@@ -189,7 +189,9 @@ describe('SpillItView', () => {
       }
       const before = glow(wrapper);
       const count = round.moves.length;
-      for (let c = 1; c <= levelParams.a.colors; c++) key(String(c));
+      for (let c = 1; c <= levelParams.a.colors; c++) {
+        key(String(c));
+      }
       await wrapper.vm.$nextTick();
       expect(glow(wrapper)).toEqual(before);
       expect(round.moves).toHaveLength(count);

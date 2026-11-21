@@ -27,7 +27,9 @@ export function usePopover(): {
   }
 
   function onOutside(event: Event): void {
-    if (open.value && root.value && !root.value.contains(event.target as Node)) close();
+    if (open.value && root.value && !root.value.contains(event.target as Node)) {
+      close();
+    }
   }
 
   onMounted(() => {

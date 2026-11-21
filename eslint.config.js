@@ -103,6 +103,7 @@ export default tseslint.config(
     rules: { 'vue/one-component-per-file': 'off' },
   },
   prettier,
-  // after `prettier`, which would otherwise switch this formatting rule off
-  { rules: { semi: ['error', 'always'] } },
+  // after `prettier`, which would otherwise switch these formatting rules off
+  // (`curly: all` is the one setting of that rule that works together with Prettier)
+  { rules: { semi: ['error', 'always'], curly: ['error', 'all'] } },
 );

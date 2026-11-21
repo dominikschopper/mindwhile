@@ -9,7 +9,9 @@ import type { GameRegistry } from './game-registry';
 export function createScoringOf(registry: GameRegistry): ScoringOf {
   return (gameId, _level, scoringVersion) => {
     const manifest = registry.getGame(gameId)?.manifest;
-    if (!manifest || manifest.scoringVersion !== scoringVersion) return undefined;
+    if (!manifest || manifest.scoringVersion !== scoringVersion) {
+      return undefined;
+    }
     return manifest.scoring;
   };
 }

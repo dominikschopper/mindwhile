@@ -75,7 +75,9 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  while (mounted.length) mounted.pop()!.unmount();
+  while (mounted.length) {
+    mounted.pop()!.unmount();
+  }
   document.body.innerHTML = '';
   delete (document as unknown as { visibilityState?: unknown }).visibilityState;
   vi.useRealTimers();

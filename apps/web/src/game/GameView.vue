@@ -60,7 +60,9 @@ watch(
     LevelPreview.value = null;
     rulesFailed.value = false;
     const entry = registry.getGame(id);
-    if (!entry) return;
+    if (!entry) {
+      return;
+    }
     try {
       const { HowToPlay: rules, LevelPreview: preview } = await entry.loadModule();
       if (props.id === id) {
@@ -68,7 +70,9 @@ watch(
         LevelPreview.value = preview ?? null;
       }
     } catch {
-      if (props.id === id) rulesFailed.value = true;
+      if (props.id === id) {
+        rulesFailed.value = true;
+      }
     }
   },
   { immediate: true },

@@ -35,9 +35,13 @@ export function encodePlayerId(bytes: Uint8Array): string {
 
 /** True only for a canonical player ID: 11 base64url characters, last character with zero low bits. */
 export function isPlayerId(value: unknown): value is string {
-  if (typeof value !== 'string' || value.length !== idLength) return false;
+  if (typeof value !== 'string' || value.length !== idLength) {
+    return false;
+  }
   for (let i = 0; i < idLength; i++) {
-    if (alphabet.indexOf(value.charAt(i)) < 0) return false;
+    if (alphabet.indexOf(value.charAt(i)) < 0) {
+      return false;
+    }
   }
   const last = alphabet.indexOf(value.charAt(idLength - 1));
   return last % 4 === 0;

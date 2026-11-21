@@ -18,7 +18,9 @@ const { cells, size, colorCount, moveCount, par, regionColor, regionSize, solved
 
 const glowClass = computed(() => {
   const pickInfo = lastPick.value;
-  if (pickInfo === null) return null;
+  if (pickInfo === null) {
+    return null;
+  }
   return pickInfo.tick % 2 === 0 ? 'cell--glow-a' : 'cell--glow-b';
 });
 
@@ -30,7 +32,9 @@ const boardLabel = computed(() => t('board.summary', { size, regionCount: region
 
 function onKeydown(event: ColorKeyEvent): void {
   const color = colorForKey(event, colorCount);
-  if (color !== undefined) pick(color);
+  if (color !== undefined) {
+    pick(color);
+  }
 }
 
 onMounted(() => globalThis.addEventListener('keydown', onKeydown));

@@ -212,7 +212,9 @@ export const animals: readonly string[] = [
 
 function pick(list: readonly string[], rng: Rng): string {
   const word = list[nextBelow(rng, list.length)];
-  if (word === undefined) throw new Error('empty word list');
+  if (word === undefined) {
+    throw new Error('empty word list');
+  }
   return word;
 }
 

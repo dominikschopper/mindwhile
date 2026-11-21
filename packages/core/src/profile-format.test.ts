@@ -82,7 +82,9 @@ describe('serializeProfile', () => {
     ]);
     const keys: string[] = [];
     JSON.stringify(env, (key, value) => {
-      if (key !== '' && !/^\d+$/.test(key)) keys.push(key);
+      if (key !== '' && !/^\d+$/.test(key)) {
+        keys.push(key);
+      }
       return value;
     });
     expect(keys.filter((k) => !allowed.has(k))).toEqual([]);
@@ -220,7 +222,9 @@ describe('parseProfile', () => {
     ];
     const r = parseProfile(withBest(best));
     expect(r.ok).toBe(true);
-    if (!r.ok) return;
+    if (!r.ok) {
+      return;
+    }
     expect(r.skipped).toBe(10);
     expect(r.data.best.map((b) => b.gameId)).toEqual(['g1', 'future-game', 'g10']);
   });
@@ -245,7 +249,9 @@ describe('parseProfile', () => {
     env.best = [{ ...entry(1), junk: 3 }];
     const r = parseProfile(env);
     expect(r.ok).toBe(true);
-    if (!r.ok) return;
+    if (!r.ok) {
+      return;
+    }
     expect(Object.keys(r.data)).toEqual(['profile', 'best']);
     expect(Object.keys(r.data.profile).sort()).toEqual([
       'gamerSymbol',

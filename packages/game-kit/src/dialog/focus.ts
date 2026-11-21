@@ -7,5 +7,7 @@ export function activeElement(): Element | null {
 
 /** Gives focus back to the element that had it before a dialog opened. */
 export function restoreFocus(element: FocusTarget): void {
-  if (element instanceof HTMLElement && element.isConnected) element.focus();
+  if (element instanceof HTMLElement && element.isConnected) {
+    element.focus();
+  }
 }

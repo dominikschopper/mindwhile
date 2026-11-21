@@ -63,7 +63,9 @@ async function openAbortDialog(wrapper: Mounted['wrapper']) {
 }
 
 afterEach(() => {
-  while (mounted.length) mounted.pop()!.unmount();
+  while (mounted.length) {
+    mounted.pop()!.unmount();
+  }
   document.body.innerHTML = '';
 });
 

@@ -8,6 +8,8 @@ export function createDefaultProfile(seed: number = newSeed(), now: number = Dat
   const rng = createRng(seed);
   const gamerTag = createDefaultTag(rng);
   const gamerSymbol = profileSymbolNames[nextBelow(rng, profileSymbolNames.length)];
-  if (gamerSymbol === undefined) throw new Error('no profile symbols');
+  if (gamerSymbol === undefined) {
+    throw new Error('no profile symbols');
+  }
   return { playerId: newPlayerId(), gamerTag, gamerSymbol, gamerTagChangedAt: now };
 }

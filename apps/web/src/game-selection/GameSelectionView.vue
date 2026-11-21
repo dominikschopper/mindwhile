@@ -14,7 +14,9 @@ const registry = useGameRegistry();
 const games = computed(() =>
   registry.listGames().map(({ manifest: game, texts }) => {
     const scores: Record<string, readonly number[] | undefined> = {};
-    for (const level of game.levels) scores[level] = bestScore(game.id, level);
+    for (const level of game.levels) {
+      scores[level] = bestScore(game.id, level);
+    }
     const best = highestLevelWithResult(game.levels, scores);
     return {
       id: game.id,
