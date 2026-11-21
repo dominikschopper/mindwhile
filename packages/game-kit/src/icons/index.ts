@@ -11,6 +11,7 @@ import {
   CircleCheck as IconCircleCheck,
   Download as IconDownload,
   Film as IconFilm,
+  FlaskConical as IconFlaskConical,
   Grid2x2 as IconGrid2x2,
   Info as IconInfo,
   Infinity as IconInfinity,
@@ -43,6 +44,7 @@ export {
   IconClose,
   IconDownload,
   IconFilm,
+  IconFlaskConical,
   IconGrid2x2,
   IconInfinity,
   IconInfo,
@@ -64,6 +66,7 @@ export {
 
 // Game symbols: icon name used in manifests -> component (platform resolves manifest.symbol).
 export const gameSymbols = {
+  'flask-conical': IconFlaskConical,
   'grid-2x2': IconGrid2x2,
 } as const;
 

@@ -32,12 +32,13 @@ describe('GameSelectionView', () => {
     );
   });
 
-  it('shows one tile for Spillit with symbol, name and no result', () => {
+  it('shows the Spillit tile with symbol, name and no result', () => {
     const wrapper = mountView();
-    const tiles = wrapper.findAll('.tiles a');
-    expect(tiles).toHaveLength(1);
-    const tile = tiles[0]!;
-    expect(tile.attributes('href')).toBe('/games/spill-it');
+    // The real registry holds every game, so find the tile of Spillit by its link.
+    const tile = wrapper
+      .findAll('.tiles a')
+      .find((a) => a.attributes('href') === '/games/spill-it')!;
+    expect(tile.exists()).toBe(true);
     expect(tile.find('svg').exists()).toBe(true);
     expect(tile.find('.tile-name').text()).toBe('Spill It!');
     expect(tile.text()).not.toContain('spill-it');

@@ -93,6 +93,18 @@ importers:
         specifier: ^3.5.0
         version: 3.5.44(typescript@7.0.2)
 
+  packages/games/jelly-sort:
+    dependencies:
+      '@mindwhile/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@mindwhile/game-kit':
+        specifier: workspace:*
+        version: link:../../game-kit
+      vue:
+        specifier: ^3.5.0
+        version: 3.5.44(typescript@7.0.2)
+
   packages/games/spill-it:
     dependencies:
       '@mindwhile/core':

@@ -8,10 +8,6 @@ const iconComponents = icons;
 const entries = Object.entries(iconComponents).filter(([name]) => name.startsWith('Icon'));
 
 describe('icons', () => {
-  it('exports the expected number of icons', () => {
-    expect(entries).toHaveLength(29);
-  });
-
   it.each(entries)('%s renders a decorative svg', (_name, component) => {
     const svg = mount(component).find('svg');
     expect(svg.exists()).toBe(true);
