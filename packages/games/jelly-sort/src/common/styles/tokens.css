@@ -1,0 +1,22 @@
+@layer tokens {
+  :root {
+    --jelly-0: light-dark(#cf8f00, #e69f00);
+    --jelly-1: light-dark(#67bceb, #89cbf0);
+    --jelly-2: light-dark(#008e68, #009e73);
+    --jelly-3: light-dark(#f0e442, #f3e968);
+    --jelly-4: light-dark(#00507d, #0067a0);
+    --jelly-5: light-dark(#7d3600, #b04e00);
+    --jelly-6: light-dark(#c2579b, #d77cb5);
+    --jelly-7: light-dark(#b4b4b4, #c4c4c4);
+
+    --jelly-mark-0: light-dark(#000000, #000000);
+    --jelly-mark-1: light-dark(#000000, #000000);
+    --jelly-mark-2: light-dark(#000000, #000000);
+    --jelly-mark-3: light-dark(#000000, #000000);
+    --jelly-mark-4: light-dark(#ffffff, #ffffff);
+    --jelly-mark-5: light-dark(#ffffff, #000000);
+    --jelly-mark-6: light-dark(#000000, #000000);
+    --jelly-mark-7: light-dark(#000000, #000000);
+    --jelly-mark-opacity: 0.7;
+  }
+}

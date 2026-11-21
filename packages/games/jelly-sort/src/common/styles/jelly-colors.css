@@ -1,0 +1,34 @@
+@layer components {
+  .jelly--0 {
+    background-color: var(--jelly-0);
+    color: var(--jelly-mark-0);
+  }
+  .jelly--1 {
+    background-color: var(--jelly-1);
+    color: var(--jelly-mark-1);
+  }
+  .jelly--2 {
+    background-color: var(--jelly-2);
+    color: var(--jelly-mark-2);
+  }
+  .jelly--3 {
+    background-color: var(--jelly-3);
+    color: var(--jelly-mark-3);
+  }
+  .jelly--4 {
+    background-color: var(--jelly-4);
+    color: var(--jelly-mark-4);
+  }
+  .jelly--5 {
+    background-color: var(--jelly-5);
+    color: var(--jelly-mark-5);
+  }
+  .jelly--6 {
+    background-color: var(--jelly-6);
+    color: var(--jelly-mark-6);
+  }
+  .jelly--7 {
+    background-color: var(--jelly-7);
+    color: var(--jelly-mark-7);
+  }
+}

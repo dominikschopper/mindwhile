@@ -5,7 +5,7 @@ import { manifest } from './manifest';
 import JellySortView from './play/JellySortView.vue';
 import { createRound } from './round/round';
 
-// View and how-to-play are placeholders until later tasks.
+// How-to-play is a placeholder until a later task.
 export const gameModule: GameModule<Component> = {
   manifest,
   createRound,
