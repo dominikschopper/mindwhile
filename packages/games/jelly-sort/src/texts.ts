@@ -1,17 +1,9 @@
 import type { GameTexts } from '@mindwhile/core';
 import { manifest } from './manifest';
 import { t } from './common/texts/translate';
+import { formatScore, formatScoreShort } from './scoring/format-score';
 
 export { t };
-
-// Placeholders, the real score formatting comes with the scoring task.
-function formatScoreShort(score: readonly number[]): string {
-  return t('score.points', { points: score[0] ?? 0 });
-}
-
-function formatScore(score: readonly number[]): string {
-  return formatScoreShort(score);
-}
 
 export const gameTexts: GameTexts = {
   name: t('game.name'),

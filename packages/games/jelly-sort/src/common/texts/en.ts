@@ -6,7 +6,17 @@ export const en = {
   'level.a': '4 colors',
   'level.b': '6 colors',
   'level.c': '8 colors',
+  'score.summary': '{points} points · {detail}',
   'score.points': '{points} points',
+  'score.onPar': 'On par',
+  'score.faster': {
+    one: '{count} move faster',
+    other: '{count} moves faster',
+  },
+  'score.slower': {
+    one: '{count} move slower',
+    other: '{count} moves slower',
+  },
   'placeholder.view': 'Jelly Sort is not playable yet.',
   'placeholder.howTo': 'Pour the jelly until every glass holds one color.',
 } as const;

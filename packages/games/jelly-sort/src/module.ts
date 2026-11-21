@@ -3,13 +3,12 @@ import type { Component } from 'vue';
 import HowToPlay from './how-to-play/HowToPlay.vue';
 import { manifest } from './manifest';
 import JellySortView from './play/JellySortView.vue';
+import { createRound } from './round/round';
 
-// Placeholders, the round, view and how-to-play come with later tasks.
+// View and how-to-play are placeholders until later tasks.
 export const gameModule: GameModule<Component> = {
   manifest,
-  createRound() {
-    throw new Error('not implemented');
-  },
+  createRound,
   View: JellySortView,
   HowToPlay,
 };
