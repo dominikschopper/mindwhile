@@ -18,5 +18,7 @@
     --jelly-mark-6: light-dark(#000000, #000000);
     --jelly-mark-7: light-dark(#000000, #000000);
     --jelly-mark-opacity: 0.7;
+    /* About 20 percent of a layer, so a layer reads as a cube with soft corners. */
+    --jelly-radius: 0.45rem;
   }
 }

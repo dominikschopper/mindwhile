@@ -196,7 +196,7 @@ describe('JellySortView', () => {
     });
 
     const wobbling = (wrapper: ReturnType<typeof setup>['wrapper']) =>
-      wrapper.findAll('.tray-glass__layer--wobble');
+      wrapper.findAll('.tray-glass__block--wobble');
 
     it('wobbles only after selection, survives an invalid tap, stops on cancel and pour', async () => {
       const { round, wrapper } = setup();
@@ -205,11 +205,11 @@ describe('JellySortView', () => {
       const buttons = wrapper.findAll('button');
       await buttons[badFrom]!.trigger('click');
       expect(wobbling(wrapper).length).toBeGreaterThan(0);
-      expect(buttons[badFrom]!.findAll('.tray-glass__layer--wobble').length).toBeGreaterThan(0);
+      expect(buttons[badFrom]!.findAll('.tray-glass__block--wobble').length).toBeGreaterThan(0);
       await buttons[badTo]!.trigger('click');
-      expect(buttons[badFrom]!.findAll('.tray-glass__layer--wobble').length).toBeGreaterThan(0);
+      expect(buttons[badFrom]!.findAll('.tray-glass__block--wobble').length).toBeGreaterThan(0);
       expect(wobbling(wrapper).length).toBe(
-        buttons[badFrom]!.findAll('.tray-glass__layer--wobble').length,
+        buttons[badFrom]!.findAll('.tray-glass__block--wobble').length,
       );
       await buttons[badFrom]!.trigger('click');
       expect(wobbling(wrapper)).toHaveLength(0);
@@ -266,7 +266,7 @@ describe('JellySortView', () => {
       const buttons = wrapper.findAll('button');
       await buttons[from]!.trigger('click');
       expect(wobbling(wrapper)).toHaveLength(0);
-      expect(wrapper.find('.tray-glass__layer--lifted').exists()).toBe(true);
+      expect(wrapper.find('.tray-glass__block--lifted').exists()).toBe(true);
       await buttons[to]!.trigger('click');
       expect(wrapper.find('.tray-glass__layer--flow').exists()).toBe(false);
       expect(wrapper.find('.tray-glass__layer--merge').exists()).toBe(false);
@@ -284,5 +284,32 @@ describe('JellySortView', () => {
       wrapper.unmount();
       expect(vi.getTimerCount()).toBe(0);
     });
+  });
+});
+
+describe('JellySortView tray rows', () => {
+  it('splits ten trays into 5 + 5 at a phone width', async () => {
+    const trays = Array.from({ length: 10 }, (_, i) => [i % 4]);
+    let report: (entries: unknown[]) => void = () => {};
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(callback: (entries: unknown[]) => void) {
+          report = callback;
+        }
+        observe() {}
+        disconnect() {}
+      },
+    );
+    const round = createRound({ level: 'a', seed: 3 });
+    const wrapper = mount(JellySortView, {
+      props: { round: { ...round, board: { capacity: 4, trays } } as JellySortRound },
+    });
+    report([{ contentRect: { width: 368 } }]);
+    await wrapper.vm.$nextTick();
+    const rows = wrapper.findAll('.jelly-sort-row');
+    expect(rows.map((row) => row.findAll('button').length)).toEqual([5, 5]);
+    wrapper.unmount();
+    vi.unstubAllGlobals();
   });
 });

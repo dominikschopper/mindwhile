@@ -13,6 +13,8 @@ import {
   prefersReducedMotion,
   type Landing,
 } from './animation';
+import { observeWidth } from './observe-width';
+import { DEFAULT_COLUMNS, rowSizes, trayColumns } from './tray-columns';
 import { focusTray, listenForTrayKeys, moveCursor, type TrayKeyAction } from './keyboard';
 
 const props = defineProps<{ round: JellySortRound }>();
@@ -25,6 +27,24 @@ const { trays, capacity, moveCount, par, selected, feedback, result, tap } = use
 const root = ref<unknown>(null);
 // Tray the keyboard acts on, null until the keyboard is used or a tray is tapped.
 const cursor = shallowRef<number | null>(null);
+
+// Width of the tray area, null until measured. Then the columns fall back to a default.
+const trayAreaRef = ref<unknown>(null);
+const areaWidth = ref<number | null>(null);
+const columns = computed(() =>
+  areaWidth.value === null
+    ? Math.min(DEFAULT_COLUMNS, Math.max(1, trays.value.length))
+    : trayColumns(trays.value.length, areaWidth.value),
+);
+const rows = computed(() => {
+  const result: number[][] = [];
+  let next = 0;
+  for (const size of rowSizes(trays.value.length, columns.value)) {
+    result.push(Array.from({ length: size }, (_, i) => next + i));
+    next += size;
+  }
+  return result;
+});
 
 function trayLabel(layers: readonly number[], index: number): string {
   const position = index + 1;
@@ -116,11 +136,16 @@ function onKey(action: TrayKeyAction): void {
 }
 
 let stopKeys: (() => void) | undefined;
+let stopMeasure: (() => void) | undefined;
 onMounted(() => {
+  stopMeasure = observeWidth(trayAreaRef.value, (width) => {
+    areaWidth.value = width;
+  });
   stopKeys = listenForTrayKeys(trays.value.length, onKey);
 });
 onBeforeUnmount(() => {
   stopKeys?.();
+  stopMeasure?.();
   landingTimer.cancel();
 });
 </script>
@@ -132,17 +157,24 @@ onBeforeUnmount(() => {
       <p class="jelly-sort-par">{{ t('counter.par', { par }) }}</p>
     </header>
 
-    <div class="jelly-sort-trays" role="group" :aria-label="t('board.label')">
-      <TrayGlass
-        v-for="(layers, index) in trays"
-        :key="index"
-        :layers="layers"
-        :capacity="capacity"
-        :selected="selected === index"
-        :landing="landing !== null && landing.tray === index ? landing : null"
-        :label="trayLabel(layers, index)"
-        @select="onTap(index)"
-      />
+    <div ref="trayAreaRef" class="jelly-sort-trays" role="group" :aria-label="t('board.label')">
+      <div
+        v-for="(row, rowIndex) in rows"
+        :key="rowIndex"
+        class="jelly-sort-row"
+        :data-columns="row.length"
+      >
+        <TrayGlass
+          v-for="index in row"
+          :key="index"
+          :layers="trays[index]!"
+          :capacity="capacity"
+          :selected="selected === index"
+          :landing="landing !== null && landing.tray === index ? landing : null"
+          :label="trayLabel(trays[index]!, index)"
+          @select="onTap(index)"
+        />
+      </div>
     </div>
 
     <p class="jelly-sort-live" role="status" aria-live="polite">{{ liveText }}</p>
@@ -180,13 +212,20 @@ onBeforeUnmount(() => {
   font-weight: 700;
 }
 
+/* Rows of equal tray count, each centered. */
 .jelly-sort-trays {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding-top: 1.5rem;
+}
+
+.jelly-sort-row {
+  display: flex;
   justify-content: center;
   align-items: flex-end;
   gap: var(--spacing-md);
-  padding-top: 1.5rem;
 }
 
 .jelly-sort-live {

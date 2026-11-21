@@ -41,20 +41,18 @@ describe('TrayGlass', () => {
     expect(wrapper.findAll('.tray-glass__layer')).toHaveLength(4);
   });
 
-  it('shows the lifted state only on the top block when selected', () => {
+  it('shows the lifted block only around the top block when selected', () => {
     const wrapper = setup({ layers: [1, 2, 2], selected: true });
-    const layers = wrapper.findAll('.tray-glass__layer');
-    expect(layers.map((layer) => layer.classes('tray-glass__layer--lifted'))).toEqual([
-      false,
-      true,
-      true,
-    ]);
+    const block = wrapper.find('.tray-glass__block--lifted');
+    expect(block.findAll('.tray-glass__layer')).toHaveLength(2);
+    expect(wrapper.findAll('.tray-glass__layer')).toHaveLength(3);
     expect(wrapper.attributes('aria-pressed')).toBe('true');
   });
 
-  it('shows no lifted layer when not selected', () => {
+  it('shows no lifted block when not selected', () => {
     const wrapper = setup({ layers: [1, 2, 2] });
-    expect(wrapper.find('.tray-glass__layer--lifted').exists()).toBe(false);
+    expect(wrapper.find('.tray-glass__block').exists()).toBe(false);
+    expect(wrapper.findAll('.tray-glass__layer')).toHaveLength(3);
     expect(wrapper.attributes('aria-pressed')).toBe('false');
   });
 
@@ -88,26 +86,54 @@ describe('TrayGlass motion', () => {
     vi.unstubAllGlobals();
   });
 
-  it('wobbles only the top block of the selected tray', () => {
-    const wrapper = setup({ layers: [1, 2, 2], selected: true });
-    const layers = wrapper.findAll('.tray-glass__layer');
-    expect(layers.map((layer) => layer.classes('tray-glass__layer--wobble'))).toEqual([
-      false,
-      true,
-      true,
-    ]);
+  it.each([
+    [[4, 1], '1', 1],
+    [[4, 1, 1], '2', 2],
+    [[4, 1, 1, 1], '3', 3],
+    [[1, 1, 1, 1], '3', 4],
+  ])('wraps the top block of %j in one wobbling unit of kind %s', (layers, kind, size) => {
+    const wrapper = setup({ layers, selected: true });
+    const blocks = wrapper.findAll('.tray-glass__block');
+    expect(blocks).toHaveLength(1);
+    const block = blocks[0]!;
+    expect(block.attributes('data-wobble')).toBe(kind);
+    expect(block.classes()).toContain(`tray-glass__block--wobble-${kind}`);
+    expect(block.findAll('.tray-glass__layer')).toHaveLength(size);
+    expect(wrapper.findAll('.tray-glass__layer')).toHaveLength(layers.length);
+    // Layers below the block are outside the wrapper, and no layer wobbles on its own.
+    expect(
+      wrapper.element.querySelectorAll('.tray-glass__inner > .tray-glass__layer'),
+    ).toHaveLength(layers.length - size);
   });
 
-  it('does not wobble when not selected', () => {
+  it('uses a different wobble kind per block size', () => {
+    const kinds = [[1], [1, 1], [1, 1, 1]].map((layers) =>
+      setup({ layers, selected: true }).find('.tray-glass__block').attributes('data-wobble'),
+    );
+    expect(new Set(kinds).size).toBe(3);
+  });
+
+  it('has no wrapper and no wobble when nothing is selected', () => {
     const wrapper = setup({ layers: [1, 2, 2] });
-    expect(wrapper.find('.tray-glass__layer--wobble').exists()).toBe(false);
+    expect(wrapper.find('.tray-glass__block').exists()).toBe(false);
+    expect(wrapper.find('[data-wobble]').exists()).toBe(false);
+  });
+
+  it('keeps the wobble on an invalid tap and ends it on cancel', async () => {
+    const wrapper = setup({ layers: [1, 2, 2], selected: true });
+    await wrapper.trigger('click');
+    expect(wrapper.find('[data-wobble="2"]').exists()).toBe(true);
+    await wrapper.setProps({ selected: false });
+    expect(wrapper.find('.tray-glass__block').exists()).toBe(false);
+    expect(wrapper.find('[data-wobble]').exists()).toBe(false);
   });
 
   it('sets no wobble with reduced motion, the lifted cue stays', () => {
     vi.stubGlobal('matchMedia', () => ({ matches: true }));
     const wrapper = setup({ layers: [1, 2], selected: true });
-    expect(wrapper.find('.tray-glass__layer--wobble').exists()).toBe(false);
-    expect(wrapper.find('.tray-glass__layer--lifted').exists()).toBe(true);
+    expect(wrapper.find('[data-wobble]').exists()).toBe(false);
+    expect(wrapper.find('.tray-glass__block--wobble').exists()).toBe(false);
+    expect(wrapper.find('.tray-glass__block--lifted').exists()).toBe(true);
   });
 
   it('marks the landed layers with flow, and merge only for equal colors', () => {
