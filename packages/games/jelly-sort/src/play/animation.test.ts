@@ -1,10 +1,11 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
-  LANDING_MS,
+  LANDING_TIMING,
   createLandingTimer,
   describePour,
   flowOffset,
+  landingDuration,
   prefersReducedMotion,
 } from './animation';
 
@@ -40,17 +41,43 @@ describe('prefersReducedMotion', () => {
 });
 
 describe('createLandingTimer', () => {
-  it('clears after the landing time and not after cancel', () => {
+  it('steps through hover and merge and ends with null', () => {
     vi.useFakeTimers();
-    const clear = vi.fn();
-    const timer = createLandingTimer(clear);
-    timer.start();
-    vi.advanceTimersByTime(LANDING_MS);
-    expect(clear).toHaveBeenCalledTimes(1);
-    timer.start();
+    const seen: unknown[] = [];
+    const timer = createLandingTimer((phase) => seen.push(phase));
+    timer.start(true);
+    vi.advanceTimersByTime(LANDING_TIMING.flow);
+    expect(seen).toEqual(['hover']);
+    vi.advanceTimersByTime(LANDING_TIMING.hover);
+    expect(seen).toEqual(['hover', 'merge']);
+    vi.advanceTimersByTime(LANDING_TIMING.merge);
+    expect(seen).toEqual(['hover', 'merge', null]);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('is flow only without a hover', () => {
+    vi.useFakeTimers();
+    const seen: unknown[] = [];
+    const timer = createLandingTimer((phase) => seen.push(phase));
+    timer.start(false);
+    vi.advanceTimersByTime(landingDuration(false));
+    expect(seen).toEqual([null]);
+  });
+
+  it('does not fire after cancel and a restart drops the old timers', () => {
+    vi.useFakeTimers();
+    const onPhase = vi.fn();
+    const timer = createLandingTimer(onPhase);
+    timer.start(true);
     timer.cancel();
-    vi.advanceTimersByTime(LANDING_MS * 2);
-    expect(clear).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(landingDuration(true) * 2);
+    expect(onPhase).not.toHaveBeenCalled();
+    timer.start(true);
+    vi.advanceTimersByTime(LANDING_TIMING.flow - 1);
+    timer.start(true);
+    vi.advanceTimersByTime(LANDING_TIMING.flow - 1);
+    expect(onPhase).not.toHaveBeenCalled();
+    timer.cancel();
     expect(vi.getTimerCount()).toBe(0);
   });
 });

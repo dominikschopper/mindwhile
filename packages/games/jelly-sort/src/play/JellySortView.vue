@@ -91,8 +91,8 @@ const liveText = computed(() => {
 
 // The block that just landed, kept for a moment so the tray can play flow and merge.
 const landing = shallowRef<Landing | null>(null);
-const landingTimer = createLandingTimer(() => {
-  landing.value = null;
+const landingTimer = createLandingTimer((phase) => {
+  landing.value = phase === null || landing.value === null ? null : { ...landing.value, phase };
 });
 let landingKey = 0;
 
@@ -109,8 +109,16 @@ function tapTray(index: number): void {
   }
   const { moved, merged } = describePour(sourceBefore, targetBefore, trays.value[from]!.length);
   const offset = measureFlow(root.value, from, index) ?? { x: 0, y: 0 };
-  landing.value = { tray: index, moved, merged, x: offset.x, y: offset.y, key: ++landingKey };
-  landingTimer.start();
+  landing.value = {
+    tray: index,
+    moved,
+    merged,
+    x: offset.x,
+    y: offset.y,
+    phase: 'flow',
+    key: ++landingKey,
+  };
+  landingTimer.start(merged);
 }
 
 function onTap(index: number): void {

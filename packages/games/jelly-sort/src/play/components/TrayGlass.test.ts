@@ -136,13 +136,100 @@ describe('TrayGlass motion', () => {
     expect(wrapper.find('.tray-glass__block--lifted').exists()).toBe(true);
   });
 
-  it('marks the landed layers with flow, and merge only for equal colors', () => {
-    const landing = { tray: 0, moved: 2, merged: false, x: -40, y: 0, key: 1 };
-    const plain = setup({ layers: [1, 2, 2], landing });
-    expect(plain.findAll('.tray-glass__layer--flow')).toHaveLength(2);
-    expect(plain.find('.tray-glass__layer--merge').exists()).toBe(false);
-    const merged = setup({ layers: [2, 2, 2], landing: { ...landing, merged: true } });
-    expect(merged.findAll('.tray-glass__layer--merge')).toHaveLength(2);
+  describe('landing', () => {
+    const landing = (extra: object = {}) => ({
+      tray: 0,
+      moved: 2,
+      merged: true,
+      x: -40,
+      y: 0,
+      phase: 'flow' as const,
+      key: 1,
+      ...extra,
+    });
+
+    it('marks the landed layers with flow in the flow phase', () => {
+      const wrapper = setup({ layers: [1, 2, 2], landing: landing({ merged: false }) });
+      expect(wrapper.findAll('.tray-glass__layer--flow')).toHaveLength(2);
+      expect(wrapper.find('.tray-glass__layer--merge').exists()).toBe(false);
+      expect(wrapper.find('.tray-glass').attributes('data-landing-phase')).toBe('flow');
+    });
+
+    it('hovers the poured block and only the top layer of the target, anchored', () => {
+      const wrapper = setup({
+        layers: [1, 3, 3, 3, 3, 3],
+        capacity: 6,
+        landing: landing({ moved: 2, phase: 'hover' }),
+      });
+      const existing = wrapper.find('.tray-glass__block--hover-existing');
+      const poured = wrapper.find('.tray-glass__block--hover-poured');
+      expect(existing.attributes('data-wobble')).toBe('1');
+      expect(poured.attributes('data-wobble')).toBe('2');
+      for (const block of [existing, poured]) {
+        expect(block.classes()).toContain('tray-glass__block--wobble');
+        expect(block.classes()).toContain('tray-glass__block--anchored');
+      }
+      expect(existing.findAll('.tray-glass__layer')).toHaveLength(1);
+      expect(poured.findAll('.tray-glass__layer')).toHaveLength(2);
+      expect(wrapper.find('.tray-glass__block--lifted').exists()).toBe(false);
+      expect(wrapper.findAll('.tray-glass__layer')).toHaveLength(6);
+      expect(wrapper.find('.tray-glass__layer--flow').exists()).toBe(false);
+    });
+
+    it.each([1, 2, 3, 4])(
+      'wraps only the top layer of a target block of %i layers, the rest stays plain',
+      (size) => {
+        const layers = [1, ...Array<number>(size).fill(3), 3];
+        const wrapper = setup({
+          layers,
+          capacity: 8,
+          landing: landing({ moved: 1, phase: 'hover' }),
+        });
+        const wrappers = wrapper.findAll('.tray-glass__block--hover-existing');
+        expect(wrappers).toHaveLength(1);
+        expect(wrappers[0]!.findAll('.tray-glass__layer')).toHaveLength(1);
+        // Everything below the top layer of the target is a direct child of the glass, no wrapper.
+        expect(
+          wrapper.element.querySelectorAll('.tray-glass__inner > .tray-glass__layer'),
+        ).toHaveLength(layers.length - 2);
+        expect(wrapper.findAll('.tray-glass__block')).toHaveLength(2);
+        expect(
+          wrapper.element.querySelectorAll('.tray-glass__block--wobble .tray-glass__block'),
+        ).toHaveLength(0);
+      },
+    );
+
+    it('joins the wobbling top layer square to the still layer below and to the poured block', () => {
+      const wrapper = setup({
+        layers: [3, 3, 3, 3],
+        landing: landing({ moved: 1, phase: 'hover' }),
+      });
+      const layers = wrapper.findAll('.tray-glass__layer');
+      expect(layers[1]!.classes()).toContain('tray-glass__layer--join-above');
+      expect(layers[2]!.classes()).toContain('tray-glass__layer--join-below');
+      expect(layers[2]!.classes()).toContain('tray-glass__layer--join-above');
+      expect(layers[3]!.classes()).toContain('tray-glass__layer--join-below');
+      const existing = wrapper.find('.tray-glass__block--hover-existing');
+      expect(existing.find('.tray-glass__layer').element).toBe(layers[2]!.element);
+    });
+
+    it('lowers and merges in the merge phase: no wrappers, joined corners', () => {
+      const wrapper = setup({ layers: [3, 3], landing: landing({ moved: 2, phase: 'merge' }) });
+      expect(wrapper.find('.tray-glass__block').exists()).toBe(false);
+      expect(wrapper.findAll('.tray-glass__layer--merge')).toHaveLength(2);
+      expect(wrapper.findAll('.tray-glass__layer--settle')).toHaveLength(0);
+      const joined = setup({ layers: [3, 3, 3], landing: landing({ moved: 1, phase: 'merge' }) });
+      expect(joined.findAll('.tray-glass__layer--settle')).toHaveLength(2);
+      const [a, b] = joined.findAll('.tray-glass__layer');
+      expect(a!.classes()).toContain('tray-glass__layer--join-above');
+      expect(b!.classes()).toContain('tray-glass__layer--join-below');
+    });
+
+    it('has no hover into an empty tray', () => {
+      const empty = setup({ layers: [3, 3], landing: landing({ merged: false, phase: 'hover' }) });
+      expect(empty.find('.tray-glass__block').exists()).toBe(false);
+      expect(empty.find('[data-wobble]').exists()).toBe(false);
+    });
   });
 
   it('squares the touching corners of equal neighbours', () => {

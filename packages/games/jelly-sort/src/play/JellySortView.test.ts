@@ -1,9 +1,10 @@
 // @vitest-environment happy-dom
 import { mount } from '@vue/test-utils';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { canPour } from '../common/board/board';
+import { canPour, pour, topBlock } from '../common/board/board';
+import { wobbleFor } from './wobble';
 import { createRound, type JellySortRound } from '../round/round';
-import { describePour } from './animation';
+import { LANDING_TIMING, describePour } from './animation';
 import JellySortView from './JellySortView.vue';
 
 function setup(round: JellySortRound = createRound({ level: 'a', seed: 3 })) {
@@ -237,6 +238,7 @@ describe('JellySortView', () => {
     });
 
     it('sets the merge class exactly when the poured color meets the same color', async () => {
+      vi.useFakeTimers();
       let merges = 0;
       let plains = 0;
       for (let seed = 1; seed <= 40 && (merges === 0 || plains === 0); seed++) {
@@ -247,8 +249,13 @@ describe('JellySortView', () => {
         const buttons = wrapper.findAll('button');
         await buttons[from]!.trigger('click');
         await buttons[to]!.trigger('click');
-        expect(buttons[to]!.find('.tray-glass__layer--merge').exists()).toBe(expected);
         expect(buttons[to]!.find('.tray-glass__layer--flow').exists()).toBe(true);
+        vi.advanceTimersByTime(LANDING_TIMING.flow);
+        await wrapper.vm.$nextTick();
+        expect(buttons[to]!.find('.tray-glass__block--hover-poured').exists()).toBe(expected);
+        vi.advanceTimersByTime(LANDING_TIMING.hover);
+        await wrapper.vm.$nextTick();
+        expect(buttons[to]!.find('.tray-glass__layer--merge').exists()).toBe(expected);
         if (expected) {
           merges++;
         } else {
@@ -270,6 +277,144 @@ describe('JellySortView', () => {
       await buttons[to]!.trigger('click');
       expect(wrapper.find('.tray-glass__layer--flow').exists()).toBe(false);
       expect(wrapper.find('.tray-glass__layer--merge').exists()).toBe(false);
+      wrapper.unmount();
+    });
+
+    // Finds a round with a valid pour of the given kind (onto the same color, or into an empty tray).
+    function scenario(kind: 'same' | 'empty') {
+      for (let seed = 1; seed <= 200; seed++) {
+        const round = createRound({ level: 'a', seed });
+        const trays = round.board.trays;
+        for (let from = 0; from < trays.length; from++) {
+          for (let to = 0; to < trays.length; to++) {
+            if (from === to || trays[from]!.length === 0 || !canPour(round.board, from, to)) {
+              continue;
+            }
+            const { merged } = describePour(trays[from]!, trays[to]!, 0);
+            const empty = trays[to]!.length === 0;
+            if ((kind === 'same' && merged) || (kind === 'empty' && empty)) {
+              return { round, from, to };
+            }
+          }
+        }
+      }
+      throw new Error('no scenario');
+    }
+    const phaseOf = (wrapper: ReturnType<typeof setup>['wrapper'], tray: number) =>
+      wrapper.findAll('button')[tray]!.attributes('data-landing-phase');
+
+    it('goes through flow, hover and merge in order and ends without landing state', async () => {
+      vi.useFakeTimers();
+      const { round, from, to } = scenario('same');
+      const { wrapper } = setup(round);
+      const buttons = wrapper.findAll('button');
+      const moved =
+        round.board.trays[from]!.length - pour(round.board, from, to).trays[from]!.length;
+      const existing = topBlock(round.board.trays[to]!)!.length;
+      expect(moved).toBeGreaterThan(0);
+      await buttons[from]!.trigger('click');
+      await buttons[to]!.trigger('click');
+      expect(phaseOf(wrapper, to)).toBe('flow');
+      expect(buttons[to]!.find('.tray-glass__block').exists()).toBe(false);
+      vi.advanceTimersByTime(LANDING_TIMING.flow);
+      await wrapper.vm.$nextTick();
+      expect(phaseOf(wrapper, to)).toBe('hover');
+      const existingBlock = buttons[to]!.find('.tray-glass__block--hover-existing');
+      const pouredBlock = buttons[to]!.find('.tray-glass__block--hover-poured');
+      expect(existingBlock.classes()).toContain('tray-glass__block--wobble');
+      expect(pouredBlock.classes()).toContain('tray-glass__block--wobble');
+      // Only the upper half of the existing block wobbles, each part with its own kind.
+      const wobblingExisting = Math.ceil(existing / 2);
+      expect(existingBlock.findAll('.tray-glass__layer')).toHaveLength(wobblingExisting);
+      expect(existingBlock.attributes('data-wobble')).toBe(
+        String(wobbleFor(wobblingExisting).kind),
+      );
+      expect(pouredBlock.findAll('.tray-glass__layer')).toHaveLength(moved);
+      expect(pouredBlock.attributes('data-wobble')).toBe(String(wobbleFor(moved).kind));
+      vi.advanceTimersByTime(LANDING_TIMING.hover);
+      await wrapper.vm.$nextTick();
+      expect(phaseOf(wrapper, to)).toBe('merge');
+      expect(buttons[to]!.find('.tray-glass__block').exists()).toBe(false);
+      expect(buttons[to]!.findAll('.tray-glass__layer--merge')).toHaveLength(moved);
+      vi.advanceTimersByTime(LANDING_TIMING.merge);
+      await wrapper.vm.$nextTick();
+      expect(phaseOf(wrapper, to)).toBeUndefined();
+      expect(wrapper.find('.tray-glass__layer--merge').exists()).toBe(false);
+      expect(wrapper.find('.tray-glass__layer--settle').exists()).toBe(false);
+      // The poured layers and the old top block are one run with square touching corners.
+      const layers = buttons[to]!.findAll('.tray-glass__layer');
+      const seam = layers.length - moved;
+      expect(layers[seam - 1]!.classes()).toContain('tray-glass__layer--join-above');
+      expect(layers[seam]!.classes()).toContain('tray-glass__layer--join-below');
+      wrapper.unmount();
+    });
+
+    it('has no hover and no wobble when pouring into an empty tray', async () => {
+      vi.useFakeTimers();
+      const { round, from, to } = scenario('empty');
+      const { wrapper } = setup(round);
+      const buttons = wrapper.findAll('button');
+      await buttons[from]!.trigger('click');
+      await buttons[to]!.trigger('click');
+      vi.advanceTimersByTime(LANDING_TIMING.flow - 1);
+      await wrapper.vm.$nextTick();
+      expect(phaseOf(wrapper, to)).toBe('flow');
+      expect(wrapper.find('.tray-glass__block--wobble').exists()).toBe(false);
+      vi.advanceTimersByTime(1);
+      await wrapper.vm.$nextTick();
+      expect(phaseOf(wrapper, to)).toBeUndefined();
+      expect(vi.getTimerCount()).toBe(0);
+      wrapper.unmount();
+    });
+
+    it('replaces a running landing with a new pour and drops the old timers', async () => {
+      vi.useFakeTimers();
+      const { round, from, to } = scenario('same');
+      // A second pour that is valid after the first one, found on a copy of the board.
+      const after = pour(round.board, from, to);
+      let second: [number, number] | null = null;
+      for (let a = 0; a < after.trays.length && !second; a++) {
+        for (let b = 0; b < after.trays.length && !second; b++) {
+          if (a !== b && after.trays[a]!.length > 0 && canPour(after, a, b) && b !== to) {
+            second = [a, b];
+          }
+        }
+      }
+      if (!second) {
+        throw new Error('no second pour');
+      }
+      const { wrapper } = setup(round);
+      const buttons = wrapper.findAll('button');
+      await buttons[from]!.trigger('click');
+      await buttons[to]!.trigger('click');
+      vi.advanceTimersByTime(LANDING_TIMING.flow);
+      await wrapper.vm.$nextTick();
+      expect(phaseOf(wrapper, to)).toBe('hover');
+      await buttons[second[0]]!.trigger('click');
+      await buttons[second[1]]!.trigger('click');
+      expect(phaseOf(wrapper, to)).toBeUndefined();
+      expect(phaseOf(wrapper, second[1])).toBe('flow');
+      // The old landing would be in merge by now, the new one is still in its own phase.
+      vi.advanceTimersByTime(LANDING_TIMING.hover);
+      await wrapper.vm.$nextTick();
+      expect(phaseOf(wrapper, to)).toBeUndefined();
+      vi.advanceTimersByTime(LANDING_TIMING.merge + LANDING_TIMING.flow);
+      await wrapper.vm.$nextTick();
+      expect(wrapper.find('[data-landing-phase]').exists()).toBe(false);
+      expect(vi.getTimerCount()).toBe(0);
+      wrapper.unmount();
+    });
+
+    it('sets no landing with reduced motion, even for the same color', async () => {
+      vi.stubGlobal('matchMedia', () => ({ matches: true }));
+      const { round, from, to } = scenario('same');
+      const { wrapper } = setup(round);
+      const buttons = wrapper.findAll('button');
+      await buttons[from]!.trigger('click');
+      await buttons[to]!.trigger('click');
+      expect(wrapper.find('[data-landing-phase]').exists()).toBe(false);
+      expect(wrapper.find('.tray-glass__block--wobble').exists()).toBe(false);
+      expect(wrapper.find('.tray-glass__layer--flow').exists()).toBe(false);
       wrapper.unmount();
     });
 

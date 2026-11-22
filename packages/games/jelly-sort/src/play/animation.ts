@@ -1,5 +1,18 @@
-/** How long the flow and merge animation stay marked on a tray, in milliseconds. */
-export const LANDING_MS = 450;
+/**
+ * Durations of the landing phases in milliseconds. The same numbers are the CSS custom properties
+ * `--landing-flow-ms`, `--landing-hover-ms` and `--landing-merge-ms` in TrayGlass.css, keep both
+ * in step.
+ */
+export const LANDING_TIMING = { flow: 320, hover: 600, merge: 350 } as const;
+
+/** The phases of a landing: flow to the hover spot, hover and wobble, merge into one layer. */
+export type LandingPhase = 'flow' | 'hover' | 'merge';
+
+/** Total time of a landing, with or without hover and merge. */
+export function landingDuration(hover: boolean): number {
+  const { flow, hover: hovering, merge } = LANDING_TIMING;
+  return hover ? flow + hovering + merge : flow;
+}
 
 /** The poured block as it lands in the target tray. */
 export interface Landing {
@@ -12,6 +25,8 @@ export interface Landing {
   /** Offset in px from where the block came from to where it is now (FLIP "invert"). */
   x: number;
   y: number;
+  /** Where the landing is now. */
+  phase: LandingPhase;
   /** Changes on every landing so a repeated landing restarts the animation. */
   key: number;
 }
@@ -64,24 +79,28 @@ export function measureFlow(
 }
 
 /**
- * Runs `clear` after the landing time and returns a function that cancels it.
- * One landing at a time, a new one replaces the pending one.
+ * Steps through the phases of one landing with timers. `onPhase` gets each new phase and null when
+ * the landing is over (the first phase, flow, is the one the caller starts with). Without a hover
+ * (empty or different target) the landing is flow only. One landing at a time, `start` replaces
+ * the pending one, `cancel` stops it.
  */
-export function createLandingTimer(clear: () => void) {
-  let handle: ReturnType<typeof setTimeout> | undefined;
+export function createLandingTimer(onPhase: (phase: LandingPhase | null) => void) {
+  let handles: ReturnType<typeof setTimeout>[] = [];
   function cancel(): void {
-    if (handle !== undefined) {
+    for (const handle of handles) {
       clearTimeout(handle);
-      handle = undefined;
     }
+    handles = [];
   }
   return {
-    start(): void {
+    start(hover: boolean): void {
       cancel();
-      handle = setTimeout(() => {
-        handle = undefined;
-        clear();
-      }, LANDING_MS);
+      const { flow, hover: hovering } = LANDING_TIMING;
+      if (hover) {
+        handles.push(setTimeout(() => onPhase('hover'), flow));
+        handles.push(setTimeout(() => onPhase('merge'), flow + hovering));
+      }
+      handles.push(setTimeout(() => onPhase(null), landingDuration(hover)));
     },
     cancel,
   };

@@ -1,0 +1,175 @@
+.tray-glass {
+  --layer-size: 2.25rem;
+  /* Landing timing, the same numbers as LANDING_TIMING in ../animation.ts. */
+  --landing-flow-ms: 320ms;
+  --landing-merge-ms: 350ms;
+  /* The poured block sits directly on the target stack. A lift would open a gap between the two
+   hovering blocks, so it is 0. */
+  --landing-lift: 0px;
+  /* Glass wall thickness. The tray width constant in tray-columns.ts depends on it. */
+  --glass-wall: 5px;
+  display: block;
+  box-sizing: content-box;
+  /* 4px each side = the inner padding: a little air between layer and glass wall. */
+  width: calc(var(--layer-size) + 0.5rem);
+  min-width: var(--button-min-size);
+  height: calc(var(--layer-size) * var(--capacity) + 0.5rem);
+  padding: 0;
+  background-color: color-mix(in srgb, var(--surface-color) 70%, transparent);
+  border: var(--glass-wall) solid var(--text-color);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  cursor: pointer;
+}
+
+.tray-glass:focus-visible {
+  outline: 3px solid var(--focus-ring-color);
+  outline-offset: 3px;
+}
+
+.tray-glass:disabled {
+  cursor: default;
+}
+
+.tray-glass__inner {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: stretch;
+  height: 100%;
+  padding: 0.25rem;
+  box-sizing: border-box;
+}
+
+/* A selected tray clips at the glass walls (not at the top, so the lifted block stays visible),
+   so a wobbling block can never be seen outside the glass. */
+.tray-glass--selected .tray-glass__inner {
+  clip-path: inset(-100vmax 0 0 0);
+}
+
+.tray-glass__layer {
+  display: flex;
+  flex: 0 0 var(--layer-size);
+  align-items: center;
+  justify-content: center;
+  height: var(--layer-size);
+  border-radius: var(--jelly-radius);
+}
+
+.tray-glass__mark {
+  width: 50%;
+  height: 50%;
+  stroke-width: 2;
+  opacity: var(--jelly-mark-opacity);
+}
+
+.tray-glass__layer--join-below {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.tray-glass__layer--join-above {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+/* The selected top block: one unit with a lift and an outline around the whole stack.
+   Both cues are static, so they work without motion. */
+.tray-glass__block {
+  /* The wobble is tuned in ../wobble.ts. The jelly deforms in place, it never rotates or travels
+     sideways, and stays below the air between layer and glass wall (0.25rem). */
+  --block-lift: -0.375rem;
+  --block-outline-color: color-mix(in srgb, var(--text-color) 50%, var(--surface-color));
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column-reverse;
+  transform: translateY(var(--block-lift));
+  transform-origin: 50% 100%;
+  outline: 1px solid var(--block-outline-color);
+  outline-offset: 1px;
+  border-radius: var(--jelly-radius);
+}
+
+/* While wobbling, the shape is cut by an animated clip-path, which would cut a plain outline.
+   So the outline is drawn as a ring (::after) that follows the same shape. The ring is part of
+   the cut shape, so the outline is always visible. */
+.tray-glass__block--wobble {
+  overflow: hidden;
+  outline: none;
+}
+
+.tray-glass__block--wobble::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--jelly-radius);
+  background-color: var(--block-outline-color);
+  pointer-events: none;
+}
+
+/* The wobble animations (keyframes, duration) are generated from ../wobble.ts and added to the
+   page by ../wobble-style.ts, as unscoped keyframes with unique names. */
+
+/* Landing on the same color: the two blocks hover as separate wrappers and wobble (kinds from
+   ../wobble.ts), without the selection outline. The poured one is lifted. */
+.tray-glass__block--landing {
+  --block-lift: 0px;
+  outline: none;
+}
+
+.tray-glass__block--landing::after {
+  display: none;
+}
+
+/* The hovering blocks are parts of one body: square corners (the layers keep their own rounding
+   at the outer ends), the bottom edge stays fixed and the wobble keyframes (anchored variants)
+   fade the deformation to zero towards it. */
+.tray-glass__block--anchored {
+  border-radius: 0;
+}
+
+.tray-glass__block--hover-poured {
+  --block-lift: var(--landing-lift);
+}
+
+/* Flow: the poured block comes from the source glass and ends at its spot (--flow-end). */
+.tray-glass__layer--flow {
+  animation: jelly-flow var(--landing-flow-ms) ease-out both;
+}
+
+/* Merge: the poured block lowers onto the stack, and both blocks settle from slightly soft
+   cubes into the joined shape. The touching corners square off and the seam closes. */
+.tray-glass__layer--merge {
+  --merge-lift: var(--landing-lift);
+}
+
+.tray-glass__layer--merge,
+.tray-glass__layer--settle {
+  animation: jelly-merge var(--landing-merge-ms) ease-out both;
+}
+
+@keyframes jelly-flow {
+  from {
+    transform: translate(var(--flow-x, 0), var(--flow-y, 0));
+  }
+  to {
+    transform: translateY(var(--flow-end, 0px));
+  }
+}
+
+@keyframes jelly-merge {
+  from {
+    border-radius: calc(var(--jelly-radius) * 1.6);
+    transform: translateY(var(--merge-lift, 0px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tray-glass__block--wobble,
+  .tray-glass__block--wobble::after,
+  .tray-glass__layer--flow,
+  .tray-glass__layer--merge,
+  .tray-glass__layer--settle {
+    animation: none;
+  }
+}
