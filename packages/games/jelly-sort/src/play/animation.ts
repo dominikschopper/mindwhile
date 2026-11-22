@@ -3,7 +3,7 @@
  * `--landing-flow-ms`, `--landing-hover-ms` and `--landing-merge-ms` in TrayGlass.css, keep both
  * in step.
  */
-export const LANDING_TIMING = { flow: 320, hover: 600, merge: 350 } as const;
+export const LANDING_TIMING = { flow: 420, hover: 600, merge: 100 } as const;
 
 /** The phases of a landing: flow to the hover spot, hover and wobble, merge into one layer. */
 export type LandingPhase = 'flow' | 'hover' | 'merge';

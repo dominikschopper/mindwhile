@@ -45,5 +45,17 @@ export const en = {
   'live.poured': 'Poured tray {from} into tray {to}. Moves {moves}',
   'live.won': 'Solved in {moves} moves',
   'live.lost': 'No moves left',
-  'placeholder.howTo': 'Pour the jelly until every glass holds one color.',
+  'howTo.move.heading': 'How a move works',
+  'howTo.move.pick':
+    'Tap a glass to pick up the jellies on top of it, then tap another glass to pour them there.',
+  'howTo.move.rules':
+    'You can pour onto the same color or into an empty glass, and only if all of it fits. Jellies of the same color merge.',
+  'howTo.goal.heading': 'The goal',
+  'howTo.goal.caption':
+    'You have to collect all jelly blobs of the same color into a single glass to win the game.',
+  'howTo.score.heading': 'Score',
+  'howTo.score.moves':
+    'Fewer moves give a higher score. You play against the par value, fewer is better.',
+  'howTo.score.par':
+    'The par is not the optimum, so you can beat it and end up below it. The round is lost when no move is left.',
 } as const;
