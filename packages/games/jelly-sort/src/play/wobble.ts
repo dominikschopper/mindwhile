@@ -58,7 +58,7 @@ export const wobbleKinds = {
     bulge: 0.16,
     squash: 0.12,
     lift: 0.2,
-    duration: 1430,
+    duration: 2950,
     steps: 8,
     aftershock: 0.5,
     wallShift: 0.25,
