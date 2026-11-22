@@ -124,6 +124,16 @@ onBeforeRouteLeave(async (to) => {
 
 .result {
   margin-block-start: var(--spacing-lg);
+  text-align: center;
+}
+
+.result .play-actions {
+  justify-content: center;
+}
+
+/* Some air between the result text and the button. The lost panel has its own spacing. */
+.result:not(.lost) .play-actions {
+  margin-block-start: var(--spacing-md);
 }
 
 .play-stage {
@@ -186,10 +196,6 @@ onBeforeRouteLeave(async (to) => {
   margin-block-end: 1rem;
   border-radius: 1rem;
   background-color: light-dark(rgb(205 205 205 / 0.75), rgb(250 250 250 / 0.67));
-}
-
-.result.lost .play-actions {
-  justify-content: center;
 }
 
 .result-score {

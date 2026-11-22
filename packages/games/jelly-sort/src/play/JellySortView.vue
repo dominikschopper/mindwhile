@@ -185,7 +185,12 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <p class="jelly-sort-live" role="status" aria-live="polite">{{ liveText }}</p>
+    <!-- The region stays in the page for screen readers, only its text fades in and out. -->
+    <p class="jelly-sort-live" role="status" aria-live="polite">
+      <Transition name="live-fade" mode="out-in">
+        <span :key="liveText">{{ liveText }}</span>
+      </Transition>
+    </p>
   </section>
 </template>
 
@@ -239,5 +244,24 @@ onBeforeUnmount(() => {
 .jelly-sort-live {
   min-height: 1.5em;
   color: var(--text-color);
+  text-align: center;
+}
+
+/* Fade in when a message appears and fade out before the next one (short, 200ms). */
+.live-fade-enter-active,
+.live-fade-leave-active {
+  transition: opacity 300ms ease;
+}
+
+.live-fade-enter-from,
+.live-fade-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-fade-enter-active,
+  .live-fade-leave-active {
+    transition: none;
+  }
 }
 </style>

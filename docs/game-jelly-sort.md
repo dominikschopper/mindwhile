@@ -47,7 +47,6 @@ Display name: "Jelly Sort" (`game.name` in `common/texts/en.ts`). The ID stays `
 - Marks are Lucide icons from `game-kit`, in this order: `infinity`, `circle-alert`, `activity`, `plane`, `sun-moon`, `apple`, `paw-print`, `film` (eight, level `c` uses all of them, `square-x` stays in reserve). Screen reader names: "infinity", "alert", "pulse", "plane", "sun and moon", "apple", "paw print", "film". Marks belong to the presentation, not to the scoring
 - The colors live only in `src/common/styles/tokens.css` (`--jelly-0` to `--jelly-7`, with a mark color per jelly, `--jelly-mark-opacity` and the corner radius `--jelly-radius`), light and dark through `light-dark()`. There is no palette test and no contrast measurement: the look is judged by the maintainer and in user tests
 - Color names for screen readers: orange, sky blue, green, yellow, dark blue, red, pink, gray
-- Known small open point: jelly 5 is brown in the light theme and red in the dark theme, but its screen reader name is "red" in both
 
 ## Look and animation
 
@@ -79,4 +78,3 @@ Display name: "Jelly Sort" (`game.name` in `common/texts/en.ts`). The ID stays `
 - **Name:** the trademark register check for "Jelly Sort" is still open (the app store check is done: Jelly Hop and Jelly Cat Sort exist but are different games). If the name changes, only the display text changes, the ID `jelly-sort` stays
 - **Unwinnable positions with moves left** are not detected as `lost`, to be watched in play tests
 - **Level numbers and minimum par** are starting values until the first release
-- **Jelly 5** is brown in light and red in dark, its screen reader name is "red" (see Marks and colors)
