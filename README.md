@@ -34,6 +34,7 @@ for passing time intelligently. No tracking, no ads, no chat, minimal running co
 | [`game-contract.md`](docs/game-contract.md)     | The interface between platform and game                                               |
 | [`tech-stack.md`](docs/tech-stack.md)           | Technology decisions, structure, conventions, hosting                                 |
 | [`game-spill-it.md`](docs/game-spill-it.md)     | Concept of the first game                                                             |
+| [`game-jelly-sort.md`](docs/game-jelly-sort.md) | Concept of the second game                                                            |
 | [`game-candidates.md`](docs/game-candidates.md) | Candidates for further games                                                          |
 | [`glossary.md`](docs/glossary.md)               | Terms and their English code names                                                    |
 

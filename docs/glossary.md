@@ -16,9 +16,13 @@ Spelling in code: identifiers in `camelCase`, types in `PascalCase`, folders and
 | result (`result`) | Result of a finished round |
 | score values (`scoreValues`) | Ordered list of integers by which results are compared. The direction of each position (`higher` or `lower` is better) is declared in the game manifest, not in the result |
 | best result (`bestResult`) | Best result per game, level and scoring version |
-| par (`par`) | Reference value of a board (in Spillit: the moves of the greedy method) |
+| tray (`tray`) | A glass of Jelly Sort: a list of layers from bottom to top with a fixed capacity. The board is a list of trays |
+| layer, jelly layer (`layer`) | One unit of jelly in a tray, one color. Not the platform layer (`useLayer`, see Platform): in Jelly Sort code `layer` always means the jelly unit |
+| block (`block`, `topBlock`) | The contiguous layers of the same color on top of a tray. Only a whole block can be poured |
+| pour (`pour`) | The move of Jelly Sort: the whole top block of one tray goes onto another tray |
+| par (`par`) | Reference value of a board (in Spillit: the moves of the greedy method, in Jelly Sort: the moves of the generator solution) |
 | deviation (`deviation`) | Moves minus par |
-| points (`points`) | Spillit score value derived from moves and par (`basePoints * par / moves`, rounded down to tens), higher is better |
+| points (`points`) | Score value of Spillit and Jelly Sort derived from moves and par (`basePoints * par / moves`, rounded down to tens), higher is better |
 | round end (`roundEnd` with state `won`, `lost` or `ended`) | Won, lost or ended (open-ended games) |
 | abort (`abort`) | Leaving a round without a result being created |
 | pause (`pause`) | Round stopped by the player, optional and decided by the game. Not the same as an interruption by the system |
@@ -81,6 +85,7 @@ Spelling in code: identifiers in `camelCase`, types in `PascalCase`, folders and
 |---|---|---|
 | Platform | Mindwhile | repository `mindwhile` |
 | First game | Spillit | game ID `spill-it`, package `@mindwhile/game-spill-it`. Spillit is our version of the classic flood-fill game |
+| Second game | Jelly Sort | game ID `jelly-sort`, package `@mindwhile/game-jelly-sort`. Our version of the water sort idea. Trademark register check still open |
 
 Display names live in the language files. The game ID follows the working title `spill-it`, so a later rename of the game would also touch the ID, stored results and the package name, and is decided deliberately.
 

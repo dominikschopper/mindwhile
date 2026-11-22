@@ -38,6 +38,25 @@ interface GameModule<TView = unknown> {
 - The platform builds one registry from these entries (`apps/web/src/common/composables/game-registry.ts`). It has one entry per game folder, and the folder name must equal `manifest.id`. A missing entry or a wrong folder name throws when the registry is built. A module that declares another ID throws when it is loaded. Tests inject a fake registry instead of the real games
 - The registry reads the files by path (`src/manifest.ts`, `src/texts.ts`, `src/module.ts`), the package `exports` declare the same entries for other packages
 
+### Adding a new game
+
+A checklist, there is no template folder and no generator script for now. The reference implementations are `packages/games/spill-it` and `packages/games/jelly-sort`, copy their structure.
+
+1. **Folder** `packages/games/<id>`. The folder name must equal `manifest.id` (the registry throws otherwise)
+2. **`package.json`**: name `@mindwhile/game-<id>`, `license` `GPL-3.0-or-later`, `type` `module`, `exports` for `.` (`./src/manifest.ts`), `./texts` (`./src/texts.ts`) and `./module` (`./src/module.ts`), dependencies `@mindwhile/core`, `@mindwhile/game-kit` and `vue` (no other runtime dependency). Then `pnpm install` once, so the workspace links the package
+3. **TypeScript projects**: `tsconfig.json` and `tsconfig.test.json` like the references, and add both to the root `typecheck` script in `package.json` (`vue-tsc --noEmit -p packages/games/<id>` and `... -p packages/games/<id>/tsconfig.test.json`)
+4. **Manifest** `src/manifest.ts` (pure data): `id`, `symbol` (a key of `gameSymbols` in `game-kit`), `color` (one of `gameColors` in `core`), `gameVersion`, `scoringVersion`, `interfaceVersion`, `levels` (ascending, IDs `a`, `b`, `c`), `scoring` (one entry per score position with `key` and `better`)
+5. **Level numbers** in the game's own `src/common/levels/levels.ts`, the one place for everything that defines a level (sizes, colors, minimum par, base points). Changing them later raises the scoring version
+6. **Texts**: `src/texts.ts` exports `GameTexts` (`name`, `tagline`, `summary`, `levelName`, `formatScore`, optionally `formatScoreShort`), the strings live in a language file (`src/common/texts/en.ts`) and are used through `t()`. No hard-coded UI strings
+7. **Module** `src/module.ts` exports `GameModule`: `createRound`, `View`, `HowToPlay` and optionally `LevelPreview`. Logic (board, generator, round, scoring) stays free of Vue, the view builds on it. Randomness only through `createRng` and `newSeed` from `core`
+8. **Scoring tests**: one file `src/scoring/scoring.<level>.test.ts` per level. `checks/scoring-tests.test.ts` fails if one is missing
+9. **Symbol**: if the symbol icon does not exist yet, add it to `gameSymbols` in `packages/game-kit/src/icons/index.ts` (and adjust the icon test there)
+10. **Registry**: it reads `src/manifest.ts`, `src/texts.ts` and `src/module.ts` of every folder under `packages/games` by path and throws when one is missing or the folder name is wrong. A new package needs all three files from the start, even as stubs
+11. **Docs** in the same change: a game document `docs/game-<id>.md` (basic rule, decisions, scoring, levels, ideas, open points), a row in `docs/game-candidates.md` and new terms in `docs/glossary.md`
+12. **Checks**: `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm format:check` and a look in the browser (start page tile, game page with levels, a full round)
+
+A template folder (for example `_skeleton`) was considered and rejected: the registry and the repository checks scan every folder under `packages/games`, so it would break them, and a template outside the workspace would rot unnoticed. A generator script is reconsidered with the third game.
+
 ### Navigation
 
 - Games have no routes of their own and do not use the History API. This includes memory and hash routers inside a game: a second router would have to be coordinated with the one of the platform for back key and back gesture, and the hash is already used by the platform for import links. The platform is the only place that handles back key and back gesture (abort confirmation as guard)
@@ -121,6 +140,7 @@ Two different things, only one of them is optional.
 - The platform wraps the round object. The view gets an object whose `apply` the platform intercepts: after every move the platform itself calls `serialize()` to save the state and `result()` to check for the end of the round
 - The platform also calls `serialize()` and saves when the app goes to the background, so time between two moves is not lost either
 - A game cannot forget to report, the view only calls `apply`. This also holds for per-level views
+- A game that reports `lost` (for example when no move is left) returns a neutral score such as `[0, 0]`. The platform creates no result and no best result for it and shows a neutral lost panel instead of the score (see `architecture.md`, Round flow)
 - Reason: saving and the result are the two things where mistakes would cost most. One place in the platform is easier to test than every single game
 
 ### Open-ended games ("End and score")
@@ -136,6 +156,7 @@ Two different things, only one of them is optional.
 - On an error the round is discarded, no result is created, the app shows a `danger` toast ("Something went wrong, the round was discarded", see `architecture.md`) and goes to the start page. Nothing is sent anywhere
 - Saved states: the platform does not store rounds yet, so there is nothing to delete. When resuming a saved round is built, the same error path deletes its saved state. **Not yet implemented:** resuming and saving
 - An unknown game or level in the URL is not an error of the game: the play page keeps its inline error with a link back and shows no toast
+- A `lost` round is not an error: it ends normally, creates no result and shows the lost panel (see Reporting moves and round end)
 - A broken state can therefore never trap the app in a loop. The console helps during development, the scoring tests cover the logic
 
 ### Toasts

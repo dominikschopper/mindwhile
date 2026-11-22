@@ -102,6 +102,7 @@ The exact keys, types, envelope, limits and transport are fixed in `data-formats
 - A game always runs exactly one round (one board). While a round is running, no other game can be started
 - The rules of the game are on its game page (see Platform shell), not during a round. At round end the result offers "Next round", the footer offers "Back to games"
 - Leaving a running round asks first (leave guard, see Platform shell). A round is only left after the round end (won, lost or ended) or after a confirmed abort ("Abort round? Progress will be lost"). A confirmed abort opens the game page of that game, "Back to games" the start page
+- A `lost` round (for example Jelly Sort with no valid pour left) shows a neutral lost panel over the board ("No moves left", "This round does not count") with the new-round button instead of a score, and creates no result and no best result. This is platform behavior, the contract does not change
 - An error in the game (creating the round, rendering the view) discards the round, creates no result and shows a `danger` toast on the start page (see `game-contract.md`, Errors)
 - An abort discards the state, neither a result nor a best result is created
 - The device's back gesture and back key trigger the same abort confirmation as the back button, but a game layer open inside the round (for example the pause) closes first: the first back resumes the game, only the next back asks (see `game-contract.md`, Navigation)
