@@ -89,9 +89,22 @@ onBeforeRouteLeave(async (to) => {
   <p v-else-if="!module || !framed">{{ t('loading') }}</p>
 
   <template v-else>
-    <component :is="module.View" :key="roundKey" :round="framed.round" />
+    <!-- The lost panel lies centered over the board, so the board stays visible behind it. -->
+    <div class="play-stage">
+      <component :is="module.View" :key="roundKey" :round="framed.round" />
 
-    <section v-if="result" class="result" role="status">
+      <section v-if="result?.roundEnd === 'lost'" class="result lost" role="status">
+        <div class="lost-message">
+          <h2>{{ t('lost.heading') }}</h2>
+          <p>{{ t('lost.text') }}</p>
+        </div>
+        <div class="play-actions">
+          <AppButton variant="primary" @click="startRound">{{ t('result.next') }}</AppButton>
+        </div>
+      </section>
+    </div>
+
+    <section v-if="result && result.roundEnd !== 'lost'" class="result" role="status">
       <h2>{{ t('result.heading') }}</h2>
       <p class="result-score">{{ scoreText }}</p>
       <div class="play-actions">
@@ -111,6 +124,72 @@ onBeforeRouteLeave(async (to) => {
 
 .result {
   margin-block-start: var(--spacing-lg);
+}
+
+.play-stage {
+  position: relative;
+}
+
+/* Lost: centered over the board with a very transparent background, the board shows through. */
+.result.lost {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #000;
+  border-radius: var(--radius-lg);
+}
+
+.result.lost > * {
+  position: relative;
+}
+
+/* The same rainbow as the backdrop of the dialogs (AppDialog), on a layer behind the text so
+   the hue shift does not tint the text. It runs a few seconds and stops, not with reduced motion. */
+.result.lost::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    135deg,
+    hsl(0 85% 55% / 0.55),
+    hsl(60 85% 55% / 0.55),
+    hsl(120 85% 45% / 0.55),
+    hsl(200 85% 55% / 0.55),
+    hsl(280 85% 55% / 0.55)
+  );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .result.lost::before {
+    animation: lost-rainbow 4s linear 2;
+  }
+}
+
+@keyframes lost-rainbow {
+  to {
+    filter: hue-rotate(360deg);
+  }
+}
+
+/* The text box on the rainbow: a grey, semi-transparent card. Darker in the light theme so the
+   black text and the card stand out from the page, the original light grey in the dark theme. */
+.lost-message {
+  padding: 0.75rem;
+  margin-block-end: 1rem;
+  border-radius: 1rem;
+  background-color: light-dark(rgb(205 205 205 / 0.75), rgb(250 250 250 / 0.67));
+}
+
+.result.lost .play-actions {
+  justify-content: center;
 }
 
 .result-score {

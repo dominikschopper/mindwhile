@@ -9,5 +9,7 @@ export const en = {
   'abort.confirm': 'Abort round',
   'abort.cancel': 'Keep playing',
   'result.heading': 'Round finished',
+  'lost.heading': 'No moves left',
+  'lost.text': 'This round does not count.',
   'result.next': 'Next round',
 } as const;

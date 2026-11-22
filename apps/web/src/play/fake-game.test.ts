@@ -17,9 +17,9 @@ describe('fake game view', () => {
     vi.useRealTimers();
   });
 
-  it('renders only the win button by default', async () => {
+  it('renders only the win and lose buttons by default', async () => {
     const { wrapper } = await mountView({});
-    expect(wrapper.html()).toBe('<button type="button" class="fake-win">win</button>');
+    expect(wrapper.findAll('button').map((b) => b.text())).toEqual(['win', 'lose']);
   });
 
   it('mounts and unmounts with pause without a pending timer', async () => {

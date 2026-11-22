@@ -135,11 +135,18 @@ export function createFakeGame(
     if (options.throwInView) {
       throw new Error('view failed');
     }
-    return h(
-      'button',
-      { type: 'button', class: 'fake-win', onClick: () => props.round.apply({ type: 'win' }) },
-      'win',
-    );
+    return [
+      h(
+        'button',
+        { type: 'button', class: 'fake-win', onClick: () => props.round.apply({ type: 'win' }) },
+        'win',
+      ),
+      h(
+        'button',
+        { type: 'button', class: 'fake-lose', onClick: () => props.round.apply({ type: 'lose' }) },
+        'lose',
+      ),
+    ];
   };
   PlainView.props = ['round'];
   const View: Component = options.withPause ? PauseView : PlainView;

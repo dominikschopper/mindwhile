@@ -1,3 +1,5 @@
+/* The jelly colors, one pair per theme (light, dark). Provisional until the browser check. Marks
+   and colors always go together, the mark on each color carries the meaning for color blindness. */
 @layer tokens {
   :root {
     --jelly-0: light-dark(#cf8f00, #e69f00);
@@ -5,8 +7,8 @@
     --jelly-2: light-dark(#008e68, #009e73);
     --jelly-3: light-dark(#f0e442, #f3e968);
     --jelly-4: light-dark(#00507d, #0067a0);
-    --jelly-5: light-dark(#7d3600, #b04e00);
-    --jelly-6: light-dark(#c2579b, #d77cb5);
+    --jelly-5: light-dark(#7d3600, #ee2d24);
+    --jelly-6: light-dark(#c2579b, #e57abe);
     --jelly-7: light-dark(#b4b4b4, #c4c4c4);
 
     --jelly-mark-0: light-dark(#000000, #000000);

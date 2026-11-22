@@ -107,6 +107,27 @@ describe('PlayView with a fake game', () => {
     expect(footer(wrapper).get('a').attributes('href')).toBe('/');
   });
 
+  it('shows the lost panel without a score and records nothing', async () => {
+    const { wrapper } = await mountFake();
+    await wrapper.get('.fake-lose').trigger('click');
+    const panel = wrapper.get('.result');
+    expect(panel.text()).toContain('No moves left');
+    expect(panel.text()).toContain('This round does not count.');
+    expect(panel.text()).not.toContain('fake points');
+    expect(panel.text()).not.toContain('Round finished');
+    expect(useProfile().best.value).toHaveLength(0);
+  });
+
+  it('starts another round from the lost panel', async () => {
+    const { wrapper, fake } = await mountFake();
+    await wrapper.get('.fake-lose').trigger('click');
+    const next = wrapper.findAll('.result button').find((b) => b.text() === 'Next round')!;
+    await next.trigger('click');
+    expect(fake.rounds.map((r) => r.seed)).toEqual([11, 22]);
+    expect(wrapper.find('.result').exists()).toBe(false);
+    expect(useProfile().best.value).toHaveLength(0);
+  });
+
   it('records the result with the round seed once, and the next round on its own', async () => {
     const { wrapper } = await mountFake();
     await wrapper.get('.fake-win').trigger('click');

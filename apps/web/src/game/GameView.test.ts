@@ -264,6 +264,42 @@ describe('GameView', () => {
     expect(wrapper.text()).not.toContain('Loading');
   });
 
+  it('shows the three Jelly Sort levels with their names', async () => {
+    const { wrapper } = await mountView('jelly-sort');
+    expect(wrapper.find('h1').text()).toBe('Jelly Sort');
+    const radios = wrapper.findAll('input[type="radio"]');
+    expect(radios).toHaveLength(3);
+    expect(wrapper.findAll('.level-picker-label').map((o) => o.text())).toEqual([
+      '4 colors',
+      '6 colors',
+      '8 colors',
+    ]);
+  });
+
+  it('shows the best result per Jelly Sort level from the seeded profile', async () => {
+    const version = defaultGameRegistry.getGame('jelly-sort')!.manifest.scoringVersion;
+    seedBestForTests([
+      storedResult('jelly-sort', 'a', [300, 2], version),
+      storedResult('jelly-sort', 'c', [120, -1], version),
+    ]);
+    const { wrapper } = await mountView('jelly-sort');
+    const texts = defaultGameRegistry.getGame('jelly-sort')!.texts;
+    const radios = () => wrapper.findAll('input[type="radio"]');
+
+    // The selection is kept per game across tests, so select level a explicitly.
+    await radios()[0]!.setValue(true);
+    expect(wrapper.find('.best').text()).toContain(texts.formatScore([300, 2]));
+    expect(wrapper.find('.level-picker-hiscore').text()).toBe(texts.formatScore([300, 2]));
+
+    await radios()[1]!.setValue(true);
+    expect(wrapper.find('.best').text()).toContain('—');
+    expect(wrapper.find('.best .visually-hidden').text()).toBe('No result yet');
+
+    await radios()[2]!.setValue(true);
+    expect(wrapper.find('.best').text()).toContain(texts.formatScore([120, -1]));
+    expect(wrapper.find('.best').text()).toContain('1 move faster');
+  });
+
   it('shows an error and a link back for an unknown id', async () => {
     const { wrapper } = await mountView('nope');
     expect(wrapper.text()).toContain('Game not found');

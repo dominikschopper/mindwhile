@@ -47,6 +47,25 @@ describe('default registry', () => {
     expect(module.View).toBeTruthy();
   });
 
+  it('has manifest, texts and loader for jelly-sort', async () => {
+    const game = defaultGameRegistry.getGame('jelly-sort');
+    expect(game?.manifest.id).toBe('jelly-sort');
+    expect(game?.texts.name).toBe('Jelly Sort');
+    const module = await game!.loadModule();
+    expect(module.manifest.id).toBe('jelly-sort');
+    expect(module.View).toBeTruthy();
+  });
+
+  it('lists both games with the folder name as id, equal to the manifest id', () => {
+    const games = defaultGameRegistry.listGames();
+    expect(games.map((game) => game.id)).toEqual(
+      expect.arrayContaining(['jelly-sort', 'spill-it']),
+    );
+    for (const game of games) {
+      expect(game.manifest.id).toBe(game.id);
+    }
+  });
+
   it('returns undefined for an unknown id', () => {
     expect(defaultGameRegistry.getGame('nope')).toBeUndefined();
   });
