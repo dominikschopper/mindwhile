@@ -1,13 +1,24 @@
 .tray-glass {
+  /* All tuning variables of the glass live in this block. Only the per-state overrides further
+     down (landing blocks) set --block-lift again. The wobble itself is tuned in ../wobble.ts,
+     the landing timings must match LANDING_TIMING in ../animation.ts. */
+
+  /* Size of one layer (a cube). */
   --layer-size: 2.25rem;
-  /* Landing timing, the same numbers as LANDING_TIMING in ../animation.ts. */
-  --landing-flow-ms: 320ms;
-  --landing-merge-ms: 350ms;
-  /* The poured block sits directly on the target stack. A lift would open a gap between the two
-   hovering blocks, so it is 0. */
-  --landing-lift: 0px;
   /* Glass wall thickness. The tray width constant in tray-columns.ts depends on it. */
   --glass-wall: 5px;
+
+  /* Selected block: how far it lifts (negative = up) and the color of its outline. */
+  --block-lift: -0.075rem;
+  --block-outline-color: color-mix(in srgb, var(--text-color) 50%, var(--surface-color));
+
+  /* Landing: timings of the flow and merge phases. */
+  --landing-flow-ms: 420ms;
+  --landing-merge-ms: 100ms;
+  /* The poured block sits directly on the target stack. A lift would open a gap between the two
+     hovering blocks, so it is 0. */
+  --landing-lift: 0;
+
   display: block;
   box-sizing: content-box;
   /* 4px each side = the inner padding: a little air between layer and glass wall. */
@@ -75,10 +86,8 @@
 /* The selected top block: one unit with a lift and an outline around the whole stack.
    Both cues are static, so they work without motion. */
 .tray-glass__block {
-  /* The wobble is tuned in ../wobble.ts. The jelly deforms in place, it never rotates or travels
-     sideways, and stays below the air between layer and glass wall (0.25rem). */
-  --block-lift: -0.375rem;
-  --block-outline-color: color-mix(in srgb, var(--text-color) 50%, var(--surface-color));
+  /* The jelly deforms in place, it never rotates or travels sideways, and stays below the air
+     between layer and glass wall (0.25rem). */
   position: relative;
   display: flex;
   flex: none;
@@ -139,10 +148,6 @@
 
 /* Merge: the poured block lowers onto the stack, and both blocks settle from slightly soft
    cubes into the joined shape. The touching corners square off and the seam closes. */
-.tray-glass__layer--merge {
-  --merge-lift: var(--landing-lift);
-}
-
 .tray-glass__layer--merge,
 .tray-glass__layer--settle {
   animation: jelly-merge var(--landing-merge-ms) ease-out both;
@@ -160,7 +165,7 @@
 @keyframes jelly-merge {
   from {
     border-radius: calc(var(--jelly-radius) * 1.6);
-    transform: translateY(var(--merge-lift, 0px));
+    transform: translateY(var(--landing-lift, 0px));
   }
 }
 
