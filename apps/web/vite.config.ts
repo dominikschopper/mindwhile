@@ -28,6 +28,6 @@ export default defineConfig(({ command, mode }) => {
     base: env.VITE_BASE ?? '/',
     plugins: [vue(), layerOrderFirst(), getVueDevToolsOptions(command)],
     css: { postcss: { plugins: [sfcLayer] } },
-    server: { fs: { allow: [workspaceRoot] } },
+    server: { port: 8899, fs: { allow: [workspaceRoot] } },
   };
 });
