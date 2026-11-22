@@ -30,7 +30,7 @@ export const en = {
   'color.2': 'green',
   'color.3': 'yellow',
   'color.4': 'dark blue',
-  'color.5': 'brown',
+  'color.5': 'red',
   'color.6': 'pink',
   'color.7': 'gray',
   'counter.moves': 'Moves {moves}',
